@@ -116,7 +116,7 @@ Operation:
 end ADT
 ```
 
-1. 线性表的顺序存储结构
+3. 线性表的顺序存储结构
 
    - 顺序存储定义：用一段地址连续的存储单元依次存储线性表的数据元素。
    - 顺序存储方式：可以借助一维数组
@@ -134,9 +134,9 @@ typedef struct{
    - 地址计算方法：$loc(a_i) = loc(a_1) + (i - 1) \times c$, 其中$loc(a_1)$为数组的首地址，$c$为每个数据元素所占据的空间。
    - 存取时间性能：$O(1)$， 这种结构称为**随机存取结构**。
 
-1. 顺序结构的插入和删除
+4. 顺序结构的插入和删除
 
-   - 获得元素操作
+   - 获得元素操作，时间复杂度$O(1)$
 
 ```cpp
 ElemType GetElem(SqList L, int i)
@@ -149,7 +149,7 @@ ElemType GetElem(SqList L, int i)
    }
 }
 ```
-   - 插入操作
+   - 插入操作，时间复杂度$O(n)$
 
 ```cpp
 bool ListInsert(SqList* L, int i, ElemType e)
@@ -165,7 +165,7 @@ bool ListInsert(SqList* L, int i, ElemType e)
    return true;
 }
 ```
-   - 删除操作
+   - 删除操作，时间复杂度$O(n)$
 
 ```cpp
 ElemType ListDelete(SqList* L, i)
@@ -182,3 +182,164 @@ ElemType ListDelete(SqList* L, i)
 }
 ```
    - 顺序存储结构的优劣
+     - 读取快速，但插入和删除需要移动大量的元素。
+     - 难以预估需要的存储空间容量，容易造成存储空间的碎片化浪费。
+
+5. 线性表的链式存储结构
+
+   - 链式存储定义：用任意的一组存储单元存储线性表的数据元素，这组存储单元可以是连续的，也可以是不连续的。
+   - 链式存储方式：对于数据元素$a_i$，需要（在指针域中）存储数据元素的信息以及（在指针域中）存储其后继元素的存储地址，这两部分信息组成数据元素$a_i$的存储映像，称为**结点**。
+   - 由于此链表每个结点只包含一个指针域，所以叫做**单链表**。
+   - 头指针与头结点
+     - 链表中第一个结点的存储位置为头指针。
+     - 通常会在单链表的第一个结点前附设一个结点，指针域为头指针，数据域存储线性表长度等公共数据。
+     - 无论链表是否为空，头指针都不为空。
+     - 头结点的意义：使`在第一元素结点前插入结点`和`删除第一结点`两项操作与其他结点相同。
+
+   - 链式存储结构的代码描述
+
+```cpp
+typedef struct Node{
+   ElemType data;
+   struct Node* next;
+}Node;
+typedef struct Node* LinkList;
+```
+
+6. 单链表的读取、插入和删除操作
+
+   - 读取操作，时间复杂度$O(n)$
+
+```cpp
+ElemType GetElem(LinkList L, int i)
+{
+   int j = 1;
+   LinkList p;
+   p = L->next;
+   while (p && j < i){
+      p = p->next;
+      j++;
+   }
+   if (!p || j > i){
+      return false;
+   }
+   return p->data;
+   // LinkList p = L->next;
+   // for (int j = 1, j < i && p != nullptr, j++){
+   //    p = p->next;
+   // }
+   // if (p == nullptr){
+   //    return false;
+   // }
+   // else{
+   //    return p->data;
+   // }
+}
+```
+
+   - 插入操作，时间复杂度$O(n)$
+
+```cpp
+bool ListInsert(LinkList* L, int i, ElemType e)
+{
+   int j = 1;
+   LinkList p = *L;
+   while (p && j < i){
+      p = p->next;
+      j++;
+   }
+   if (p == nullptr || j > i){
+      return false;
+   }
+   LinkList s = new Node;
+   s->data = e;
+   s->next = p->next;
+   p->next = s;
+   delete s;
+}
+```
+
+   - 删除操作，时间复杂度$O(n)$
+
+```cpp
+ElemType ListDelete(LinkList *L, int i)
+{
+   int j = 1;
+   LinkList p = *L;
+   while (p && j < i){
+      p = p->next;
+      j++;
+   }
+   if (p->next == nullptr || j > i){
+      return false;
+   }
+   LinkList temp = p->next;
+   p->next = temp->next;
+   ElemType ans = temp->data;
+   delete temp;
+   return ans;
+}
+```
+
+7. 单链表的整表创建
+
+   - 头插法
+
+```cpp
+void CreateListtHead(LinkList *L, int n)
+{
+   LinkList p;
+   srand(time(0)); // 初始化随机数种子
+   *L = new Node; // 头结点
+   (*L)->next = nullptr;
+   for (int i = 0; i < n; i++)
+   {
+      p = new Node;
+      p->data = rand() % 100 + 1;
+      p->next = (*L)->next;
+      (*L)->next = p; // 这里是插入到表头，故名头插法。
+   }
+}
+```
+
+   - 尾插法
+
+```cpp
+void CreateListTail(LinkList *L, int n)
+{
+   LinkList p, r;
+   srand(time(0));
+   *L = new Node;
+   r = *L;
+   for (int i = 0; i < n; i++)
+   {
+      p = new Node;
+      p->data = rand() % 100 + 1;
+      r->next = p;
+      r = p->next; // 重新使r指向尾部
+   }
+   r->next = nullptr; // 链表结束
+}
+```
+
+8. 单链表的整表删除
+
+```cpp
+void ClearList(LinkList *L)
+{
+   LinkList p, q;
+   p = (*L)->next; // L为头结点，p指向第一个节点
+   while (p != nullptr)
+   {
+      q = p->next;
+      delete p;
+      p = q;
+   }
+   (*L)->next = nullptr;
+}
+```
+
+9. 单链表结构与顺序存储结构的优缺点
+
+   - 当需要频繁查找、很少进行插入和删除操作时，宜使用顺序存储结构，反之宜使用单链表结构。
+   - 当不清楚线性表的数据规模或数据规模变化较大时，宜采用单链表结构。
