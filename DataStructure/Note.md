@@ -126,6 +126,7 @@ end ADT
 typedef int ElemType;
 typedef struct{
    ElemType data[MAXSIZE];
+   int length;
 }SqList;
 ```
    - 数组长度与线性表长度不一定相等
@@ -140,16 +141,44 @@ typedef struct{
 ```cpp
 ElemType GetElem(SqList L, int i)
 {
-   if (i >= 0 && i < L.length)
-   {
+   if (i >= 0 && i < L.length){
       return L.data[i - 1];
    }
-   else
-   {
-      return -1;
+   else{
+      return false;
    }
 }
 ```
    - 插入操作
+
+```cpp
+bool ListInsert(SqList* L, int i, ElemType e)
+{
+   if (L->length == MAXSIZE){ // 当前线性表已满
+      return false;
+   }
+   for (int j = L->length - 1, j >= i - 1, j--){
+      L->data[j + 1] = L->data[j]; // 插入操作倒序处理可以省去引入变量temp
+   }
+   L->data[i - 1] = e;
+   L->length++;
+   return true;
+}
+```
    - 删除操作
+
+```cpp
+ElemType ListDelete(SqList* L, i)
+{
+   if (L->length = 0){
+      return false;
+   }
+   ElemType e = L->data[i - 1];
+   for (int j = i - 1, j < L->length - 1, j++){
+      L->data[j] = L->data[j + 1]; // 删除操作正序处理可以省去引入变量temp
+   }
+   L->length--;
+   return e;
+}
+```
    - 顺序存储结构的优劣
