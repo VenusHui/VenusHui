@@ -1,3 +1,8 @@
+> writer: VenusHui
+> 
+> time: 2021.08.01
+> 
+> Reference: Play With Data Structure 
 ## 《大话数据结构》阅读笔记
 
 ## 第一章 数据结构绪论
@@ -89,7 +94,7 @@
 
 ## 第三章 线性表
 
-    零个或多个数据元素的有限序列
+      零个或多个数据元素的有限序列
 1. 对于线性表$a_1,a_2...a_n$, 称$a_{i-1}$为$a_i$的**直接前驱元素**，$a_{i+1}$称为$a_i$的**直接后继元素**。元素个数`n`为线性表的长度，`n=0`时为空表，称`i`为数据元素$a_i$的位序。
 
    - 在较为复杂的线性表中，一个数据元素可以由若干个[数据项](#基本概念和术语)组成
@@ -116,7 +121,7 @@ Operation:
 end ADT
 ```
 
-3. 线性表的顺序存储结构
+### 线性表的顺序存储结构
 
    - 顺序存储定义：用一段地址连续的存储单元依次存储线性表的数据元素。
    - 顺序存储方式：可以借助一维数组
@@ -134,7 +139,7 @@ typedef struct{
    - 地址计算方法：$loc(a_i) = loc(a_1) + (i - 1) \times c$, 其中$loc(a_1)$为数组的首地址，$c$为每个数据元素所占据的空间。
    - 存取时间性能：$O(1)$， 这种结构称为**随机存取结构**。
 
-4. 顺序结构的插入和删除
+### 顺序结构的插入和删除
 
    - 获得元素操作，时间复杂度$O(1)$
 
@@ -185,7 +190,7 @@ ElemType ListDelete(SqList* L, i)
      - 读取快速，但插入和删除需要移动大量的元素。
      - 难以预估需要的存储空间容量，容易造成存储空间的碎片化浪费。
 
-5. 线性表的链式存储结构
+### 线性表的链式存储结构
 
    - 链式存储定义：用任意的一组存储单元存储线性表的数据元素，这组存储单元可以是连续的，也可以是不连续的。
    - 链式存储方式：对于数据元素$a_i$，需要（在指针域中）存储数据元素的信息以及（在指针域中）存储其后继元素的存储地址，这两部分信息组成数据元素$a_i$的存储映像，称为**结点**。
@@ -206,7 +211,7 @@ typedef struct Node{
 typedef struct Node* LinkList;
 ```
 
-6. 单链表的读取、插入和删除操作
+### 单链表的读取、插入和删除操作
 
    - 读取操作，时间复杂度$O(n)$
 
@@ -281,7 +286,7 @@ ElemType ListDelete(LinkList *L, int i)
 }
 ```
 
-7. 单链表的整表创建
+### 单链表的整表创建
 
    - 头插法
 
@@ -322,7 +327,7 @@ void CreateListTail(LinkList *L, int n)
 }
 ```
 
-8. 单链表的整表删除
+### 单链表的整表删除
 
 ```cpp
 void ClearList(LinkList *L)
@@ -339,7 +344,109 @@ void ClearList(LinkList *L)
 }
 ```
 
-9. 单链表结构与顺序存储结构的优缺点
+### 单链表结构与顺序存储结构的优缺点
 
    - 当需要频繁查找、很少进行插入和删除操作时，宜使用顺序存储结构，反之宜使用单链表结构。
    - 当不清楚线性表的数据规模或数据规模变化较大时，宜采用单链表结构。
+
+### 静态链表
+
+- 定义：用数组描述的链表称作静态链表。
+- 存储方式：游标实现法，即数组的每个元素都由数据域和游标，游标相当于单链表中的`next指针`，用于存放直接后继元素的下标。
+- 应用：在不支持指针的语言中用游标的方式描述链表，目前应用很少。
+
+```cpp
+typedef struct Component{
+   ElemType data;
+   int cur; // 游标
+}Component, StaticLinkList[MAXSIZE]; // 通常会为问题预留足够的空间，。
+```
+- 特殊处理：
+  - 数组第一个元素的`cur`存放备用链表（未被使用的数组元素称为备用链表）的第一个结点的下标。
+  - 数组的最后一个元素的`cur`存放第一个有树枝的元素的下标，相当于单链表的头结点。
+
+- 静态链表的初始化、插入、删除等操作
+  - 初始化
+
+```cpp
+void InitList(StaticLinkList space)
+{
+   for (int i = 0; i < MAXSIZE - 1; i++){
+      space[i].cur = i + i; // 这里是在初始化游标
+   }
+   space[MAXSIZE - 1].cur = 0;
+}
+```
+  - 为了模拟动态链表中的结点申请与释放，我们可以自己写`Malloc_SSL`和``Free_SSL`函数
+
+```cpp
+// 若备用空间链表为空，则返回分配的结点下标，否则返回0
+int Malloc_SLL(StaticLinkList space)
+{
+   int i = space[0].cur;
+   if (space[0].cur != 0){
+      space[0].cur = space[i].cur; // 将第一个结点的cur改为指向备用链表中的下一个结点
+   }
+   return i;
+}
+
+// 将下表为k的空闲结点回收到备用链表
+void Free_SSL(StaticLinkList space, int k)
+{
+   space[k].cur = space[0].cur;
+   space[0].cur = k;
+}
+```
+  - 插入操作
+
+```cpp
+bool ListInsert(StaticLinkList L, int i, ElemType e)
+{
+   if (i < 1 || i > ListLength(L) + 1){
+      return false;
+   }
+   int k = MAXSIZE - 1;
+   int j = Malloc_SSL(L); // 获得备用链表中空闲分量的下标
+   if (j != 0){
+      L[j].data = e;
+      for (int l = 1; l < i; l++){ // 从表头开始遍历
+         k = L[k].cur;
+      }
+      L[j].cur = L[k].cur;
+      L[k].cur = j;
+      return true;
+   }
+   return false;
+}
+```
+  - 删除操作
+
+```cpp
+bool ListDelete(StaticLinkList L, int i)
+{
+   if (i < 1 || i > ListLength(L)){
+      return false;
+   }
+   int k = MAXSIZE - 1, j;
+   for (j = 1; j < i; j++){
+      k = L[k].cur;
+   }
+   j = L[k].cur;
+   L[k].cur = L[j].cur;
+   Free_SSL(L, j);
+   return true;
+}
+```
+- 静态链表的优劣分析
+  - 在插入、删除操作时只需要修改游标，不需要移动元素，改进了顺序存储结构中插入和删除操作需要大量移动元素的缺陷。
+  - 没有解决连续存储分配带来的表长难以确定的问题，且在存储上失去了链式存储结构随机存取的特性（无法利用碎片化空间）。
+
+### 循环链表
+
+- 将单链表终端结点的指针端由空指针改为头结点，使单链表成环为循环链表。
+- 尾指针：与单链表的头指针不同，循环链表通常使用指向终端结点的尾指针`rear`表示，这样可以在$O(1)$的时间复杂度下查找到终端结点，并且简化将两个循环链表合二为一的步骤。
+
+### 双向链表
+
+- 在单链表的指针域中追加一个指向其直接前驱元素的指针`piror`，使单链表成为双向链表。
+- 双向链表也可以是循环链表。
