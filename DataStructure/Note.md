@@ -102,7 +102,7 @@
 2. 线性表的抽象数据类型
 
 ```
-ADT LinerList
+ADT LinerList // ADT short for abstract data type
 Data:
    DataType a1;
    DateType a2;
@@ -450,3 +450,119 @@ bool ListDelete(StaticLinkList L, int i)
 
 - 在单链表的指针域中追加一个指向其直接前驱元素的指针`piror`，使单链表成为双向链表。
 - 双向链表也可以是循环链表。
+
+## 第四章 栈与队列
+
+### 栈的定义
+    栈是限定仅在表尾进行插入和删除操作的线性表。
+- 允许进行插入和删除的一端称为栈顶，另一端称为栈底。
+
+### 栈的抽象数据类型
+
+```
+ADT Stack
+Data: // 与线性表相同
+   DataType a1;
+   DateType a2;
+   ...
+   DataType an;
+Operation:
+   InitStack(*S);       // 初始化，建立一个空栈
+   DestroyStack(*S);    // 若栈S存在，则销毁它
+   ClearStack(*S);      // 清空栈S
+   StackEmpty(*S);      // 判断栈是否为空
+   GetTop(*S);          // 若栈存在且非空获取栈顶元素
+   Push(*S, e);         // 进栈操作
+   Pop(*S);             // 出栈操作
+   StackLength(S);      // 返回栈S的元素个数
+end ADT
+```
+
+### 栈的顺序存储结构(顺序栈)
+
+- 栈的顺序存储结构与线性表相似，也是利用数组来实现，由于首元素都存在栈底，我们通常使用下标为0的一端作为栈底。
+
+```cpp
+typedef int ElemType;
+typedef struct{
+   ElemType data[MAXSIZE];
+   int top; // 用于栈顶指针(栈顶元素的数组下标，存在一个元素时top = 0)，通常把空栈的判定条件定为top = -1;
+}SqStack;
+```
+- 进栈操作，时间复杂度$O(1)$
+
+```cpp
+bool Push(SqStack* S, ElemType e)
+{
+   if (S->top == MAXSIZE - 1){
+      return false; // 此栈已满
+   }
+   S->data[++S->top] = e; // 先栈顶指针加一，后元素进栈
+   return S->data[S->top];
+}
+```
+- 出栈操作，时间复杂度$O(1)$
+
+```cpp
+ElemType Pop(SqStack* S)
+{
+   if (S->top = -1){
+      return false; // 此栈为空栈
+   }
+   return S->data[top--]; // 先元素出栈，后栈顶指针回退
+}
+```
+
+### 两栈共享空间
+
+- 通常情况下可以用一个数组来存储两个类型相同的栈，以解决一个栈已满而另一个栈还有很多剩余空间的问题。
+
+```cpp
+// 可以理解为两个栈在数组的两端向中间靠拢
+typedef struct{
+   ElemType data[MAXSIZE * 2];
+   int top1; // 栈1的栈顶指针
+   int top2; // 栈2的栈顶指针
+   /* 栈1为空的判定条件：top = -1;
+      栈2为空的判定条件：top = MAXSIZE * 2 - 1;
+      栈满的判定条件：top1 + 1 = top2; */
+}
+```
+- 两栈共享空间的模式在两个栈具有相反的空间需求时十分好用，即一个栈增长，另一个栈随之缩短的模式
+
+### 栈的链式存储结构(链栈)
+
+- 由于单链表有头指针，通常考虑将栈顶放在单链表的头部，使头指针成为栈顶指针，插入元素类比[头插法](#单链表的整表创建)。
+- 由于栈顶在头部，所以链栈不需要头结点。
+
+```cpp
+typedef struct StackNode{
+   ElemType data;
+   struct StackNode* next; // 我的理解是：这里typedef还未生效，使用StackNode必须在前面加struct
+}StackNode, *LinkStackPtr; // 相当于typedef StackNode* LinkStackPtr
+
+typedef struct LinkStack{
+   LinkStackPtr top;       // 栈顶指针
+   int count;              // 元素数量
+}LinkStack;
+```
+
+- 进栈操作
+
+```cpp
+bool Push(LinkStack* S, ElemType e)
+{
+   // 链栈不存在栈满的情况（存在会出大问题的）
+   LinkStackPtr p = new StackNode;
+   p->data = e;
+   p->next = S->top;
+   S->top = p;
+   S->count++;
+   return true;
+}
+```
+- 出栈操作
+
+```cpp
+
+```
