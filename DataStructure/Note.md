@@ -564,5 +564,17 @@ bool Push(LinkStack* S, ElemType e)
 - 出栈操作
 
 ```cpp
-
+ElemType Pop(LinkStack* S)
+{
+   LinkStackPtr p = new StackNode;
+   if (StackEmpty(*S)){
+      return false;
+   }
+   ElemType ans = S->top->data;
+   p = S->top;
+   S->top = S->top->next;
+   S->count--;
+   delete p;
+   return ans;
+}
 ```
