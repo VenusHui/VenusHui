@@ -547,7 +547,7 @@ typedef struct LinkStack{
 }LinkStack;
 ```
 
-- 进栈操作
+- 进栈操作，时间复杂度$O(1)$
 
 ```cpp
 bool Push(LinkStack* S, ElemType e)
@@ -561,12 +561,12 @@ bool Push(LinkStack* S, ElemType e)
    return true;
 }
 ```
-- 出栈操作
+- 出栈操作，时间复杂度$O(1)$
 
 ```cpp
 ElemType Pop(LinkStack* S)
 {
-   LinkStackPtr p = new StackNode;
+   LinkStackPtr p;
    if (StackEmpty(*S)){
       return false;
    }
@@ -574,7 +574,155 @@ ElemType Pop(LinkStack* S)
    p = S->top;
    S->top = S->top->next;
    S->count--;
-   delete p;
    return ans;
 }
 ```
+
+### 栈的应用
+- 递归
+  - 定义：直接调用自己或者通过一系列的调用语句间接地调用自己的函数称作递归函数。
+  - 每个递归定义必须至少有一个条件，满足时递归不再进行，即不再引用自身而是返回值退出。
+
+- 四则运算表达式求值
+  - 后缀表示法（逆波兰表示法）：不需要括号，且所有符号都在运算数字的后面出现的表示方法。如`9 3 1 - 3 * + 10 2 / +`，其对应的中缀表达式为`9 + (3 - 1) * 3 + 10 / 2`。
+  - 中缀表达式转后缀表达式：从左到右遍历中缀表达式的每个数字和符号，若是数字则直接输出，若是符号，则判断与栈顶符号的优先级，是右括号或优先级不高于栈顶符号，则栈中元素依次出栈输出，并将当前符号进栈，一直到最后输出后缀表达式为止。
+  - 后缀表达式的计算结果：从左到右遍历后缀表达式的每个数字及符号，遇到是数字就进栈，遇到是符号就将处于栈顶的两个数出栈进行运算，运算结果进栈，一直到获得最终结果。
+
+### 队列(queue)的定义
+    队列是只允许在一端进行插入操作，而在另一端进行删除操作的线性表。
+- 允许插入的一端叫队尾，允许删除的一端叫队头。
+
+### 队列的抽象数据类型
+
+```
+ADT Queue
+Data: // 与线性表相同
+   DataType a1;
+   DateType a2;
+   ...
+   DataType an;
+Operation:
+   InitQueue(*Q);       // 初始化操作，建立一个空队列
+   DestroyQueue(*Q);    // 销毁队列
+   ClearQueue(*Q);      // 将队列Q清空
+   QueueEmpty(Q);       // 判断队列Q是否为空
+   GetHead(Q);          // 返回队列Q的对头元素
+   EnQueue(*Q, e);      // 入队操作
+   DeQueue(*Q);         // 出队操作
+   QueueLength(Q);      // 获取队列长度
+end ADT
+```
+### 循环队列
+
+- 队列的顺序存储结构的不足：利用数组实现的顺序存储结构若是将下标为零的点设置为队头，则进行出队操作时的时间复杂度为$O(n)$，若采用游标的方式设置队头及队尾，在多次进行出队入队操作后，队尾游标可能会位移到数组之外造成`队列的假溢出`，所以要将此时队头位置空出来的空间与队尾相连进行再利用，也就是循环队列的由来。
+
+- 循环队列的定义：队列的这种头尾相接的顺序存储结构称为循环队列。
+
+- 循环队列的存储方式：引入两个指针`front`，`rear`分别指向队头和队尾，当`rear`应指向`MAXSIZE`的位置时将其改为指向下标为0的位置。
+  - 判断队列满的条件：由于此时在`front == rear`的条件下，队列可能为满也可能为空，所以我们修改队列满的条件，通常情况下我们认为**数组中只剩余一个空闲单元**的时候队列为满。此时队列满的条件为：`(rear + 1) / MAXSIZE == front`（由于`rear`和`front`的大小关系不明，所以用取模整合）。
+  - 同时应用取模整合`front`和`rear`大小为一个问题的还有计算队列长度的公式：`(rear - front + MAXSIZE) % MAXSIZE`。
+
+- 循环队列的代码实现
+
+```cpp
+typedef int ElemType;
+typedef struct{
+   ElemType data[MAXSIZE];
+   int front;  // 头指针
+   int rear;   // 尾指针
+}SqQueue;
+
+// 初始化
+bool InitQueue(SqQueue* Q)
+{
+   Q->front = 0;
+   Q->rear = 0;
+   return true;
+}
+
+// 获取队列长度
+int QueueLength(SqQueue Q)
+{
+   return (Q.rear - Q.front + MAXSIZE) % MAXSIZE;
+}
+
+// 入队操作
+bool EnQueue(SqQueue* Q, ElemType e)
+{
+   if ((Q->rear + 1) % MAXSIZE == Q->front){ // 判断队列是否为满
+      return false;
+   }
+   Q->data[Q->rear] = e;
+   Q->rear = (Q->rear + 1) % MAXSIZE; // 尾指针后移，若超出则转移到数组头部
+   return true;
+}
+
+// 出队操作
+ElemType DeQueue(SqQueue* Q)
+{
+   if (Q->front == Q->rear){ // 判断队列是否为空
+      return false;
+   }
+   ElemType ans = Q->data[Q->front];
+   Q->front = (Q->front + 1) % MAXSIZE;
+   return ans;
+}
+```
+- 循环队列相关操作的时间复杂度都不高，但会受到数组空间的制约。
+
+### 队列的链式存储结构(链队列)
+
+```cpp
+typedef int ElemType;
+typedef struct QNode{
+   ElemType data;
+   struct QNode* next;
+}QNode, *QueuePtr;
+typedef struct{
+   QueuePtr front, rear;
+}LinkQueue;
+
+// 入队操作
+bool EnQueue(LinkQueue* Q, ElemType e)
+{
+   QueuePtr p = new QNode; // 虽然是在函数体中，但new的内存一般在遇到相应的delete才会释放，函数结束不会释放这一部分内存
+   if (p != nullptr){
+      p->data = e;
+      p->next = nullptr;
+      Q->rear->next = p;
+      Q->rear = p;
+      return true;
+   }
+   return false;
+}
+
+// 出队操作
+ElemType DeQueue(LinkQueue* Q)
+{
+   QueuePtr p;
+   if (Q->front == Q->rear){
+      return false;
+   }
+   p = Q->front->next;
+   ElemType ans = p->data;
+   Q->front->next = p->next;
+   if (Q->rear == p){
+      Q->rear = Q->front;
+   }
+   return ans; // 这里会自动释放p
+}
+```
+
+- 与循环队列的对比：虽然两者基本操作的时间复杂度均为$O(1)$，但由于链队列在申请和释放结点上的时间开销，在频繁进行出队和入队操作操作时，时间性能上不如循环队列，所以在能预见队列长度最大值时，优先使用循环队列。
+
+## 串(string)
+
+### 串的定义
+    由零个或多个字符组成的有限序列，又叫字符串
+
+- 一般记为$s = "a_1a_2···a_n" (n >= 0)$。串中的字符数目n称为串的长度，零个字符的字符串称为空串。
+- 串的相邻字符之间具有前驱和后继的关系。
+- 子串与主串：串中任意连续个数的连续字符组成的子序列成为该串的子串，包含子串的串成为主串，子串在主串中的位置为子串的第一个字符在主串中的序号。
+- 串的比较：给定两个串$s = “a_1a_2···a_n”, t = “b_1b_2···b_m”$，当满足以下条件之一时，$s < t$：
+  - $n < m, 且a_i = b_i(i = 1, 2, ···, n)$。
+  - $存在某个k \leqslant min(m, n)，使得a_i = b_i(i = 1, 2, ···, k - 1), a_k < b_k$。
