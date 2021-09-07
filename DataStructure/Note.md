@@ -78,7 +78,7 @@
 6. 算法时间复杂度
 
    - 定义：进行算法分析时，语句总的执行次数$T(n)$是关于问题规模n的函数，算法的时间复杂度/时间量度记作$T(n)=O(f(n))$。表示随着问题规模n的增大，算法执行时间的增长率和$f(n)$的增长率相同。（大O记法）
-   - 推到大O阶的方法
+   - 推到大$O$阶的方法
      - 用常数1取代运行时间中的所有加法常数。
      - 在修改后的运行次数函数中，只保留最高阶项。
      - 如果最高阶项存在且系数不唯一，则去除与其想乘的系数。
@@ -137,7 +137,7 @@ typedef struct{
    - 数组长度与线性表长度不一定相等
 
    - 地址计算方法：$loc(a_i) = loc(a_1) + (i - 1) \times c$, 其中$loc(a_1)$为数组的首地址，$c$为每个数据元素所占据的空间。
-   - 存取时间性能：$O(1)$， 这种结构称为**随机存取结构**。
+   - 存取时间性能：$O(1)$， 这种结构称为**随机存取结构**（与之相反的是**循序存储结构**，比如链表的存取方式）。
 
 ### 顺序结构的插入和删除
 
@@ -178,12 +178,12 @@ ElemType ListDelete(SqList* L, i)
    if (L->length = 0){
       return false;
    }
-   ElemType e = L->data[i - 1];
+   ElemType ans = L->data[i - 1];
    for (int j = i - 1, j < L->length - 1, j++){
       L->data[j] = L->data[j + 1]; // 删除操作正序处理可以省去引入变量temp
    }
    L->length--;
-   return e;
+   return ans;
 }
 ```
    - 顺序存储结构的优劣
@@ -219,8 +219,7 @@ typedef struct Node* LinkList;
 ElemType GetElem(LinkList L, int i)
 {
    int j = 1;
-   LinkList p;
-   p = L->next;
+   LinkList p = L->next;
    while (p && j < i){
       p = p->next;
       j++;
@@ -229,16 +228,6 @@ ElemType GetElem(LinkList L, int i)
       return false;
    }
    return p->data;
-   // LinkList p = L->next;
-   // for (int j = 1, j < i && p != nullptr, j++){
-   //    p = p->next;
-   // }
-   // if (p == nullptr){
-   //    return false;
-   // }
-   // else{
-   //    return p->data;
-   // }
 }
 ```
 
@@ -291,7 +280,7 @@ ElemType ListDelete(LinkList *L, int i)
    - 头插法
 
 ```cpp
-void CreateListtHead(LinkList *L, int n)
+void CreateListHead(LinkList *L, int n)
 {
    LinkList p;
    srand(time(0)); // 初始化随机数种子
@@ -363,7 +352,7 @@ typedef struct Component{
 ```
 - 特殊处理：
   - 数组第一个元素的`cur`存放备用链表（未被使用的数组元素称为备用链表）的第一个结点的下标。
-  - 数组的最后一个元素的`cur`存放第一个有树枝的元素的下标，相当于单链表的头结点。
+  - 数组的最后一个元素的`cur`存放第一个有数值的元素的下标，相当于单链表的头结点。
 
 - 静态链表的初始化、插入、删除等操作
   - 初始化
@@ -377,7 +366,7 @@ void InitList(StaticLinkList space)
    space[MAXSIZE - 1].cur = 0;
 }
 ```
-  - 为了模拟动态链表中的结点申请与释放，我们可以自己写`Malloc_SSL`和``Free_SSL`函数
+  - 为了模拟动态链表中的结点申请与释放，我们可以自己写`Malloc_SSL`和`Free_SSL`函数
 
 ```cpp
 // 若备用空间链表为空，则返回分配的结点下标，否则返回0
@@ -388,7 +377,7 @@ int Malloc_SLL(StaticLinkList space)
       space[0].cur = space[i].cur; // 将第一个结点的cur改为指向备用链表中的下一个结点
    }
    return i;
-}
+}      
 
 // 将下表为k的空闲结点回收到备用链表
 void Free_SSL(StaticLinkList space, int k)
@@ -455,7 +444,7 @@ bool ListDelete(StaticLinkList L, int i)
 
 ### 栈的定义
     栈是限定仅在表尾进行插入和删除操作的线性表。
-- 允许进行插入和删除的一端称为栈顶，另一端称为栈底。
+- 允许进行插入和删除的一端称为`栈顶`，另一端称为`栈底`。
 
 ### 栈的抽象数据类型
 
@@ -524,7 +513,7 @@ typedef struct{
    int top1; // 栈1的栈顶指针
    int top2; // 栈2的栈顶指针
    /* 栈1为空的判定条件：top = -1;
-      栈2为空的判定条件：top = MAXSIZE * 2 - 1;
+      栈2为空的判定条件：top = MAXSIZE * 2;
       栈满的判定条件：top1 + 1 = top2; */
 }
 ```
@@ -723,6 +712,85 @@ ElemType DeQueue(LinkQueue* Q)
 - 一般记为$s = "a_1a_2···a_n" (n >= 0)$。串中的字符数目n称为串的长度，零个字符的字符串称为空串。
 - 串的相邻字符之间具有前驱和后继的关系。
 - 子串与主串：串中任意连续个数的连续字符组成的子序列成为该串的子串，包含子串的串成为主串，子串在主串中的位置为子串的第一个字符在主串中的序号。
-- 串的比较：给定两个串$s = “a_1a_2···a_n”, t = “b_1b_2···b_m”$，当满足以下条件之一时，$s < t$：
+
+### 串的比较
+
+   给定两个串$s = “a_1a_2···a_n”, t = “b_1b_2···b_m”$，当满足以下条件之一时，$s < t$：
   - $n < m, 且a_i = b_i(i = 1, 2, ···, n)$。
   - $存在某个k \leqslant min(m, n)，使得a_i = b_i(i = 1, 2, ···, k - 1), a_k < b_k$。
+
+### 串的抽象数据类型
+
+```
+ADT String
+Data:
+   char ch1;
+   char ch2;
+   ···
+   char chn;
+Operation:
+   StrAssign(T, *chars);      // 串赋值操作，将*chars赋值给T
+   StrCopy(T, S);             // 串复制操作，将串S复制给串T
+   ClearString(S);            // 清空串S
+   StringEmpty(S);            // 判断串S是否为空
+   StrLength(S);              // 返回串S的长度
+   StrCompare(S, T);          // 比较串S和串T，若S > T，返回值 > 0，S = T，返回值 = 0，S < T，返回值 < 0
+   Concat(S1, S2);            // 返回将串S2联结在串S1之后的串
+   SubString(S, pos, len);    // 返回串S中从pos开始，长度为len的字串
+   Index(S, T, pos);          // 若主串S中存在与串T相同的子串，则返回它在主串S中第pos个字符之后第一次出现的位置，否则返回0
+   Replace(S, T, V);          // 用串V替换串S中所有与串T相等的子串
+   StrInsert(S, pos, T);      // 在串S的第pos个字符之前插入串T
+   StrDelete(S, pos, len);    // 删除串S第pos个字符起长度为len的子串
+   // 说明：与串相关的还有很多这些基本操作的扩展函数
+end ADT
+```
+
+### 串的存储结构
+
+- 顺序存储结构
+  - 通常是通过定长数组实现，存在一个预定义的串的最大长度，由于串存储字符的特殊性，一些编程语言规定在串值的最后加一个不计入串长度的结束标记字符`\0`。
+  - 存在的问题：在进行一些字符串操作时，都有可能使串长超过定长数组的最大长度的MAXSIZE。
+  - 解决方案：串值的存储空间可以在程序的执行过程中动态分配而得。
+
+- 链式存储结构：与线性表相似，不同的是若每个结点只对应一个字符的话会造成很大的空间浪费(毕竟常见机器中一个int指针就占四个字节，一个char型字符才占一个字节)，所以可以考虑在一个结点存储多个字符，具体数量可以视情况而定（直接影响串处理的效率），最后一个结点未被占满时可以用非串值字符不全
+
+- 串的链式存储结构只在进行串与串的链接时具有更好的性能，总体而言不如顺序存储结构灵活，性能也不如顺醋存储结构好。
+
+### 朴素的模式匹配算法
+- 模式匹配的定义：子串在主串中的定位操作。
+- 朴素的模式匹配算法：将主串与模式串左端对齐，比较指针从左到右依次遍历，在不匹配的位置比较指针回溯到模式串左端，模式串右移一位，重复上述操作直到结束。
+
+### KMP模式匹配算法
+- 相较于朴素模式匹配的优势：朴素模式匹配中在模式串移动一位之后，比较指针需要回到模式串最前端重新开始遍历，造成了大量重复匹配的情况，而KMP模式匹配避免了比较指针的移动，大大减少了重复遍历的情况。
+
+- [KMP模式匹配算法原理](https://www.bilibili.com/video/BV1jb411V78H)：在KMP模式匹配中，通过将模式串向后移动比较指针（当前字符）之前的最大公共前后缀的长度，从而达到在每次移动模式串之后比较指针不回溯的效果。
+
+- next数组值推导
+  - 由于一个模式串T各个位置（假设在该位置与主串出现了不匹配的情况）的最大公共前后缀长度不同且与比较的主串无关，则将这一长度的变化定义为一个数组`next`，该数组的长度即为串T的长度。
+
+  - 函数表示
+  $$ next[j] = \begin{cases}
+     0 & j = 1 \\
+     Max\{k | 1 < k < j，且串p_1···p_{k - 1} = 串p_{j - k + 1}···p_{j - 1} \} & 此集合不为空 \\
+     1 & 其他情况
+  \end{cases} $$
+  这里的第二种情况即为找到最大公共前后缀的长度，公共前后缀最短为`1`，最长为`j - 1`，否则没有意义。
+
+  - 代码实现
+
+```cpp
+void get_next(String T, int* next)
+{
+   int i = 1, j = 0;
+   while (i < StrLength(T)){
+      if (j == 0 || T[i] == T[j]){ // T[i]表示后缀的单个字符，T[j]表示前缀的单个字符
+         i++;
+         j++;
+         next[i] = j;
+      }
+      else{
+         j = next[j]; // 匹配失败，j值回溯
+      }
+   }
+}
+```
