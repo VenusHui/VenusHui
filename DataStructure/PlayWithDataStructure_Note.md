@@ -1,6 +1,8 @@
 > writer: VenusHui
 > 
 > time: 2021.08.01
+>
+> last edit: 2021.09.08
 > 
 > Reference: Play With Data Structure 
 ## 《大话数据结构》阅读笔记

@@ -5,5 +5,7 @@
 这是一位同济大学软件学院大二本科生管理代码，笔记以及写写博客的地方，主要是在自己的Windows和Mac完成资料的同步以及记录一些自己的总结和想法。
 
 ## 数据结构
-- [《大话数据结构》阅读笔记](./DataStructure/DS_Note.md)
+- [《大话数据结构》阅读笔记](./DataStructure/PlayWithDataStructure_Note.md)
+
+## 计算机组成原理
 - [计算机组成原理](./PrinciplesOfComputerComposition/PCC_Note.md)
