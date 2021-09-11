@@ -708,7 +708,9 @@ ElemType DeQueue(LinkQueue* Q)
 
 - 与循环队列的对比：虽然两者基本操作的时间复杂度均为$O(1)$，但由于链队列在申请和释放结点上的时间开销，在频繁进行出队和入队操作操作时，时间性能上不如循环队列，所以在能预见队列长度最大值时，优先使用循环队列。
 
-## 串(string)
+### 在队列的两端进行插入和删除，可以用STL中俄的双端队列deque
+
+## 第五章 串(string)
 
 ### 串的定义
     由零个或多个字符组成的有限序列，又叫字符串
@@ -780,21 +782,76 @@ end ADT
   \end{cases} $$
   这里的第二种情况即为找到最大公共前后缀的长度，公共前后缀最短为`1`，最长为`j - 1`，否则没有意义。
 
-  - 代码实现
+  - [next数组代码推演](https://www.bilibili.com/video/BV16X4y137qw)
 
 ```cpp
-void get_next(String T, int* next)
+// 说明：这部分代码均使用STL中的 string 而非之前我们自己实现的 String
+// 计算每个位置的最大公共前后缀长度
+void get_next(string s, int *next)
 {
-   int i = 1, j = 0;
-   while (i < StrLength(T)){
-      if (j == 0 || T[i] == T[j]){ // T[i]表示后缀的单个字符，T[j]表示前缀的单个字符
-         i++;
-         j++;
-         next[i] = j;
+   unsigned int i = 1, j = 0;
+   next[1] = 0;
+   while (i < s.size())
+   {
+      if (j == 0 || s[i - 1] == s[j - 1]){
+        next[++i] = ++j;
       }
       else{
-         j = next[j]; // 匹配失败，j值回溯
+         j = next[j]; // j值向前回溯，不断截短后缀向前匹配，直到匹配成功或者next值为0
       }
    }
 }
+
+// 返回子串t在主串s中第pos个字符之后的位置
+int Index_KMP(string s, string t, int pos = 0)
+{
+   unsigned int i = pos, j = 0;
+   int *next = new int[t.size() + 1];
+   get_next(t, next);
+   while (i <= s.size() && j <= t.size()){
+      if (j == 0 || s[i - 1] == t[j - 1]){
+         i++;
+         j++;
+      }
+      else {
+         j = next[j];
+      }
+   }
+   delete[] next;
+   if (j > t.size()){
+      return i - t.size();
+   }
+   else {
+      return 0
+   }
+}
 ```
+
+### KMP模式匹配算法的改进
+
+### nextval数组值的推导
+
+## 第六章 树(Tree)
+
+### 树的定义
+- 树是$n(n \geq 0)$个结点的有限集，$n = 0$称为空树。在任意一棵非空树中：
+   - 有且仅有一个热定的成为根(root)的结点；
+   - 当$n > 1$时，其余结点可分为$m(m >0)$个互不相交的有限集$T_1,T_2,···,T_m$，其中每一个集合本身又是一棵树，并且成为根的子树(subtree)。
+
+- 树的定义方法：递归
+- 注意：
+  - $n > 0$时根结点是唯一的，不可能存在多个根结点。
+  - $m > 0$时，子树的个数没有限制，但他们一定是不相交的。
+
+- 结点的分类
+    结点拥有的子树个树成为结点的度(Degree)。树的度是树内各结点度的最大值。
+   - 终端结点/叶结点：度为0。
+   - 非终端结点/分支结点：度不为0。
+   - 内部结点：非根结点的分支节点。
+
+- 结点之间的关系
+  - 结点的子树的根称为该结点的孩子(Child)，相应的该结点成为孩子的双亲(Parent)。
+  - 同一个双亲的孩子之间互称兄弟(Sibling)。
+  - 结点的祖先是从根到该结点所经分支上的所有结点。以某结点为根的子树的任意结点为该结点的子孙。
+
+  ### 其他相关概念
