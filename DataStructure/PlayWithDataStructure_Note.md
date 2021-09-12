@@ -835,8 +835,8 @@ int Index_KMP(string s, string t, int pos = 0)
 
 ### 树的定义
 - 树是$n(n \geq 0)$个结点的有限集，$n = 0$称为空树。在任意一棵非空树中：
-   - 有且仅有一个热定的成为根(root)的结点；
-   - 当$n > 1$时，其余结点可分为$m(m >0)$个互不相交的有限集$T_1,T_2,···,T_m$，其中每一个集合本身又是一棵树，并且成为根的子树(subtree)。
+   - 有且仅有一个热定的成为**根**(root)的结点；
+   - 当$n > 1$时，其余结点可分为$m(m >0)$个互不相交的有限集$T_1,T_2,···,T_m$，其中每一个集合本身又是一棵树，并且成为根的**子树**(subtree)。
 
 - 树的定义方法：递归
 - 注意：
@@ -844,7 +844,7 @@ int Index_KMP(string s, string t, int pos = 0)
   - $m > 0$时，子树的个数没有限制，但他们一定是不相交的。
 
 - 结点的分类
-    结点拥有的子树个树成为结点的度(Degree)。树的度是树内各结点度的最大值。
+    结点拥有的子树个树成为结点的**度**(Degree)。树的度是树内各结点度的最大值。
    - 终端结点/叶结点：度为0。
    - 非终端结点/分支结点：度不为0。
    - 内部结点：非根结点的分支节点。
@@ -854,4 +854,79 @@ int Index_KMP(string s, string t, int pos = 0)
   - 同一个双亲的孩子之间互称兄弟(Sibling)。
   - 结点的祖先是从根到该结点所经分支上的所有结点。以某结点为根的子树的任意结点为该结点的子孙。
 
-  ### 其他相关概念
+### 其他相关概念
+- 结点的**层次**(Level)：从根开始，根为第一层，根的孩子为第二层，若某结点在第$l$层，其子树就在第$l + 1$层。双亲在同一层的结点互为**堂兄弟**。树中结点的最大层次称为树的**深度**(Depth)或高度。
+
+- 若树中结点的各子树从左到右是有次序的，则称该树为有序树，否则称为无序树。
+
+- 森林(Forest)是$m(m \geq 0)$棵互不相交的树的集合。
+
+### 树的抽象数据类型
+
+```
+ADT Tree
+Data:
+   树是由一个根结点和若干棵子树构成的。树中结点具有相同的数据类型和层次关系。
+Operation:
+   InitTree(*T);                 // 构造空树T
+   DestroyTree(*T);              // 销毁树T
+   CreateTree(*T, defination);   // 根据定义definition创建树T
+   ClearTree(*T);                // 清空树T
+   TreeEmpty(T);                 // 判断树T是否为空
+   TreeDepth(T);                 // 返回树的深度
+   Root(T);                      // 返回树的根结点
+   Value(T, cur_e);              // 返回树T中cur_e结点的值
+   Assgin(T, cur_e, value);      // 给树T中结点cur_e赋值为value
+   Parent(T, cur_e);             // 若cur_e为非根节点，返回它的双亲
+   LeftChild(T, cur_e);          // 若cur_e是非叶结点，返回它的最左子树
+   RightSibling(T, cur_e);       // 若cur_e有右兄弟，则返回，否则返回空
+   InsertChild(*T, *p, i, c);    // p指向树T的某个结点，i为所指结点p的度加1，非空树c与T不相交，操作结果是插入c为树T中p所指结点的第i棵子树。 
+   DeleteChild(*T, *p, i);       // p指向树T的某个结点，i为所指结点的度，操作结果为删除T中p所指结点的第i棵子树。
+end ADT
+```
+
+### 树的存储结构
+
+- 双亲表示法
+  - 在每个结点中附设一个指示器指示其双亲结点在数组中的位置。
+```cpp
+#define MAX_TREE_SIZE 100
+typedef int Elemtype;
+typedef struct PTNode{
+   ElemType data;
+   int parent; // 指示双亲在结点中的位置，由于根结点没有双亲，规定根结点的parent值为-1
+   // 可以根据问题的需求按需添加其他数据域如：
+   // int firstchild; // 可以容易的得到结点的最左子结点，规定叶结点的firstchild值为-1
+   // int rightslib;  // 可以容易的得到结点的兄弟之间的关系，右兄弟不存在则赋值为-1
+}PTNode;
+typedef struct{
+   PTNode node[MAX_TREE_SIZE];
+   int r, n; // 根的位置和结点数
+}PTree;
+```
+
+- 孩子表示法
+  - **多重链表表示法**：每个结点有多个指针域，每个指针指向一棵子树的根结点。
+  - 存储方式：把每个节点的孩子结点排列起来，以单链表作为存储结构，则n个结点有n个孩子链表，如果是叶子结点则单链表为空。然后n个头指针又组成一个线性表，采用顺序存储结构存入一个一维数组之中。
+```cpp
+#define MAX_TREE_SIZE 100
+typedef int Elemtype;
+typedef struct CTNode{
+   int child; // child为数据域，用来存储该结点在表头数组中的下标。
+   struct CTNode* next;
+}*ChildPtr;
+typedef struct{
+   ElemType data;
+   ChildPtr firstchild;
+}CTBox;
+typedef struct{
+   CTBox nodes[MAX_TREE_SIZE];
+   int r, n;
+}CTree;
+```
+
+- 孩子兄弟表示法
+
+```cpp
+
+```
