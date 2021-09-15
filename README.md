@@ -7,5 +7,10 @@
 ## 数据结构
 - [《大话数据结构》阅读笔记](./DataStructure/PlayWithDataStructure_Note.md)
 
+- [数据结构课程设计](./DataStructure/CourseExercise/README.md)
+
 ## 计算机组成原理
 - [计算机组成原理](./PrinciplesOfComputerComposition/PCC_Note.md)
+
+## 算法（面向ACM-ICPC）
+- [ACM-ICPC](./ACM-ICPC/ACM-ICPC-Preparation-Note.md)
