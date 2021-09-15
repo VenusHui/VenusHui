@@ -797,7 +797,7 @@ void get_next(string s, int *next)
         next[++i] = ++j;
       }
       else{
-         j = next[j]; // j值向前回溯，不断截短后缀向前匹配，直到匹配成功或者next值为0
+         j = next[j]; // j值向前回溯，不断截短后缀向前匹配，直到匹配成功或者next(j)值为0
       }
    }
 }
@@ -959,3 +959,78 @@ typedef struct CSNode{
 
 - 具有$n$个结点的完全二叉树的深度为$[log_2n] + 1$，$[X]$表示不大于$x$的最大整数。
   - 由满二叉树的定义，深度为$k$的满二叉树的结点数$n$一定为$2^k - 1$，则$k = log_2(n + 1)$。而完全二叉树的结点数小于等于$2^k - 1$，又大于等于$2^k - 1$减去叶子节点数$2^{k - 1}$。对于上述不等式两边取对数即可证明。
+
+- 对一棵具有$n$个结点的完全二叉树，对这$n$个结点按层序编号，则对编号为$i$的结点有：
+  - 若$i = 1$，则结点$i$为根结点，无双亲。若$i > 1$，结点$i$的双亲为编号为$[i / 2]$的结点。
+  - 若$2i > n$，则结点$i$无左孩子（结点$i$为叶子结点）；否则结点$i$的左孩子为结点$2i$。
+  - 若$2i + 1 > n$，则结点i无右孩子；否则其右孩子为结点$2i + 1$。
+
+### 二叉树的存储结构
+
+- 二叉树的顺序存储结构
+  - 由于完全二叉树定义的严格性，我们完全可以用一个一维数组进行存储，数组下标对应二叉树的层序编号；对于非完全二叉树，只需要将其补充成完全二叉树，在存储时将补充的位置存储为空（自定义一个为空的值）即可。
+  - 顺序存储结构一般只用于完全二叉树，对于结点较少（极端情况如：斜树）的非完全二叉树会造成较大的空间浪费。
+
+- 二叉链表
+  - 由于二叉树每个节点的度最大为2，可以在一个数据域的基础上增设两个指针域，分别表示该结点的左孩子和右孩子。
+```cpp
+typedef struct BiNode{
+   ElemType data;
+   struct BiNode *leftchild, *rightchild;
+}BiNode, *BiTree;
+```
+
+### 二叉树的遍历
+    从根结点出发，按照某种次序依次访问二叉树的所有结点，使得每个结点被访问一次且仅被访问一次。
+- 前序遍历
+  当二叉树为空时，返回，否则先访问根结点，然后前序遍历左子树，再前序遍历右子树。
+
+```cpp
+void PreOrderTranvers(BiTree T)
+{
+   if (T == nullptr){
+      return;
+   }
+   // Operate this node
+   PreOrderTranvers(T.leftchild);
+   PreOrderTranvers(T.rightchild);
+}
+```
+
+- 中序遍历
+  当二叉树为空时，返回，否则先中序遍历左子树，然后访问根结点，再中序遍历右子树。
+
+```cpp
+void InOrderTranvers(BiTree T)
+{
+   if (T == nullptr){
+      return;
+   }
+   InOrderTranvers(T.leftchild);
+   // Operate this node
+   InOrderTranvers(T.rightchild);
+}
+```
+
+- 后续遍历
+  当二叉树为空时，返回，否则先后序遍历左右子树，最后访问根结点。
+
+```cpp
+void PostOrderTranvers(BiTree T)
+{
+   if (T == nullptr){
+      return;
+   }
+   PostOrderTranvers(T.leftchild);
+   PostOrderTranvers(T.rightchild);
+   // Operate this node
+}
+```
+
+- 层序遍历
+  当二叉树为空时，返回，否则从树的根结点开始，从上到下逐层访问，同一层中从左到右依次访问。
+
+- 二叉树遍历的性质
+  - 已知前序遍历和中序遍历序列，可以唯一确定一棵二叉树。
+  - 已知后序遍历和中序遍历序列，可以唯一确定一棵二叉树。
+  - 已知前序遍历和后序遍历序列，**不能**唯一确定一棵二叉树。
