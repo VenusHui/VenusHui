@@ -23,3 +23,8 @@ Student::Student(int id, int gender, int age, string name, string category, Stud
 Student::~Student()
 {
 }
+
+istream& operator>> (istream& in, Student& s)
+{
+	in >> s._admissionID >> s._name >> s._age >> s._gender >> s._category;
+}
