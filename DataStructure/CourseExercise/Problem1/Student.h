@@ -7,6 +7,8 @@
 #include <string>
 using namespace std;
 
+#define gap 8
+
 class Student
 {
 private:
@@ -21,18 +23,27 @@ public:
     Student();
     Student(int id, int gender, int age, string name, string category, Student* next);
     ~Student();
+
     int getID() { return _admissionID; }
     void setID(int id) { _admissionID = id; }
+
     int getGender() { return _gender; }
     void setGender(int gender) { _gender = gender; }
+
     int getAge() { return _age; }
     void setAge(int age) { _age = age; }
+
     string getName() { return _name; }
     void setName(string name) { _name = name; }
+
     string getCategory() { return _category; }
     void setCategory(string category) { _category = category; }
+
     Student* getNext() { return _next; }
     void setNext(Student* next) { _next = next; }
+
+    bool changeInfo(Student& newStudent);
+
     friend istream& operator>>(istream& in, Student& s);
     friend ostream& operator<<(ostream& out, Student& s);
 };

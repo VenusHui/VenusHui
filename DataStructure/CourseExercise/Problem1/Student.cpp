@@ -24,15 +24,34 @@ Student::~Student()
 {
 }
 
+bool Student::changeInfo(Student& newStudent)
+{
+	this->_admissionID = newStudent.getID();
+	this->_name = newStudent.getName();
+	this->_gender = newStudent.getGender();
+	this->_age = newStudent.getAge();
+	this->_category = newStudent.getCategory();
+	return true;
+}
+
 istream& operator>> (istream& in, Student& s)
 {
-	in >> s._admissionID >> s._name >> s._gender >> s._age >> s._category;
+	string tmp;
+	in >> s._admissionID >> s._name >> tmp >> s._age >> s._category;
+	if (tmp == "男"){
+		s._gender = 1;
+	}
+	else if (tmp == "女"){
+		s._gender = 0;
+	}
+	else{
+		cout << "性别输入不合法，请重新输入" << endl;
+	}
 	return in;
 }
 
 ostream& operator<<(ostream& out, Student& s)
 {
-	const int gap = 8;
 	out << setiosflags(ios::left) << setfill(' ') << setw(gap) << "考号" << setw(gap)
 		<< "姓名" << setw(gap) << "性别" << setw(gap) << "年龄" << setw(gap) << "报考类别" << endl;
 	out << setfill(' ') << setw(gap) << s.getID() << setw(gap) << s.getName();

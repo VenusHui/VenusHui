@@ -8,15 +8,11 @@ using namespace std;
 void menuChoose(char& op)
 {
 	cout << "请选择您要进行的操作：";
-	while (true)
-	{
+	while (true){
 		op = _getch();
 		if (op >= '0' && op <= '6'){
 			cout << op << endl;
 			break;
-		}
-		else{
-			continue;
 		}
 	}
 }
@@ -28,10 +24,10 @@ int main()
 	cout << "请输入考生人数：";
 	cin >> sNum;
 	StudentList sList(sNum);
-	Student* temp = sList.getFirstNode();
+	Student* temp = new Student;
 	sList.createListTail(sNum);
 	cout << sList;
-	cout << "操作列表：1为插入，2为删除，3为查找，4为修改，5为统计，0为取消操作，6为退出系统" << endl;
+	cout << "操作列表：1为插入，2为删除，3为查找，4为修改，5为统计，0为取消操作" << endl;
 	char operation = 0;
 	while (operation != -1)
 	{
@@ -39,32 +35,55 @@ int main()
 		switch (operation)
 		{
 			case '0':
-				continue;
+				delete temp;
+				return 0;
 			case '1':
 				cout << "请输入你要插入考生的位置：";
 				cin >> index;
 				sList.insertElem(index);
 				break;
 			case '2':
+				if (!sList.size()){
+					cout << "信息表已为空，无法删除" << endl;
+					break;
+				}
 				cout << "请输入要删除考生的考号：";
 				cin >> index;
 				sList.deleteElem(sList.getElemByID(index));
 				break;
 			case '3':
+				if (!sList.size()) {
+					cout << "信息表已为空，无法查找" << endl;
+					break;
+				}
 				cout << "请输入要查找学生的考号：";
 				cin >> index;
 				*temp = sList.getElem(index);
 				cout << "你所查找的学生信息为：" << endl << *temp << endl;
 				break;
 			case '4':
+				if (!sList.size()) {
+					cout << "信息表已为空，无法修改" << endl;
+					break;
+				}
 				cout << "请输入要修改学生的考号：";
 				cin >> index;
-				
+				if (sList.getElemByID(temp->getID()) != -1) {
+					cout << "考号为 " << temp->getID() << " 的考生已经存在，请核对后重新输入" << endl;
+					break;
+				}
+				cout << "请依次输入修改后该学生的考号、姓名、性别、年龄及报考类别！" << endl;
+				cin >> *temp;
+				if (sList.getElem(index).changeInfo(*temp)){
+					cout << "修改成功" << endl;
+				}
+				else{
+					cout << "修改失败" << endl;
+				}
 				break;
 			case '5':
+				sList.summary();
 				break;
-			case '9':
-				return 0;
 		}
 		cout << endl << sList;
 	}
