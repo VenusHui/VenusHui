@@ -1,5 +1,6 @@
 // 约瑟夫生者死者游戏
 #include <iostream>
+#include <iomanip>
 #include <string>
 using namespace std;
 
@@ -8,44 +9,65 @@ class ChainNode
 public:
     // data;
     int data;
-    ChainNode *next;
+    ChainNode* next;
 
     // operation
     ChainNode();
-    ChainNode(const int data) { this->data = data; }
-    ChainNode(const int data, ChainNode *next)
-    {
-        this->data = data;
-        this->next = next;
-    }
+    ChainNode(const int data);
+    ChainNode(const int data, ChainNode* next);
+
 };
+
+ChainNode::ChainNode()
+{
+    data = 0;
+    next = nullptr;
+}
+
+ChainNode::ChainNode(const int data)
+{
+    this->data = data;
+    this->next = nullptr;
+}
+
+ChainNode::ChainNode(const int data, ChainNode* next)
+{
+    this->data = data;
+    this->next = next;
+}
 
 class CircularList
 {
 private:
-    ChainNode *firstNode;
+    ChainNode* firstNode;
     int listSize;
 
 public:
+    CircularList();
     CircularList(int num);
     ~CircularList();
     int size() { return listSize; }
     ChainNode* getFirstNode() { return firstNode; }
-    bool deleteElem();
-    bool insertElem();
+    void josephus(int totalNum, int startNum, int deathNum, int surplusNum);
 };
+
+CircularList::CircularList()
+{
+    firstNode = new ChainNode;
+    listSize = 0;
+}
 
 CircularList::CircularList(int num)
 {
     firstNode = new ChainNode;
     firstNode->next = firstNode;
     listSize = 0;
-    ChainNode *rNode = new ChainNode(*firstNode);
+    ChainNode* rNode = new ChainNode(firstNode->data, firstNode->next);
     for (int i = 1; i <= num; i++)
     {
-        ChainNode *temp = new ChainNode;
-        temp->data = i;
+        ChainNode* temp = new ChainNode(i);
         rNode->next = temp;
+        temp->next = firstNode;
         rNode = temp->next;
         listSize++;
     }
@@ -56,7 +78,7 @@ CircularList::~CircularList()
 {
 }
 
-bool input(int &data, const string cueStr)
+bool input(int& data, const string cueStr)
 {
     cout << "请输入" << cueStr << "：";
     cin >> data;
@@ -70,17 +92,32 @@ bool input(int &data, const string cueStr)
     return true;
 }
 
-void josephus(CircularList &list, int totalNum, int startNum, int deathNum, int surplusNum)
+void CircularList::josephus(int totalNum, int startNum, int deathNum, int surplusNum)
 {
-    int count = 1;
-    while (surplusNum < list.size())
+    const int gap2 = 10;
+    int count = 0, death = 0, gap1 = 0;
+    for (int i = 1; (totalNum - surplusNum) /i != 0; i *= 10)
     {
+        gap1++;
+    }
+    for (int i = 0; i < startNum; i++)
+    {
+        firstNode = firstNode->next;
+    }
+    while (surplusNum < listSize)
+    {
+        count++;
         if (count == deathNum)
         {
-            list.deleteElem();
+            death++;
+            cout << "第" << setw(gap1) << death << "个死者的位置是" << setw(gap2) << firstNode->data << endl;
+            ChainNode* tmp = new ChainNode(firstNode->data, firstNode->next);
+            tmp = firstNode->next;
+            firstNode->next = tmp->next;
+            listSize--;
+            delete tmp;
         }
-        
-        count++;
+        firstNode = firstNode->next;
     }
     return;
 }
@@ -88,11 +125,11 @@ void josephus(CircularList &list, int totalNum, int startNum, int deathNum, int 
 int main()
 {
     int N, S, M, K; // 分别代表总人数，起始序号，死亡数字，剩余人数
-    cout << "现有N个人围成一圈，从第S人开始依次报数，报M的人出局，再由下一个人报数，如此循环，直到最后剩下K个人为止" << endl;
+    cout << "    现有N个人围成一圈，从第S人开始依次报数，报M的人出局，再由下一个人报数，如此循环，直到最后剩下K个人为止" << endl;
     if (input(N, "生死游戏的总人数") && input(S, "游戏开始的位置") && input(M, "死亡数字") && input(K, "剩余的生者人数"))
     {
         CircularList cList(N);
-        josephus(cList, N, S, M, K);
+        cList.josephus(N, S, M, K);
     }
 
     return 0;
