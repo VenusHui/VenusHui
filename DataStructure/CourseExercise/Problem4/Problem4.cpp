@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <cmath>
 using namespace std;
 
@@ -14,6 +15,7 @@ public:
     bool isSafe(int row, int col); // 判断(row, col)位置能否放置皇后
     void place(int row);           // 放置皇后
     void printSolution();          // 打印该种解法
+    int getAns() { return ans; }
 };
 
 NQueenSol::NQueenSol()
@@ -22,22 +24,10 @@ NQueenSol::NQueenSol()
     cout << "现有N * N的棋盘，放入N个皇后，要求所有皇后不在同一行、列和同一斜线上" << endl;
     cout << "请输入皇后的个数：";
     cin >> qNum;
-    if (cin.fail())
+    placeResult = new int[qNum + 1];
+    for (int i = 0; i < qNum + 1; i++)
     {
-        throw "input error";
-    }
-    try
-    {
-        placeResult = new int[qNum + 1];
-        for (int i = 0; i < qNum + 1; i++)
-        {
-            placeResult[i] = 0;
-        }
-    }
-    catch (const std::exception &e)
-    {
-        cerr << e.what() << endl;
-        exit(0);
+        placeResult[i] = 0;
     }
 }
 
@@ -105,5 +95,10 @@ int main()
 {
     NQueenSol solution;
     solution.place(1);
+    if (solution.getAns() == 0)
+    {
+        cout << "此情况下无解" << endl;
+    }
+
     return 0;
 }
