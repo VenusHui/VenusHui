@@ -2,7 +2,7 @@
 > 
 > time: 2021.08.01
 >
-> last edit: 2021.09.15
+> last edit: 2021.10.11
 > 
 > Reference: Play With Data Structure 
 ## 《大话数据结构》阅读笔记
@@ -521,7 +521,7 @@ typedef struct{
       栈满的判定条件：top1 + 1 = top2; */
 }
 ```
-- 两栈共享空间的模式在两个栈具有相反的空间需求时十分好用，即一个栈增长，另一个栈随之缩短的模式
+- 两栈共享空间的模式在两个栈具有**相反的空间需求**时十分好用，即一个栈增长，另一个栈随之缩短的模式
 
 ### 栈的链式存储结构(链栈)
 
@@ -1034,3 +1034,86 @@ void PostOrderTranvers(BiTree T)
   - 已知前序遍历和中序遍历序列，可以唯一确定一棵二叉树。
   - 已知后序遍历和中序遍历序列，可以唯一确定一棵二叉树。
   - 已知前序遍历和后序遍历序列，**不能**唯一确定一棵二叉树。
+
+### 二叉树的建立
+
+### 线索二叉树
+
+- 线索二叉树的原理
+  - 对于一棵非完全二叉树，用一般的二叉树存储方法会造成很多空指针域的空间浪费。
+  - 对于一棵一般的二叉树，我们只有在进行某种次序的遍历之后才能得到某个节点的前驱和后继节点。
+  - 二者结合，我们可以将空的指针域利用起来，存放结点在某种次序遍历下的前驱和后继结点，这种指向前驱和后继结点的指针称为**线索**，相应的二叉树称为**线索二叉树**
+
+- 线索二叉树的结构实现
+  - 存储结构的定义
+
+```cpp
+enum PointTag {Link, Thread};         // tag=0时指向左右孩子，tag=1时指向前驱后继（默认左前驱，右后继）
+typedef struct BiThrNode{
+   ElemType data;
+   struct BiThrNode *lchild, *rchild; // 左右孩子指针
+   PointTag lTag, rTag;               // 左右标志
+}BiThrNode, *BiThrTree;
+```
+
+  - 中序遍历的同时进行线索化（其余遍历次序的线索化同理）
+    线索化：在遍历的过程中修改空指针的过程
+```cpp
+BiThrNode pre; // 全局变量，始终存储上一次访问的结点，初始位nullptr
+void InThreading(BiThrTree T)
+{
+   if (T)
+   {
+      InTreading(T->lchild);
+      if (T->lchild == nullptr) // 当前结点无左孩子，将上一个访问的结点设为前驱
+      {
+         T->lTag = Thread;
+         T->lchild = pre;
+      }
+      if (pre->rchild == nullptr) // 上一个结点无右孩子，将当前结点设为后驱
+      {
+         pre->rTag = Thread;
+         pre->rchild = T;
+      }
+      pre = T; //更新pre结点
+      InTreading(T->rchild);
+   }
+}
+```
+
+- 线索二叉树的改进
+  - 线索二叉树指针域中存放前驱和后继的这种结构与双向链表十分相似，我们可以仿照双向链表的方式，为线索二叉树添加一个头结点。
+  - 头结点的`lTag = 0, lchild = root`
+  - 头结点的`rTag = 1, rchild = the last node`
+  - 所序遍历次序下第一个结点的`lTag = 1, lchild = head`
+  - 所需遍历次序下的最后一个结点的`rTag = 1, rchild = head`
+  - 这里的遍历相当于对链表的一次扫描，时间复杂度$O(n)$，代码实现如下：
+
+```cpp
+void InTreading(BiThrTree T) // 这里的T代表的不是根结点，而是头结点
+{
+   BiThrNode* p;
+   p = T->lchild;
+   while (p != T)
+   {
+      while (p->lTag == Link)
+      {
+         p = T->lchild;
+         // operate the node
+      }
+      while (p->rTag == Thread && p->rchild != T)
+      {
+         p = rchild;
+         // operate the node
+      }
+      p = p->rchild;
+   }
+}
+```
+
+- 总结
+  - 充分利用空指针域的空间（节省空间）。
+  - 在创建时的一次遍历就可以一直存有前驱后继的信息（节省时间）。
+  - 所以当二叉树需要经常遍历或查找结点时需要用到结点在某种遍历次序下的前驱和后继时，可以考虑采用线索二叉树。
+
+### 树、森林与二叉树的转换
