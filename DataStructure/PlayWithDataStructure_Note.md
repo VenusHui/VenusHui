@@ -1187,3 +1187,147 @@ void InTreading(BiThrTree T) // 这里的T代表的不是根结点，而是头�
 - 顶点与边之间的关系
   - 对于无向图$G(V, E)$，若边$(v_i, v_j) \in E$，则称$v_i$，$v_j$互为**邻接**(Adjcent)点，边$(v_i, v_j)$ **依附**(indicent)于顶点$v_i$和$v_j$，也称边$(v_i, v_j)$与顶点$v_i$和$v_j$相**关联**。顶点的**度**(Degree)是和该顶点相关联的边的数目，记为TD(v)。
   - 对于有向图$G(V, E)$，若边
+
+
+## 第八章 查找
+
+### 查找概论
+
+- 查找表(Search Table)：由同一类型数据元素（或记录）构成的集合。
+  - 静态查找表：只作查找操作的查找表。
+  - 动态查找表：在查找过程中同时插入查找表中不存在的数据元素，或者从查找表中删除已经存在的某个数据元素。
+
+- 关键字(Key)：数据元素中某个数据项的值，用于**标识**一个数据元素。
+  - 主关键字：此关键字可以唯一的标识一个数据元素
+  - 次关键字：可以识别多个数据元素的关键字，我理解为`tag`
+
+- 查找：就是根据给定的某个值，在查找表中确定一个其关键字等于给定值的数据元素。
+
+### 顺序表查找
+
+- 顺序查找(Sequential Search)/线性查找
+  - 渐进时间复杂度：$O(n)$
+
+```cpp
+// 找到返回数组下标，否则返回 -1
+int Sequential_Search(int* a, int n, int key)
+{
+   for (int i = 0; i < n; i++)
+   {
+      if (a[i] == key)
+      {
+         return i;
+      }
+   }
+   return -1;
+}
+```
+
+- 顺序查找优化：监视哨
+
+```cpp
+// 找到返回数组下标，否则返回数组最大长度（改的有点奇怪了）
+int Sequential_Search2(int* a, int n, int key)
+{
+   int i = 0;
+   a[n] = key;
+   for(i; i <= n; i++)
+   {
+      if (a[i] == key)
+      {
+         break;
+      }
+   }
+   return i;
+}
+```
+
+### 有序表查找
+
+- 二分查找(Binary Search)/折半查找
+  - 适用条件：线性表采用顺序存储且关键码有序
+  - 基本思想
+  - 渐进时间复杂度：$O(logn)$
+
+```cpp
+int Binary_Search(int*a, int n, int key)
+{
+   int low = 0, high = n - 1, mid;
+   while(low <= high)
+   {
+      mid = (low + high) / 2;
+      // mid = low + (high - low) * (key - a[low]) / (a[high] - a[low]); // for Interpolation_Search
+      if (key < a[mid])
+      {
+         high = mid - 1;
+      }
+      else if (key > a[mid])
+      {
+         low = mid + 1;
+      }
+      else
+      {
+         return mid;
+      }
+   }
+   return -1;
+}
+```
+  - 对于需要频繁执行插入和删除操作的数据集来说，维护有序的排序需要较大的计算量，不推荐使用二分查找
+
+- 插值查找(Interpolation Search)
+  - 对于二分查找的优化：对于一个均匀分布的顺序表，插值查找优化啦二分查找中对于`mid`的计算，在寻找靠近数组两端的数据时更具优势。`mid = low + (high - low) * (key - a[low]) / (a[high] - a[low])`
+  - 渐进时间复杂度：$O(loglogn)$
+
+- 斐波那契查找(Fibonacci Search)
+  - 利用黄金分割原理实现的二分查找
+  - 算法思想
+    - 当`key == a[mid]`时查找结束
+    - 当`key < a[mid]`时，新范围为`low`到`mid - 1`，此时范围个数为`fibo[k - 1] - 1`
+    - 当`key < a[mid]`时，新范围为`mid + 1`到`high`，此时范围个数为`fibo[k - 2] - 1`
+  - 渐进时间复杂度：$O(logn)$
+
+```cpp
+int fibo[MAX_SIZE]; // 首先有一个Fibonacci数组{0, 1, 1, 2, 3, 5, 8, 13···}
+int Fibonacci_Search(int *a, int n, int key)
+{
+   int low = 0, high = n - 1, mid, i, k = 0;
+   while (n > fibo[k] - 1){
+      k++;
+   }
+   for (i = n; i < fibo[k] - 1; i++)
+   {
+      a[i] = a[n]; // 赋值为最大的数组值
+   }
+   while (low <= high)
+   {
+      mid = low + fibo[k - 1] - 1;
+      if (key < a[mid])
+      {
+         high = mid - 1;
+         k = k - 1;
+      }
+      else if (key > a[mid])
+      {
+         low = mid + 1;
+         k = k - 2;
+      }
+      else
+      {
+         if (mid <= n)
+         {
+            return mid;
+         }
+         else
+         {
+            return n;
+         }
+      }
+   }
+   return -1;
+}
+```
+
+  - 小结
+    - 对于大多数数据Fibonacci查找的平均性能要优于二分查找，但对于最坏情况下的性能要低于二分查找
+    - 二分查找进行的是加法与除法运算，插值查找是四则运算，Fibonacci查找是简单的加减法运算，在数据量较大的时候，运算类型也会影响最终的查找效率。
