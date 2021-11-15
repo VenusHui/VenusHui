@@ -1,81 +1,120 @@
-// 约瑟夫生者死者游戏
 #include <iostream>
+#include <iomanip>
 #include <string>
 using namespace std;
 
-class Node
+template <typename Type>
+struct ListNode // 链表结点
 {
-public:
-    // data;
-    int data;
-    Node *next;
-
-    // operation
-    Node();
-    Node(const int data) { this->data = data; }
+    Type data;
+    ListNode *next;
+    ListNode() { this->next = nullptr; }
+    ListNode(Type data)
+    {
+        this->next = nullptr;
+        this->data = data;
+    }
+    ListNode(ListNode<Type> *node)
+    {
+        this->data = node->data;
+        this->next = node->next;
+    }
 };
 
-class CircularList
+template <typename Type>
+class CircularList // 循环链表
 {
 private:
-    Node *start;
     int listSize;
 
+protected:
+    ListNode<Type> *rear;
+
 public:
-    CircularList(int num);
+    CircularList();
     ~CircularList();
+    int size() { return listSize; }
+    void remove(int index);
 };
 
-CircularList::CircularList(int num)
+template <typename Type>
+CircularList<Type>::CircularList()
 {
-    start = new Node(1);
-    listSize = num;
-    Node *p = start;
-    for (int i = 2; i <= num; i++)
-    {
-        Node *temp = new Node(i);
-        p->next = temp;
-        p = temp;
-    }
-    p->next = start;
+    listSize = 0;
+    rear = new ListNode<Type>;
+    rear->next = rear; // 循环效果
 }
 
-CircularList::~CircularList()
+template <typename Type>
+CircularList<Type>::~CircularList()
 {
-    Node *p = start->next, *q;
-    while (p != start)
+    ListNode<Type> *prt, *pre = rear;
+    while (rear->next != rear)
     {
-        q = p->next;
-        delete p;
-        p = q;
+        prt = pre->next;
+        pre->next = prt->next;
+        delete prt;
     }
-    delete start;
+    delete rear;
 }
 
-class JosephusSolution
+template <typename Type>
+void CircularList<Type>::remove(int index)
+{
+    ListNode<Type>* prt = this->rear, *pre = nullptr;
+    for (int i = 0; i < index; i++)
+    {
+        pre = prt;
+        prt = prt->next;
+    }
+    pre->next = prt->next;
+    delete prt;
+    prt = pre->next;
+}
+
+class JosephusSolution : CircularList<int> // 约瑟夫生死环，继承自循环链表
 {
 private:
-    CircularList* clist;
-    
+    int total, start, death, remain; // 总人数，起始序号，死亡数字，剩余人数
+
 public:
     JosephusSolution();
     ~JosephusSolution();
+    void print()
+    {
+        ListNode<int> *tmp = rear->next;
+        while (tmp != rear)
+        {
+            cout << tmp->data << endl;
+            tmp = tmp->next;
+        }
+    }
+    bool Input(int &data, const string cueStr);
+    void JosephusSimulate();
 };
 
-JosephusSolution::JosephusSolution(int num)
+JosephusSolution::JosephusSolution()
 {
-    if (num == 1)
+    cout << "现有N个人围成一圈，从第S人开始依次报数，报M的人出局，再由下一个人报数，如此循环，直到最后剩下K个人为止" << endl;
+    if (Input(total, "生死游戏的总人数") && Input(start, "游戏开始的位置") && Input(death, "死亡数字") && Input(remain, "剩余的生者人数"))
     {
+        rear->data = 1;
+        ListNode<int> *prt, *pre = rear; // 当前结点及记录了上一次插入的结点
+        for (int i = 2; i <= total; i++)
+        {
+            prt = new ListNode<int>(i);
+            pre->next = prt;
+            prt->next = rear;
+            pre = prt;
+        }
     }
-    
 }
 
 JosephusSolution::~JosephusSolution()
 {
 }
 
-
-bool input(int &data, const string cueStr)
+bool JosephusSolution::Input(int &data, const string cueStr)
 {
     cout << "请输入" << cueStr << "：";
     cin >> data;
@@ -89,31 +128,39 @@ bool input(int &data, const string cueStr)
     return true;
 }
 
+void JosephusSolution::JosephusSimulate()
+{
+    ListNode<int> *prt = rear, *pre = nullptr;
+    for (int i = 1; i < start; i++)
+    {
+        prt = rear->next;
+    }
+    int loop = total - remain;
+    for (int i = 1; i <= loop; i++)
+    {
+        for (int j = 1; j < death; j++)
+        {
+            pre = prt;
+            prt = prt->next;
+        }
+        pre->next = prt->next;
+        cout << "第" << i << "个死者的位置是：" << prt->data << endl;
+        delete prt;
+        prt = pre->next;
+    }
+    cout << "最后剩下：" << remain << "人" << endl;
+    cout << "剩余的生者位置为：" << endl;
+    prt = rear;
+    for (int i = 0; i < remain; i++)
+    {
+        cout << setw(5) << setfill(' ') << prt->data;
+        prt = prt->next;
+    }
+    cout << endl;
+}
 int main()
 {
-    int N, S, M, K; // 分别代表总人数，起始序号，死亡数字，剩余人数
-    cout << "现有N个人围成一圈，从第S人开始依次报数，报M的人出局，再由下一个人报数，如此循环，直到最后剩下K个人为止" << endl;
-    if (input(N, "生死游戏的总人数") && input(N, "游戏开始的位置") && input(N, "死亡数字") && input(N, "剩余的生者人数"))
-    {
-        char choose;
-        switch (choose)
-        {
-        case:'1'
-            cout << "采用循环链表模拟" << endl;
-            JosephusSolution sol(1);
-            break;
-        case:'2'
-            cout << "采用有序集合模拟" << endl;
-            JosephusSolution sol(2);
-            break;
-        case:'3'
-            cout << "采用递推公式计算" << endl;
-            JosephusSolution sol(3);
-            break;
-        default:
-            break;
-        }
-    }
-
+    JosephusSolution testInstance;
+    testInstance.JosephusSimulate();
     return 0;
 }
