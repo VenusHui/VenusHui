@@ -8,17 +8,9 @@ struct ListNode // 链表结点
 {
     Type data;
     ListNode *next;
-    ListNode() { this->next = nullptr; }
-    ListNode(Type data)
-    {
-        this->next = nullptr;
-        this->data = data;
-    }
-    ListNode(ListNode<Type> *node)
-    {
-        this->data = node->data;
-        this->next = node->next;
-    }
+    ListNode() : data(0), next(nullptr) {};
+    ListNode(Type data) : data(data), next(nullptr) {};
+    ListNode(ListNode<Type> *node) : data(node->data), next(node->next) {};
 };
 
 template <typename Type>
@@ -61,7 +53,7 @@ CircularList<Type>::~CircularList()
 template <typename Type>
 void CircularList<Type>::remove(int index)
 {
-    ListNode<Type>* prt = this->rear, *pre = nullptr;
+    ListNode<Type> *prt = this->rear, *pre = nullptr;
     for (int i = 0; i < index; i++)
     {
         pre = prt;
