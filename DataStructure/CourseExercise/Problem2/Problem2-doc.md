@@ -8,16 +8,58 @@
 
 ## 项目名称：约瑟夫生者死者游戏
 
-## 项目背景
+## 项目概述
+
+### 项目背景
 
 在一艘有N名旅客的船上，由于船严重超载，必须要抛下一些乘客，使船上只剩下K名乘客(K < N)。制定如下规则进行筛选：所有旅客围成一圈编号1-N，现从第S名旅客开始，按照编号递增的顺序从1开始报数，报到M的人被抛弃，然后从被抛弃的下一位开始重新从1开始报数，重复上述过程直到船上只剩下K个人为止。
+
+### 项目目标
+
+通过模拟方法找出所有需要抛弃的乘客的编号，并最后输出最后剩余的乘客编号。
 
 ## 项目概览
 
 ## 实现思路
 
-- 数据的存储结构：按照题目要求，采用**单循环链表**
+- 数据的存储结构：按照题目要求，采用**单循环链表**模拟N名乘客围成一圈
+
+- 类的设计及关系
+
+![类的设计及关系](../Resources/Problem2-UML.png)
+
+## 核心代码
+
+```cpp
+int loop = total - remain;
+for (int i = 1; i <= loop; i++)
+{
+    for (int j = 1; j < death; j++)
+    {
+        pre = prt;
+        prt = prt->next;
+    }
+    pre->next = prt->next;
+    cout << "第" << i << "个死者的位置是：" << prt->data << endl;
+    delete prt;
+    prt = pre->next;
+}
+cout << "最后剩下：" << remain << "人" << endl;
+cout << "剩余的生者位置为：" << endl;
+prt = rear;
+for (int i = 0; i < remain; i++)
+{
+    cout << setw(5) << setfill(' ') << prt->data;
+    prt = prt->next;
+}
+```
+
+## 性能分析
 
 - 
 
 ## 测试
+
+- MacOS下采用clang++的c++17标准编译测试结果如下
+
+![MacOS下采用clang++的c++17标准编译测试结果](../Resources/Problem2-MacOSTest.png)

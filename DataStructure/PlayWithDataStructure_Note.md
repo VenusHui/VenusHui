@@ -1202,21 +1202,128 @@ void InTreading(BiThrTree T) // 这里的T代表的不是根结点，而是头�
   - 路径：与树相比，树的根结点到每个结点的路径是唯一的，但图中两顶点之间的路径不一定是唯一的，路径长度就是路径上边或弧的数目。
   - 第一个顶点到最后一个顶点相同的路径称为回路或环。序列中顶点不重复出现的路径称为简单路。除了第一个顶点和最后一个顶点之外，其余顶点不重复出现的回路，称为简单回路或简单环。
 
-- 连通图相关
-  - 在无向图G中，若从顶点$v_i$到$v_j$有路径，则称$v_i$和$v_j$是连通的，若图G中任意两个顶点都是连通的，则称G是连通图(Connexted Graph)。无向圈中的极大连通子图称为连通分量。
+#### 连通图相关
+- 在无向图G中，若从顶点$v_i$到$v_j$有路径，则称$v_i$和$v_j$是连通的，若图G中任意两个顶点都是连通的，则称G是连通图(Connexted Graph)。无向圈中的极大连通子图称为连通分量。
 
-  - 在有向图G中，对于任意两个顶点$v_i$和$v_j$，若从$v_i$到$v_j$和从$v_j$到$v_i$都有路径，则称图G为强连通图。有向圈中的极大强连通子图称做有向图的强连通分量。
+- 在有向图G中，对于任意两个顶点$v_i$和$v_j$，若从$v_i$到$v_j$和从$v_j$到$v_i$都有路径，则称图G为强连通图。有向圈中的极大强连通子图称做有向图的强连通分量。
 
-  - 连通图的生成树：是一个极小的连通子图，它含有图中全部的n个顶点，但只有足以构成一棵树的n - 1条边。有向图中一顶点入度为0，其余顶点入度为1的叫做**有向树**，一个有向图由多颗有向树构成**生成森林**。
+- 连通图的生成树：是一个极小的连通子图，它含有图中全部的n个顶点，但只有足以构成一棵树的n - 1条边。有向图中一顶点入度为0，其余顶点入度为1的叫做**有向树**，一个有向图由多颗有向树构成**生成森林**。
+
+- 重连通分量(Biconnected Component)
+  - 关节点：在无向连通图G中，当且仅当删去顶点v及依附于v的所有边之后G被分割为至少两个连通分量，则称顶点v为关节点(Atriculation Point)。
+
+  - 重连通图：一个没有关节点的连通图成为重连通图(Biconnected Graph)。
+
+  - 借助深度优先树(DFS树)完成：
+
+  - 对于任意非根顶点v，其不是关节点的充要条件是：它的每一个子女都可以沿着某条路径通往v的某个祖先，且v不属于这条路径。
+
+```cpp
+
+```
+
 
 ### 图的存储结构
 
-#### 邻接矩阵
+#### 邻接矩阵(Adjacency Matrix)
 
-图的邻接矩阵(Adjacency Matrix)存储方式就是用两个数组，一个一维数组存储图的顶点信息，一个二维数组存储图的边的信息。
+图的邻接矩阵存储方式就是用两个数组，一个一维数组存储图的顶点信息，一个二维数组存储图的边的信息。
 
-#### 邻接表
+```cpp
+// Adjacency Matrix
+#include <iostream>
+const int INFINITY = __INT_MAX__;
+template <typename VertexType, typename EdgeType>
+class MGraph
+{
+private:
+    VertexType *vex;
+    EdgeType *arc;
+    int vertexNum, edgeNum;
 
+public:
+    MGraph(int vertexNum, int edgeNum);
+    ~MGraph();
+    void CreateGraph();
+};
+
+template <typename VertexType, typename EdgeType>
+MGraph<VertexType, EdgeType>::MGraph(int vertexNum, int edgeNum)
+{
+    this->vertexNum = vertexNum;
+    this->edgeNum = edgeNum;
+    vex = new VertexType[vertexNum];
+    arc = new EdgeType *[vertexNum];
+    for (int i = 0; i < vertexNum; i++)
+    {
+        arc[i] = new EdgeType[vertexNum];
+    }
+}
+
+template <typename VertexType, typename EdgeType>
+MGraph<VertexType, EdgeType>::~MGraph()
+{
+    delete[] vex;
+    for (int i = 0; i < vertexNum; i++)
+    {
+        delete[] arc[i];
+    }
+    delete[] arc;
+}
+```
+
+#### 邻接表(Adjacency List)
+
+图的邻接表存储方式是将顶点用一个一维数组/单链表来存储，且每个数据元素还存储指向第一个邻接点的指针；图中每个顶点的所有邻接点构成一个单链表，其中有向图存储以该顶点作为弧尾的出边表（存储入边表即为逆邻接表）。
+
+```cpp
+template <typename Type>
+struct EdgeVertex<Type>{
+   int adjvex; // 存储该邻接点在顶点数组的下标
+   Type val;   // 顶点权值
+   struct EdgeVertex<Type>* next;
+};
+
+template <typename Type>
+struct PeakVertex<Type>{
+   Type val;
+   struct EdgeVertex<Type>* firstEdge; 
+};
+```
+
+#### 十字链表(Orthogonal List)
+
+```cpp
+// 针对有向图
+template <typename Type>
+struct EdgeVertex<Type>{
+   int tailvex;   // 存储起点在顶点数组的下标
+   int headvexl;  // 存储终点在顶点数组的下表
+   Type val;      // 顶点权值
+   struct EdgeVertex<Type>* headLink;
+   struct EdgeVertex<Type>* tailLink;
+};
+
+template <typename Type>
+struct PeakVertex<Type>{
+   Type val;
+   struct EdgeVertex<Type>* firstIn;  // 入边邻接表
+   struct EdgeVertex<Type>* firstOut; // 出边邻接表
+};
+```
+
+#### 邻接多重表
+
+#### 边集数组
+
+### 图的遍历
+
+从图的某一顶点出发访遍图中的其余顶点，且使每个顶点仅被访问一次。
+
+#### 深度优先遍历(Depth First Search)
+
+
+#### 广度优先遍历(Breadth First Search)
 
 ## 第八章 查找
 
