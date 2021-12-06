@@ -1,192 +1,284 @@
-// 表达式计算
 #include <iostream>
 #include <string>
 #include <cmath>
 using namespace std;
 
-template<class T>
-class MyStackNode
+template <typename Type>
+struct StackNode
 {
-private:
-    T data;
-    MyStackNode *next;
-
-public:
-    MyStackNode();
-    MyStackNode(T elem, MyStackNode *next);
-    ~MyStackNode();
-    MyStackNode *getNext() { return next; }
-    char getData() { return data; }
+    Type val;
+    StackNode *next;
+    StackNode() : next(nullptr) {}
+    StackNode(Type x) : val(x), next(nullptr) {}
+    StackNode(StackNode<Type> *rNode) : val(rNode->val), next(rNode->next) {}
 };
 
-template <class T>
-MyStackNode<T>::MyStackNode()
+template <typename Type>
+class Stack
 {
-    next = nullptr;
-}
+protected:
+    StackNode<Type> *topPtr;
 
-template <class T>
-MyStackNode<T>::MyStackNode(T elem, MyStackNode *next)
-{
-    this->data = elem;
-    this->next = next;
-}
-
-template <class T>
-MyStackNode<T>::~MyStackNode()
-{
-}
-
-template<class T>
-class MyStack
-{
-private:
-    MyStackNode<T>* topPtr; // 栈顶指针
-    int size;        // 元素个数
 public:
-    MyStack();
-    ~MyStack();
-    bool push(T elem);
-    bool pop();
-    template<T> T top();
+    Stack();
+    ~Stack();
+
+    // 判断栈是否已满
+    bool empty() { return topPtr == nullptr; }
+
+    // 入栈操作
+    void push(Type elem);
+
+    // 出栈操作
+    void pop();
+
+    // 获取栈顶
+    Type &top() { return topPtr->val; }
 };
 
-template <class T> MyStack<T>::MyStack()
+template <typename Type>
+Stack<Type>::Stack()
 {
-    topPtr = new MyStackNode<T>();
-    size = 0;
+    topPtr = nullptr;
 }
 
-template <class T> MyStack<T>::~MyStack()
+template <typename Type>
+Stack<Type>::~Stack()
 {
-}
-
-template<class T> bool MyStack<T>::push(T elem)
-{
-    MyStackNode<T>* p = new MyStackNode(elem, topPtr);
-    topPtr = p;
-    size++;
-    return true;
-}
-
-template<class T> bool MyStack<class T>::pop()
-{
-    if (topPtr == nullptr)
+    StackNode<Type> *tmp = topPtr;
+    while (topPtr != nullptr)
     {
-        return false;
+        tmp = topPtr->next;
+        delete topPtr;
+        topPtr = tmp;
     }
-    MyStackNode<class T>* p = topPtr;
-    topPtr = p->getNext();
-    delete p;
-    size--;
-    return true;
 }
 
-template<class T> T MyStack<T>::top()
+template <typename Type>
+void Stack<Type>::push(Type elem)
 {
-    return topPtr->getData();
+    StackNode<Type> *newNode = new StackNode<Type>(elem);
+    newNode->next = topPtr;
+    topPtr = newNode;
 }
 
-class BiTreeNode
+template <typename Type>
+void Stack<Type>::pop()
 {
-private:
-    string data;
+    if (empty())
+    {
+        return;
+    }
+    StackNode<Type> *tmp = topPtr;
+    topPtr = topPtr->next;
+    delete tmp;
+}
+
+// template <typename Type>
+// Type& Stack<Type>::top(Type &ans)
+// {
+
+// }
+
+template <typename Type>
+struct BiTreeNode
+{
+    Type val;
     BiTreeNode *left;
     BiTreeNode *right;
-
-public:
-    BiTreeNode();
-    BiTreeNode(string data, BiTreeNode *left, BiTreeNode *right);
-    ~BiTreeNode();
-    string getData() { return data; }
-    BiTreeNode *getLeft() { return left; }
-    BiTreeNode *getRight() { return right; }
+    BiTreeNode() : left(nullptr), right(nullptr) {}
+    BiTreeNode(Type x) : val(x), left(nullptr), right(nullptr) {}
+    BiTreeNode(Type x, BiTreeNode *left, BiTreeNode *right) : val(x), left(left), right(right) {}
+    ostream &operator<<(ostream &out)
+    {
+        out << this->val;
+        return out;
+    }
 };
 
-BiTreeNode::BiTreeNode()
+template <typename Type>
+class BiTree
+{
+protected:
+    BiTreeNode<Type> *root;
+
+public:
+    BiTree();
+    ~BiTree();
+    void insert();
+    void remove(Type key);
+    void preOrderTranvers(BiTreeNode<Type> *curNode);
+    void inOrderTranvers(BiTreeNode<Type> *curNode);
+    void postOrderTranvers(BiTreeNode<Type> *curNode);
+};
+
+template <typename Type>
+BiTree<Type>::BiTree()
+{
+    root = new BiTreeNode<Type>;
+}
+
+template <typename Type>
+BiTree<Type>::~BiTree()
 {
 }
 
-BiTreeNode::BiTreeNode(string data, BiTreeNode *left, BiTreeNode *right)
+template <typename Type>
+void BiTree<Type>::preOrderTranvers(BiTreeNode<Type> *curNode)
 {
-    this->data = data;
-    this->left = left;
-    this->right = right;
+    if (curNode == nullptr)
+    {
+        return;
+    }
+    cout << curNode->val << " ";
+    preOrderTranvers(curNode->left);
+    preOrderTranvers(curNode->right);
 }
 
-BiTreeNode::~BiTreeNode()
+template <typename Type>
+void BiTree<Type>::inOrderTranvers(BiTreeNode<Type> *curNode)
 {
+    if (curNode == nullptr)
+    {
+        return;
+    }
+    inOrderTranvers(curNode->left);
+    cout << curNode->val << " ";
+    inOrderTranvers(curNode->right);
 }
 
-class ExpressionConvert
+template <typename Type>
+void BiTree<Type>::postOrderTranvers(BiTreeNode<Type> *curNode)
+{
+    if (curNode == nullptr)
+    {
+        return;
+    }
+    postOrderTranvers(curNode->left);
+    postOrderTranvers(curNode->right);
+    cout << curNode->val << " ";
+}
+
+class ExpConvert : BiTree<string>
 {
 private:
-    int sBit;
-    double temp;
-    string expression;
+    string temp;                           // 暂存目前正在处理的数据
+    string expression;                     // 表达式
+    BiTree tree;                           // 表达式转换树
+    Stack<BiTreeNode<string> *> dataStack; // 辅助数栈
+    Stack<string> operatorStack;           // 辅助符号栈
 
 public:
-    ExpressionConvert();
-    ~ExpressionConvert();
-    void digitConvert(char ch);
-    bool initTree(int start, int end);
-    void preOrderTranvers();
-    void inOrderTranvers();
-    void postOrderTranvers();
+    ExpConvert();
+    ~ExpConvert();
+    void createTree();
+    void printResult();
 };
 
-ExpressionConvert::ExpressionConvert()
+ExpConvert::ExpConvert()
 {
-    temp = 0;
-    sBit = 0;
     cout << "请输入表达式：";
     cin >> expression;
     for (unsigned i = 0; i < expression.size(); i++)
     {
-        if (expression.at(i) >= '0' && expression.at(i) <= '9' || expression.at(i) == '.')
+        if ((expression.at(i) >= '0' && expression.at(i) <= '9') || expression.at(i) == '.')
         {
-            digitConvert(expression.at(i));
+            temp += expression.at(i);
         }
         else
         {
-            temp = 0;
-            sBit = 0;
+            if (!temp.empty())
+            {
+                BiTreeNode<string> *tmpNode = new BiTreeNode<string>(temp);
+                dataStack.push(tmpNode);
+            }
+            switch (expression.at(i))
+            {
+            case '+':
+            case '-':
+                if (operatorStack.empty())
+                {
+                    operatorStack.push(string(1, expression.at(i)));
+                }
+                else if (operatorStack.top() == "*" || operatorStack.top() == "/")
+                {
+                    createTree();
+                    operatorStack.push(string(1, expression.at(i)));
+                }
+                else
+                {
+                    operatorStack.push(string(1, expression.at(i)));
+                }
+                break;
+            case '*':
+            case '/':
+                operatorStack.push(string(1, expression.at(i)));
+                break;
+            case '(':
+                operatorStack.push(string(1, expression.at(i)));
+                break;
+            case ')':
+                while (operatorStack.top() != "(")
+                {
+                    createTree();
+                }
+                operatorStack.pop();
+                break;
+            default:
+                cout << "Create Tree Error!" << endl;
+                break;
+            }
+            temp.clear();
         }
     }
-}
-
-void ExpressionConvert::digitConvert(char ch)
-{
-    if (ch == '.')
+    if (!temp.empty())
     {
-        sBit = 1;
+        BiTreeNode<string> *tmpNode = new BiTreeNode<string>(temp);
+        dataStack.push(tmpNode);
     }
-    if (sBit == 0)
+    while (!operatorStack.empty())
     {
-        temp = temp * 10 + (ch - '0');
+        createTree();
     }
-    else
+    root = dataStack.top();
+    dataStack.pop();
+    if (!dataStack.empty())
     {
-        temp += (ch - '0') / pow(0.1, sBit);
-        sBit++;
+        cout << "Expression Error!" << endl;
     }
 }
 
-ExpressionConvert::~ExpressionConvert()
+ExpConvert::~ExpConvert()
 {
 }
 
-bool ExpressionConvert::initTree(int start, int end)
+void ExpConvert::createTree()
 {
-    BiTreeNode *temp;
-    if (start == end)
-    {
-        temp = new BiTreeNode;
-    }
-    return true;
+    BiTreeNode<string> *left = dataStack.top();
+    dataStack.pop();
+    BiTreeNode<string> *right = dataStack.top();
+    dataStack.pop();
+    BiTreeNode<string> *curOper = new BiTreeNode<string>(operatorStack.top(), right, left);
+    operatorStack.pop();
+    dataStack.push(curOper);
+}
+
+void ExpConvert::printResult()
+{
+    cout << "波兰表达式：  ";
+    postOrderTranvers(root);
+    cout << endl;
+    cout << "中缀表达式：  ";
+    inOrderTranvers(root);
+    cout << endl;
+    cout << "逆波兰表达式：";
+    preOrderTranvers(root);
+    cout << endl;
 }
 
 int main()
 {
+    ExpConvert testInstance;
+    testInstance.printResult();
     return 0;
 }

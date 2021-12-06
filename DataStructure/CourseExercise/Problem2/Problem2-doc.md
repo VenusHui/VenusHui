@@ -1,10 +1,10 @@
-> 版本：1.0
+> version：1.0
 >
-> 作者：2053300 胡锦晖
+> CopyRight：2053300 胡锦晖
 >
-> 项目进度：已完成
+> Process：已完成
 >
-> 最后编辑于：2021.11.15
+> LastEdit：2021.11.15
 
 ## 项目名称：约瑟夫生者死者游戏
 
@@ -63,7 +63,16 @@ for (int i = 0; i < remain; i++)
     改进之后的代码为：
 
 ```cpp
-
+for (int i = 1; i <= death % listSize; i++)
+{
+    pre = prt;
+    prt = pre->next;
+}
+pre->next = prt->next;
+// 输出死者位置
+delete prt;
+prt = pre->next;
+listSize--;
 ```
 
 - 有序集合模拟
