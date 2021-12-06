@@ -107,9 +107,9 @@ public:
     ~BiTree();
     void insert();
     void remove(Type key);
-    void preOrderTranvers(BiTreeNode<Type> *curNode);
-    void inOrderTranvers(BiTreeNode<Type> *curNode);
-    void postOrderTranvers(BiTreeNode<Type> *curNode);
+    void preOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func);
+    void inOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func);
+    void postOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func);
 };
 
 template <typename Type>
@@ -124,49 +124,51 @@ BiTree<Type>::~BiTree()
 }
 
 template <typename Type>
-void BiTree<Type>::preOrderTranvers(BiTreeNode<Type> *curNode)
+void BiTree<Type>::preOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func)
 {
     if (curNode == nullptr)
     {
         return;
     }
-    cout << curNode->val << " ";
-    preOrderTranvers(curNode->left);
-    preOrderTranvers(curNode->right);
+    func(curNode);
+    preOrderTranvers(curNode->left, func);
+    preOrderTranvers(curNode->right, func);
 }
 
 template <typename Type>
-void BiTree<Type>::inOrderTranvers(BiTreeNode<Type> *curNode)
+void BiTree<Type>::inOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func)
 {
     if (curNode == nullptr)
     {
         return;
     }
-    inOrderTranvers(curNode->left);
-    cout << curNode->val << " ";
-    inOrderTranvers(curNode->right);
+    inOrderTranvers(curNode->left, func);
+    func(curNode);
+    inOrderTranvers(curNode->right, func);
 }
 
 template <typename Type>
-void BiTree<Type>::postOrderTranvers(BiTreeNode<Type> *curNode)
+void BiTree<Type>::postOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func)
 {
     if (curNode == nullptr)
     {
         return;
     }
-    postOrderTranvers(curNode->left);
-    postOrderTranvers(curNode->right);
-    cout << curNode->val << " ";
+    postOrderTranvers(curNode->left, func);
+    postOrderTranvers(curNode->right, func);
+    func(curNode);
 }
 
 class ExpConvert : BiTree<string>
 {
 private:
-    string temp;                           // 暂存目前正在处理的数据
-    string expression;                     // 表达式
-    BiTree tree;                           // 表达式转换树
-    Stack<BiTreeNode<string> *> dataStack; // 辅助数栈
-    Stack<string> operatorStack;           // 辅助符号栈
+    string temp;                                               // 暂存目前正在处理的数据
+    string expression;                                         // 表达式
+    BiTree tree;                                               // 表达式转换树
+    Stack<BiTreeNode<string> *> dataStack;                     // 辅助数栈
+    Stack<string> operatorStack;                               // 辅助符号栈
+    function<void(BiTreeNode<string> *)> outputWithBracket;    // 输出函数
+    function<void(BiTreeNode<string> *)> outputWithoutBracket; // 输出函数
 
 public:
     ExpConvert();
@@ -189,9 +191,14 @@ ExpConvert::ExpConvert()
         {
             if (!temp.empty())
             {
+                if (expression.at(i) == ')')
+                {
+                    temp += expression.at(i);
+                }
                 BiTreeNode<string> *tmpNode = new BiTreeNode<string>(temp);
                 dataStack.push(tmpNode);
             }
+            temp.clear();
             switch (expression.at(i))
             {
             case '+':
@@ -216,6 +223,7 @@ ExpConvert::ExpConvert()
                 break;
             case '(':
                 operatorStack.push(string(1, expression.at(i)));
+                temp += expression.at(i);
                 break;
             case ')':
                 while (operatorStack.top() != "(")
@@ -228,7 +236,6 @@ ExpConvert::ExpConvert()
                 cout << "Create Tree Error!" << endl;
                 break;
             }
-            temp.clear();
         }
     }
     if (!temp.empty())
@@ -246,6 +253,22 @@ ExpConvert::ExpConvert()
     {
         cout << "Expression Error!" << endl;
     }
+    outputWithBracket = [&](BiTreeNode<string> *curNode)
+    {
+        cout << curNode->val << " ";
+    };
+    outputWithoutBracket = [&](BiTreeNode<string> *curNode)
+    {
+        for (unsigned int i = 0; i < curNode->val.size(); i++)
+        {
+            if (curNode->val.at(i) == '(' || curNode->val.at(i) == ')')
+            {
+                continue;
+            }
+            cout << curNode->val.at(i);
+        }
+        cout << " ";
+    };
 }
 
 ExpConvert::~ExpConvert()
@@ -266,13 +289,13 @@ void ExpConvert::createTree()
 void ExpConvert::printResult()
 {
     cout << "波兰表达式：  ";
-    postOrderTranvers(root);
+    postOrderTranvers(root, outputWithoutBracket);
     cout << endl;
     cout << "中缀表达式：  ";
-    inOrderTranvers(root);
+    inOrderTranvers(root, outputWithBracket);
     cout << endl;
     cout << "逆波兰表达式：";
-    preOrderTranvers(root);
+    preOrderTranvers(root, outputWithoutBracket);
     cout << endl;
 }
 
