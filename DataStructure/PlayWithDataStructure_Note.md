@@ -1,8 +1,8 @@
-> writer: VenusHui
+> CopyRight: VenusHui
 > 
 > time: 2021.08.01
 >
-> last edit: 2021.11.15
+> last edit: 2021.12.06
 > 
 > Reference: Play With Data Structure ,DS course of SE in Tongji Unversity
 ## 《大话数据结构》阅读笔记
@@ -1322,8 +1322,51 @@ struct PeakVertex<Type>{
 
 #### 深度优先遍历(Depth First Search)
 
-
 #### 广度优先遍历(Breadth First Search)
+
+### 最小生成树
+
+#### Kruskal算法
+
+#### Prim算法
+
+### 最短路径
+
+#### 单源最短路径
+
+- Dijkstra算法（非负权值）
+
+- Bellman-Ford算法（任意权值）
+
+#### Floyd算法
+
+### 活动网络
+
+#### AOV网络
+
+   在有向图G中，用顶点表示活动，用弧$<v_i, v_j>$表示活动$v_i$必须先于活动$v_j$进行，这种有向图叫做用顶点表示活动的网络(Activity On Vertices)。
+
+- 拓扑排序
+  - 算法描述：找到任意一个入度为0的顶点，输出它并在图中将其删去，并删去从它出发的弧。重复上述过程直到所有顶点已输出，拓扑有序序列形成。
+
+  - 代码实现：
+
+```cpp
+
+```
+
+#### AOE网络
+
+   在有向带权图中用有向边表示一个工程中的各项活动，用有向边上的权值表示活动的持续时间，用顶点表示事件，这种有向图叫做用边表示活动的网络(Avtivity On Edges)。
+
+- 关键路径(Critical Path)
+  - 定义：在AOE网络中有些活动可以并行进行，在从源点(Source)到汇点(Sink)的路径不止一条，关键路径即为从源点到汇点的最长路径（整个工程完成的事件取决于关键路径）。
+
+  - 关键活动(Critical Activity)
+    - 最早可能开始时间：事件$v_i$的最早可能开始时间Ve(i)是从源点$v_0$到$v_i$的最长路径长度。
+    - 最迟允许开始时间：事件$v_i$的最迟允许开始时间Vl(i)是保证汇点$v_{n - 1}$Ve(n - 1)时刻的完成的前提下，事件$v_i$的最迟开始时间。Vl(i)等于Ve(n - 1)减去$v_i$到汇点$v_{n - 1}$的最长路径长度。
+    - 松弛时间(Slack Time)：即最迟允许开始时间减去最早可能开始时间。
+
 
 ## 第八章 查找
 
