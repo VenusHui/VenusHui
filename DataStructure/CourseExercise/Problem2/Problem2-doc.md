@@ -83,9 +83,12 @@ listSize--;
 
     观察数据之间的关系可以得到：
 
-```cpp
+```
 f(n, m) = (f(n - 1, m) + m) % n;
 f(n, m) // 指n个人，报第m个编号出列最终编号
+
+
+index = (index + m - 1) % (list.size());
 ```
 
 ## 测试
