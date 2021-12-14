@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <string>
 #include <ctime>
+#include <functional>
 using namespace std;
 
 const int FunctionNum = 8; // 8种排序方式
@@ -10,12 +11,12 @@ const int FunctionNum = 8; // 8种排序方式
 class SortFunctions
 {
 private:
-    int *num, nNum;        // 待排序数组及其规模
+    int* num, nNum;        // 待排序数组及其规模
     clock_t start, finish; // 排序的起止时间
     double duration;       // 共计用时
     int compCount;         // 排序所用的操作次数
     char oper;             // 用户选择的操作
-    string *sortNames;     // 排序名称集合
+    string* sortNames;     // 排序名称集合
 
 public:
     SortFunctions();
@@ -31,7 +32,7 @@ public:
     // 重置随机数
     void Reset();
 
-    void swap(int &a, int &b);
+    void swap(int& a, int& b);
 
     // 冒泡排序
     void BubbleSort();
@@ -63,7 +64,9 @@ public:
 
 SortFunctions::SortFunctions()
 {
+    oper = 0;
     srand((unsigned)time(0));
+    start = finish = clock();
     duration = 0;
     compCount = 0;
     cout << "请输入要生成随机数的个数：";
@@ -81,7 +84,7 @@ SortFunctions::SortFunctions()
     cout << "**            8 --- 基数排序           **" << endl;
     cout << "**            9 --- 退出程序           **" << endl;
     cout << "=========================================" << endl;
-    sortNames = new string[FunctionNum + 1]{"", "冒泡", "选择", "直接插入", "希尔", "快速", "堆", "归并", "基数"};
+    sortNames = new string[FunctionNum + 1]{ "", "冒泡", "选择", "直接插入", "希尔", "快速", "堆", "归并", "基数" };
 }
 
 SortFunctions::~SortFunctions()
@@ -112,7 +115,7 @@ void SortFunctions::Reset()
     start = clock();
 }
 
-void SortFunctions::swap(int &a, int &b)
+void SortFunctions::swap(int& a, int& b)
 {
     int tmp = a;
     a = b;
@@ -259,8 +262,8 @@ void SortFunctions::MergeSort(const int low, const int high)
     {
         const int subArrayOne = mid - left + 1;
         const int subArrayTwo = right - mid;
-        int *leftArray = new int[subArrayOne],
-            *rightArray = new int[subArrayTwo];
+        int* leftArray = new int[subArrayOne],
+            * rightArray = new int[subArrayTwo];
         for (int i = 0; i < subArrayOne; i++)
             leftArray[i] = num[left + i];
         for (int j = 0; j < subArrayTwo; j++)
@@ -318,8 +321,8 @@ void SortFunctions::RadixSort()
     }
     function<void(int)> CountSort = [&](int exp)
     {
-        int *output = new int[nNum];
-        int i, count[10] = {0};
+        int* output = new int[nNum];
+        int i, count[10] = { 0 };
         for (i = 0; i < nNum; i++)
         {
             count[(num[i] / exp) % 10]++;
@@ -350,7 +353,7 @@ void SortFunctions::PrintDetail()
     finish = clock();
     cout << sortNames[oper - '0'] << "排序所用时间" << setprecision(6) << (static_cast<double>(finish) - static_cast<double>(start)) / CLOCKS_PER_SEC << " s" << endl;
     cout << sortNames[oper - '0'] << "排序交换次数" << compCount << endl
-         << endl;
+        << endl;
 }
 
 int main()
@@ -363,35 +366,35 @@ int main()
         testInstance.Reset();
         switch (testInstance.getOper())
         {
-        case '1':
-            testInstance.BubbleSort();
-            break;
-        case '2':
-            testInstance.SelectSort();
-            break;
-        case '3':
-            testInstance.InsertSort();
-            break;
-        case '4':
-            testInstance.ShellSort();
-            break;
-        case '5':
-            testInstance.QuickSort(0, testInstance.getArrSize() - 1);
-            break;
-        case '6':
-            testInstance.HeapSort(testInstance.getArrSize() - 1);
-            break;
-        case '7':
-            testInstance.MergeSort(0, testInstance.getArrSize() - 1);
-            break;
-        case '8':
-            testInstance.RadixSort();
-            break;
-        case '9':
-            loop = false;
-            break;
-        default:
-            break;
+            case '1':
+                testInstance.BubbleSort();
+                break;
+            case '2':
+                testInstance.SelectSort();
+                break;
+            case '3':
+                testInstance.InsertSort();
+                break;
+            case '4':
+                testInstance.ShellSort();
+                break;
+            case '5':
+                testInstance.QuickSort(0, testInstance.getArrSize() - 1);
+                break;
+            case '6':
+                testInstance.HeapSort(testInstance.getArrSize() - 1);
+                break;
+            case '7':
+                testInstance.MergeSort(0, testInstance.getArrSize() - 1);
+                break;
+            case '8':
+                testInstance.RadixSort();
+                break;
+            case '9':
+                loop = false;
+                break;
+            default:
+                break;
         }
         if (loop)
         {
