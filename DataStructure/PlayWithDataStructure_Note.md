@@ -1293,6 +1293,9 @@ struct PeakVertex<Type>{
 
 #### 十字链表(Orthogonal List)
 
+- 优势：十字链表是对于有向图的优化
+   将邻接表和逆邻接表整合到了一起，这样容易求得某一顶点的出度和入度
+
 ```cpp
 // 针对有向图
 template <typename Type>
@@ -1313,6 +1316,20 @@ struct PeakVertex<Type>{
 ```
 
 #### 邻接多重表
+
+- 优势：邻接多重表是对于无向图的优化
+   在无向图中在对边操作时，如果使用邻接表，则要找到这条边的两个边表结点对它们进行操作。
+
+```cpp
+// 针对无向图
+template <typename Type>
+struct EdgeVertex<Type>{
+   int ivex; // 依附于某条边的i顶点在顶点表中的下标
+   int jvex; // 依附于某条边的j顶点在顶点表中的下标
+   struct EdgeVertex<Type>* iLink; // 指向依附顶点ivex的下一条边
+   struct EdgeVertex<Type>* jLink;
+}
+```
 
 #### 边集数组
 
