@@ -9,8 +9,8 @@ class Maze
 {
 private:
     int row, col;   // 行数及列数
-    char **MazeMap; // 指向整张地图
-    bool **visited; // 用于确定每个点是否被访问
+    char** MazeMap; // 指向整张地图
+    bool** visited; // 用于确定每个点是否被访问
 
 public:
     int startX, startY, endX, endY;     // 起点及终点坐标
@@ -30,19 +30,19 @@ Maze::Maze()
     startY = 3;
     endX = 0;
     endY = 3;
-    char map[6][6] = {{'0', '#', '#', '0', '0', '#'},
+    char map[6][6] = { {'0', '#', '#', '0', '0', '#'},
                       {'#', '#', '0', '0', '#', '#'},
                       {'#', '0', '0', '#', '0', '#'},
                       {'0', '0', '#', '#', '0', '#'},
                       {'#', '0', '#', '#', '0', '#'},
-                      {'#', '0', '0', '0', '#', '#'}};
+                      {'#', '0', '0', '0', '#', '#'} };
     if (oper != 1)
     {
         cout << "Please input the row and the colomn num of the Maze:" << endl;
         cin >> row >> col;
     }
-    MazeMap = new char *[row];
-    visited = new bool *[row];
+    MazeMap = new char* [row];
+    visited = new bool* [row];
     for (int i = 0; i < row; i++)
     {
         MazeMap[i] = new char[col];
@@ -107,28 +107,28 @@ bool Maze::dfs(int start_x, int start_y)
     if (dfs(start_x - 1, start_y))
     {
         cout << "(" << start_x - 1 << ", " << start_y << ")"
-             << " ---> ";
+            << " ---> ";
         MazeMap[start_x - 1][start_y] = '*';
         return true;
     }
     else if (dfs(start_x, start_y - 1))
     {
         cout << "(" << start_x << ", " << start_y - 1 << ")"
-             << " ---> ";
+            << " ---> ";
         MazeMap[start_x][start_y - 1] = '*';
         return true;
     }
     else if (dfs(start_x + 1, start_y))
     {
         cout << "(" << start_x + 1 << ", " << start_y << ")"
-             << " ---> ";
+            << " ---> ";
         MazeMap[start_x + 1][start_y] = '*';
         return true;
     }
     else if (dfs(start_x, start_y + 1))
     {
         cout << "(" << start_x << ", " << start_y + 1 << ")"
-             << " ---> ";
+            << " ---> ";
         MazeMap[start_x][start_y + 1] = '*';
         return true;
     }

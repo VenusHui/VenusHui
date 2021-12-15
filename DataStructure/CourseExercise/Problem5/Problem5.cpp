@@ -14,7 +14,7 @@ public:
     FileToSol();
     ~FileToSol();
     void printSource();
-    void getNext(string subString, int *next);
+    void getNext(string subString, int* next);
     int KMP(string main, string sub);
     int search(string s);
 };
@@ -49,7 +49,7 @@ void FileToSol::printSource()
     char buffer[256];
     fin = ifstream(fileName.c_str());
     cout << endl
-         << "显示源文件“" << fileName << "”：" << endl;
+        << "显示源文件“" << fileName << "”：" << endl;
     while (!fin.eof())
     {
         fin.getline(buffer, 256);
@@ -59,7 +59,7 @@ void FileToSol::printSource()
     fin.close();
 }
 
-void FileToSol::getNext(string subString, int *next)
+void FileToSol::getNext(string subString, int* next)
 {
     unsigned int i = 1, j = 0;
     next[1] = 0;
@@ -80,7 +80,7 @@ int FileToSol::KMP(string main, string sub)
 {
     int ans = 0;
     unsigned int i = 0, j = 0;
-    int *next = new int[sub.size() - 1];
+    int* next = new int[sub.size() - 1];
     getNext(sub, next);
     while (i < main.size())
     {

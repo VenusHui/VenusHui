@@ -2,29 +2,42 @@
 #ifndef STUDENTLIST_H_
 #define STUDENTLIST_H_
 
-#include <vector>
 #include "Student.h"
 
-typedef string* Res;
+template <typename Type>
+struct ListNode // 链表结点
+{
+	Type data;
+	ListNode* next;
+	ListNode() : next(nullptr) {};
+	ListNode(Type data) : data(data), next(nullptr) {};
+	ListNode(ListNode<Type>* node) : data(node->data), next(node->next) {};
+};
+
+struct CatePair {
+	string category;
+	int num;
+	CatePair() : category(""), num(0) {}
+	CatePair(string cate) : category(cate), num(1) {}
+};
 
 class StudentList
 {
 private:
-	Student* firstNode;
+	ListNode<Student>* first;
 	int listSize;
 	int maleNum;
 	int femaleNum;
-	Res* cateRes;
+	ListNode<CatePair>* cateFirst;
+
 public:
-	StudentList();
 	StudentList(int num);
 	~StudentList();
 
-	void createListTail(int n); // 使用尾插法进行单链表的整表创建
 	bool isEmpty() const { return listSize == 0; } // 判断链表是否为空
 	int size() const { return listSize; } // 获取链表长度
 
-	Student* getFirstNode() const { return firstNode; }
+	ListNode<Student>* getFirstNode() const { return first; }
 	int getElemByID(int admissionID) const; // 获取学号为admissionID的Student在List中的编号
 
 	Student& getElem(int index) const; // 获取编号为index的Student

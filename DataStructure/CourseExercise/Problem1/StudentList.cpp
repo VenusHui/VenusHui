@@ -1,58 +1,69 @@
 #include "StudentList.h"
 
-StudentList::StudentList()
-{
-	firstNode = new Student;
-	listSize = maleNum = femaleNum = 0;
-	cateRes = nullptr;
-}
-
 StudentList::StudentList(int num)
 {
-	firstNode = new Student;
+	first = new ListNode<Student>;
+	cateFirst = nullptr;
 	listSize = num;
 	maleNum = femaleNum = 0;
-	*cateRes = new string[num];
+	if (num == 0) {
+		return;
+	}
+	ListNode<CatePair>* cateNode = cateFirst;
+	ListNode<Student>* pNode = nullptr, * rNode = this->first;
+	cout << "请依次输入考生的考号、姓名、性别、年龄及报考类别！" << endl;
+	for (int i = 0; i < num; i++)
+	{
+		pNode = new ListNode<Student>;
+		cin >> pNode->data;
+		// 处理性别
+		if (pNode->data.getGender() == Male)
+		{
+			maleNum++;
+		}
+		else
+		{
+			femaleNum++;
+		}
+		// 处理报考类别
+		while (cateNode != nullptr)
+		{
+			if (cateNode->data.category == pNode->data.getCategory())
+			{
+				cateNode->data.num++;
+			}
+			cateNode = cateNode->next;
+		}
+		cateNode = new ListNode<CatePair>(pNode->data.getCategory());
+		cateNode->next = cateFirst;
+		cateFirst = cateNode;
+
+		rNode->next = pNode;
+		rNode = pNode;
+	}
 }
 
 StudentList::~StudentList()
 {
-	while (firstNode != nullptr)
+	while (first != nullptr)
 	{
-		Student* nextNode = firstNode->getNext();
-		delete firstNode;
-		firstNode = nextNode;
-	}
-}
-
-void StudentList::createListTail(int n)
-{
-	if (n == 0){
-		return;
-	}
-	Student* pNode = new Student, *rNode = this->firstNode;
-	cout << "请依次输入考生的考号、姓名、性别、年龄及报考类别！" << endl;
-	for (int i = 0; i < n; i++)
-	{
-		pNode = new Student;
-		cin >> *pNode;
-		rNode->setNext(pNode);
-		rNode = pNode;
+		ListNode<Student>* nextNode = first->next;
+		delete first;
+		first = nextNode;
 	}
 }
 
 int StudentList::getElemByID(int admissionID) const
 {
 	int i = 1;
-	Student* temp = firstNode->getNext();
+	ListNode<Student>* temp = first->next;
 	while (temp != nullptr || i > listSize + 1)
 	{
-		if (temp->getID() == admissionID)
+		if (temp->data.getID() == admissionID)
 		{
 			return i;
-			cout << this->firstNode->getID() << endl;
 		}
-		temp = temp->getNext();
+		temp = temp->next;
 		i++;
 	}
 	return -1;
@@ -60,86 +71,108 @@ int StudentList::getElemByID(int admissionID) const
 
 Student& StudentList::getElem(int index) const
 {
-	Student* temp = firstNode;
+	ListNode<Student>* temp = first;
 	for (int i = 0; i < this->getElemByID(index); i++)
 	{
-		temp = temp->getNext();
+		temp = temp->next;
 	}
-	return *temp;
+	return temp->data;
 }
 
 void StudentList::insertElem(int index)
 {
 	int i = 1;
-	Student* listDex = this->firstNode;
+	ListNode<Student>* listDex = this->first;
 	if (listDex == nullptr || index > listSize + 1) {
-		cout << "插入位置超出信息表范围！" << endl;
+		cout << "选择的插入位置超出信息表范围！" << endl;
 		return;
 	}
-	Student* temp = new Student;
+	ListNode<Student>* temp = new ListNode<Student>;
 	cout << "请依次输入考生的考号、姓名、性别、年龄及报考类别！" << endl;
-	cin >> *temp;
-	if (this->getElemByID(temp->getID()) != -1){
-		cout << "考号为 " << temp->getID() << " 的考生已经存在，请核对后重新输入" << endl;
+	cin >> temp->data;
+	if (this->getElemByID(temp->data.getID()) != -1) {
+		cout << "考号为 " << temp->data.getID() << " 的考生已经存在，请核对后重新输入" << endl;
 		return;
 	}
+	// 处理性别
+	if (temp->data.getGender() == Male)
+	{
+		maleNum++;
+	}
+	else
+	{
+		femaleNum++;
+	}
+	// 处理报考类别
+	ListNode<CatePair>* cateNode = cateFirst;
+	while (cateNode != nullptr)
+	{
+		if (cateNode->data.category == temp->data.getCategory())
+		{
+			cateNode->data.num++;
+		}
+		cateNode = cateNode->next;
+	}
+	cateNode = new ListNode<CatePair>(temp->data.getCategory());
+	cateNode->next = cateFirst;
+	cateFirst = cateNode;
+
 	while (this && i < index) {
-		listDex = listDex->getNext();
+		listDex = listDex->next;
 		i++;
 	}
-	temp->setNext(listDex->getNext());
-	listDex->setNext(temp);
+	temp->next = listDex->next;
+	listDex->next = temp;
 	this->listSize++;
 	return;
 }
 
 void StudentList::deleteElem(int index)
 {
-	int i = 1;
-	Student* temp = new Student;
-	Student* listDex = this->firstNode;
-	while (this && i < index) {
-		listDex = listDex->getNext();
-		i++;
-	}
-	if (listDex == nullptr || i > listSize) {
-		cout << "插入位置超出链表范围！" << endl;
+	if (this->getElemByID(index) == -1) {
+		cout << "考号为 " << index << " 的考生不存在，请核对后重新输入" << endl;
 		return;
 	}
-	temp = listDex->getNext();
-	listDex->setNext(temp->getNext());
-	cout << "您删除的考生信息为：" << endl << *temp << endl;
-	delete temp;
+	else
+	{
+		ListNode<Student> temp = getElem(index);
+
+	}
 	listSize--;
 }
 
 void StudentList::summary()
 {
-	int maleNum = 0;
-	
-	Student* temp = this->firstNode->getNext();
-	
+	cout << "共有 " << listSize << "名考生，信息汇总如下：" << endl;
+	cout << "男生： " << maleNum << "人        " << "女生： " << femaleNum << "人" << endl;
+	ListNode<CatePair>* cateNode = cateFirst;
+	while (cateNode != nullptr)
+	{
+		cout << "报考 " << cateNode->data.category << " 的人共有 " << cateNode->data.num << " 人" << endl;
+		cateNode = cateNode->next;
+	}
 }
 
 ostream& operator<<(ostream& out, StudentList& list)
 {
-	if (list.size() == 0){
+	if (list.listSize == 0)
+	{
 		return out;
 	}
 	out << setiosflags(ios::left) << setfill(' ') << setw(gap) << "考号" << setw(gap)
 		<< "姓名" << setw(gap) << "性别" << setw(gap) << "年龄" << setw(gap) << "报考类别" << endl;
-	Student* temp = list.firstNode->getNext();
-	for (int i = 0; i < list.size(); i++)
+	ListNode<Student>* temp = list.first->next;
+	for (int i = 0; i < list.listSize; i++)
 	{
-		out << setfill(' ') << setw(gap) << temp->getID() << setw(gap) << temp->getName();
-		if (temp->getGender()) {
+		out << setfill(' ') << setw(gap) << temp->data.getID() << setw(gap) << temp->data.getName();
+		if (temp->data.getGender()) {
 			out << setw(gap) << "男";
 		}
 		else {
 			out << setw(gap) << "女";
 		}
-		out << setw(gap) << temp->getAge() << setw(gap) << temp->getCategory() << endl;
-		temp = temp->getNext();
+		out << setw(gap) << temp->data.getAge() << setw(gap) << temp->data.getCategory() << endl;
+		temp = temp->next;
 	}
 	return out;
 }

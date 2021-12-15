@@ -7,7 +7,7 @@ class NQueenSol
 {
 private:
     int ans, qNum;    // 记录解法个数以及皇后个数
-    int *placeResult; // 记录每一行皇后所在的列号，从1开始。
+    int* placeResult; // 记录每一行皇后所在的列号，从1开始。
 
 public:
     NQueenSol();

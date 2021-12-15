@@ -7,17 +7,15 @@ Student::Student()
 	_age = 0;
 	_name = "";
 	_category = "";
-	_next = nullptr;
 }
 
-Student::Student(int id, int gender, int age, string name, string category, Student* next)
+Student::Student(int id, int gender, int age, string name, string category)
 {
 	_admissionID = id;
 	_gender = gender;
 	_age = age;
 	_name = name;
 	_category = category;
-	_next = next;
 }
 
 Student::~Student()
@@ -38,13 +36,13 @@ istream& operator>> (istream& in, Student& s)
 {
 	string tmp;
 	in >> s._admissionID >> s._name >> tmp >> s._age >> s._category;
-	if (tmp == "男"){
-		s._gender = 1;
+	if (tmp == "男") {
+		s._gender = Male;
 	}
-	else if (tmp == "女"){
-		s._gender = 0;
+	else if (tmp == "女") {
+		s._gender = Female;
 	}
-	else{
+	else {
 		cout << "性别输入不合法，请重新输入" << endl;
 	}
 	return in;
