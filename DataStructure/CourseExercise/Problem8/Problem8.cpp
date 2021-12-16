@@ -6,16 +6,16 @@ using namespace std;
 class GraphForSol
 {
 private:
-    int vNum, **adjMatrix;
-    int *parent, *key;
-    bool *mstSet;
-    string *nameRes, start;
+    int vNum, ** adjMatrix;
+    int* parent, * key;
+    bool* mstSet;
+    string* nameRes, start;
 
 public:
     GraphForSol();
     ~GraphForSol();
     void addVertex();
-    int findIndex(string &name);
+    int findIndex(string& name);
     void addEdge();
     int minKey();
     void primMST();
@@ -24,6 +24,12 @@ public:
 
 GraphForSol::GraphForSol()
 {
+    vNum = 0;
+    adjMatrix = nullptr;
+    parent = key = nullptr;
+    mstSet = nullptr;
+    nameRes = nullptr;
+    start = "";
     cout << "**           电网造价模拟系统          **" << endl;
     cout << "=========================================" << endl;
     cout << "**          A --- 创建电网顶点         **" << endl;
@@ -38,18 +44,6 @@ GraphForSol::~GraphForSol()
 {
 }
 
-// void menuChoose(char& op)
-// {
-// 	cout << "请选择您要进行的操作：";
-// 	while (true){
-// 		op = _getch();
-// 		if (op >= '0' && op <= '6'){
-// 			cout << op << endl;
-// 			break;
-// 		}
-// 	}
-// }
-
 void GraphForSol::addVertex()
 {
     cout << "请输入顶点个数：" << endl;
@@ -62,7 +56,7 @@ void GraphForSol::addVertex()
     }
 }
 
-int GraphForSol::findIndex(string &name)
+int GraphForSol::findIndex(string& name)
 {
     for (int i = 0; i < vNum; i++)
     {
@@ -76,7 +70,7 @@ int GraphForSol::findIndex(string &name)
 
 void GraphForSol::addEdge()
 {
-    adjMatrix = new int *[vNum];
+    adjMatrix = new int* [vNum];
     for (int i = 0; i < vNum; i++)
     {
         adjMatrix[i] = new int[vNum];
@@ -87,7 +81,7 @@ void GraphForSol::addEdge()
         string start, end;
         int weight, sIndex, eIndex;
         cout << endl
-             << "请输入两个顶点及边：";
+            << "请输入两个顶点及边：";
         cin >> start >> end >> weight;
         sIndex = findIndex(start);
         eIndex = findIndex(end);
@@ -98,7 +92,7 @@ void GraphForSol::addEdge()
 
 int GraphForSol::minKey()
 {
-    int min = INT_MAX, min_index;
+    int min = INT_MAX, min_index = -1;
     for (int v = 0; v < vNum; v++)
     {
         if (mstSet[v] == false && key[v] < min)
@@ -163,22 +157,22 @@ int main()
         cin >> oper;
         switch (oper)
         {
-        case 'A':
-            graph.addVertex();
-            break;
-        case 'B':
-            graph.addEdge();
-            break;
-        case 'C':
-            graph.primMST();
-            break;
-        case 'D':
-            graph.printMST();
-            break;
-        case 'E':
-            loop = 0;
-        default:
-            break;
+            case 'A':
+                graph.addVertex();
+                break;
+            case 'B':
+                graph.addEdge();
+                break;
+            case 'C':
+                graph.primMST();
+                break;
+            case 'D':
+                graph.printMST();
+                break;
+            case 'E':
+                loop = 0;
+            default:
+                break;
         }
     }
 
