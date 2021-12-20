@@ -40,7 +40,7 @@ public:
 template <typename Type>
 Tree<Type>::Tree()
 {
-    root = new TreeNode<Type>;
+    root = nullptr;
     prt = root;
 }
 
@@ -148,6 +148,7 @@ public:
 
 FamilyTree::FamilyTree()
 {
+    oper = 0;
     cout << "**             家谱管理系统              **" << endl;
     cout << "===========================================" << endl;
     cout << "**          A --- 完善家谱               **" << endl;
@@ -161,7 +162,6 @@ FamilyTree::FamilyTree()
     cout << "请输入祖先的姓名：";
     cin >> name;
     root = new TreeNode<string>(name);
-    oper = 0;
     cout << "此家谱的祖先是：" << root->val << endl;
 }
 

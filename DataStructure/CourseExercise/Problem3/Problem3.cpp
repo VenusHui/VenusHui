@@ -9,8 +9,8 @@ class Maze
 {
 private:
     int row, col;   // 行数及列数
-    char** MazeMap; // 指向整张地图
-    bool** visited; // 用于确定每个点是否被访问
+    char **MazeMap; // 指向整张地图
+    bool **visited; // 用于确定每个点是否被访问
 
 public:
     int startX, startY, endX, endY;     // 起点及终点坐标
@@ -30,19 +30,19 @@ Maze::Maze()
     startY = 3;
     endX = 0;
     endY = 3;
-    char map[6][6] = { {'0', '#', '#', '0', '0', '#'},
+    char map[6][6] = {{'0', '#', '#', '0', '0', '#'},
                       {'#', '#', '0', '0', '#', '#'},
                       {'#', '0', '0', '#', '0', '#'},
                       {'0', '0', '#', '#', '0', '#'},
                       {'#', '0', '#', '#', '0', '#'},
-                      {'#', '0', '0', '0', '#', '#'} };
+                      {'#', '0', '0', '0', '#', '#'}};
     if (oper != 1)
     {
         cout << "Please input the row and the colomn num of the Maze:" << endl;
         cin >> row >> col;
     }
-    MazeMap = new char* [row];
-    visited = new bool* [row];
+    MazeMap = new char *[row];
+    visited = new bool *[row];
     for (int i = 0; i < row; i++)
     {
         MazeMap[i] = new char[col];
@@ -95,45 +95,48 @@ Maze::~Maze()
 
 bool Maze::dfs(int start_x, int start_y)
 {
+    // 触碰边界
     if (start_x < 0 || start_y < 0 || endX < 0 || endY < 0 || start_x >= row || start_y >= col || endX >= row || endY >= col)
     {
         return false;
     }
+    // 不可访问或已访问过
     if (MazeMap[start_x][start_y] == '#' || visited[start_x][start_y] == true)
     {
         return false;
     }
-    visited[start_x][start_y] = true;
-    if (dfs(start_x - 1, start_y))
+    visited[start_x][start_y] = true; // 将该位置标记为已访问
+    if (dfs(start_x - 1, start_y))    // 访问左边
     {
         cout << "(" << start_x - 1 << ", " << start_y << ")"
-            << " ---> ";
+             << " ---> ";
         MazeMap[start_x - 1][start_y] = '*';
         return true;
     }
-    else if (dfs(start_x, start_y - 1))
+    else if (dfs(start_x, start_y - 1)) // 访问下边
     {
         cout << "(" << start_x << ", " << start_y - 1 << ")"
-            << " ---> ";
+             << " ---> ";
         MazeMap[start_x][start_y - 1] = '*';
         return true;
     }
-    else if (dfs(start_x + 1, start_y))
+    else if (dfs(start_x + 1, start_y)) // 访问右边
     {
         cout << "(" << start_x + 1 << ", " << start_y << ")"
-            << " ---> ";
+             << " ---> ";
         MazeMap[start_x + 1][start_y] = '*';
         return true;
     }
-    else if (dfs(start_x, start_y + 1))
+    else if (dfs(start_x, start_y + 1)) // 访问上边
     {
         cout << "(" << start_x << ", " << start_y + 1 << ")"
-            << " ---> ";
+             << " ---> ";
         MazeMap[start_x][start_y + 1] = '*';
         return true;
     }
-    if (start_x == endX && start_y == endY)
+    if (start_x == endX && start_y == endY) // 到达终点
     {
+        MazeMap[start_x][start_y] = '*';
         return true;
     }
     return false;
