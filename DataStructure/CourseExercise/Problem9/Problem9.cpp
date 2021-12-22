@@ -6,12 +6,12 @@ template <typename Type>
 struct BiTreeNode
 {
     Type val;
-    BiTreeNode* left;
-    BiTreeNode* right;
+    BiTreeNode *left;
+    BiTreeNode *right;
     BiTreeNode() : left(nullptr), right(nullptr) {}
     BiTreeNode(Type x) : val(x), left(nullptr), right(nullptr) {}
-    BiTreeNode(Type x, BiTreeNode* left, BiTreeNode* right) : val(x), left(left), right(right) {}
-    ostream& operator<<(ostream& out)
+    BiTreeNode(Type x, BiTreeNode *left, BiTreeNode *right) : val(x), left(left), right(right) {}
+    ostream &operator<<(ostream &out)
     {
         out << this->val;
         return out;
@@ -22,16 +22,16 @@ template <typename Type>
 class BiTree
 {
 protected:
-    BiTreeNode<Type>* root; // 根结点
+    BiTreeNode<Type> *root; // 根结点
 
 public:
     BiTree();
     ~BiTree();
 
     // 递归方式实现的前序、中序、后序遍历，func为遍历时对于当前节点进行的操作
-    void preOrderTranvers(BiTreeNode<Type>* curNode, function<void(BiTreeNode<Type>*)> func);
-    void inOrderTranvers(BiTreeNode<Type>* curNode, function<void(BiTreeNode<Type>*)> func);
-    void postOrderTranvers(BiTreeNode<Type>* curNode, function<void(BiTreeNode<Type>*)> func);
+    void preOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func);
+    void inOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func);
+    void postOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func);
 };
 
 template <typename Type>
@@ -46,7 +46,7 @@ BiTree<Type>::~BiTree()
 }
 
 template <typename Type>
-void BiTree<Type>::preOrderTranvers(BiTreeNode<Type>* curNode, function<void(BiTreeNode<Type>*)> func)
+void BiTree<Type>::preOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func)
 {
     if (curNode == nullptr)
     {
@@ -58,7 +58,7 @@ void BiTree<Type>::preOrderTranvers(BiTreeNode<Type>* curNode, function<void(BiT
 }
 
 template <typename Type>
-void BiTree<Type>::inOrderTranvers(BiTreeNode<Type>* curNode, function<void(BiTreeNode<Type>*)> func)
+void BiTree<Type>::inOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func)
 {
     if (curNode == nullptr)
     {
@@ -70,7 +70,7 @@ void BiTree<Type>::inOrderTranvers(BiTreeNode<Type>* curNode, function<void(BiTr
 }
 
 template <typename Type>
-void BiTree<Type>::postOrderTranvers(BiTreeNode<Type>* curNode, function<void(BiTreeNode<Type>*)> func)
+void BiTree<Type>::postOrderTranvers(BiTreeNode<Type> *curNode, function<void(BiTreeNode<Type> *)> func)
 {
     if (curNode == nullptr)
     {
@@ -87,9 +87,9 @@ private:
     char oper;                                       // 用户的操作类型
     int temp;                                        // 每次操作的中间数据
     bool repeatFlag;                                 // 二叉排序树中是否有带操作数据的标志
-    function<void(BiTreeNode<int>*)> output;        // 格式化输出函数
-    void find(BiTreeNode<int>* curNode, int key);    // 查询操作
-    void insert(BiTreeNode<int>*& curNode, int key); // 插入操作
+    function<void(BiTreeNode<int> *)> output;        // 格式化输出函数
+    void find(BiTreeNode<int> *curNode, int key);    // 查询操作
+    void insert(BiTreeNode<int> *&curNode, int key); // 插入操作
 
 public:
     // 构造和析构函数
@@ -128,10 +128,6 @@ BiSortTree::BiSortTree()
     cout << "**        3 --- 查询元素               **" << endl;
     cout << "**        4 --- 退出程序               **" << endl;
     cout << "=========================================" << endl;
-    output = [&](BiTreeNode<int>* curNode)
-    {
-        cout << curNode->val << "->";
-    };
 }
 
 BiSortTree::~BiSortTree()
@@ -147,31 +143,30 @@ bool BiSortTree::setOper()
         {
             return true;
         }
-    }
-    cin.clear();
-    cin.ignore(65536, '\n');
-    return false;
-}
-
-bool BiSortTree::getElem(string cue)
-{
-    cout << cue;
-    while (true)
-    {
-        if (cin >> temp)
-        {
-            return true;
-        }
+        cout << "Operation code error, Please Check Operation Code:";
         cin.clear();
         cin.ignore(65536, '\n');
     }
     return false;
 }
 
+bool BiSortTree::getElem(string cue)
+{
+    cout << cue;
+    cin >> temp;
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(65536, '\n');
+        return false;
+    }
+    return true;
+}
+
 void BiSortTree::createTree()
 {
     cout << "Please input key to create Bsort_Tree:" << endl;
-    while (cin >> temp && temp != 0)
+    while (getElem(""))
     {
         insert(root, temp);
     }
@@ -180,12 +175,16 @@ void BiSortTree::createTree()
 
 void BiSortTree::outputTree()
 {
+    output = [&](BiTreeNode<int> *curNode)
+    {
+        cout << curNode->val << "->";
+    };
     cout << "Bsort_Tree is:" << endl;
     inOrderTranvers(root, output);
     cout << endl;
 }
 
-void BiSortTree::insert(BiTreeNode<int>*& curNode, int key)
+void BiSortTree::insert(BiTreeNode<int> *&curNode, int key)
 {
     if (curNode == nullptr)
     {
@@ -224,7 +223,7 @@ void BiSortTree::insertElem()
     }
 }
 
-void BiSortTree::find(BiTreeNode<int>* curNode, int key)
+void BiSortTree::find(BiTreeNode<int> *curNode, int key)
 {
     if (curNode == nullptr)
     {
@@ -267,27 +266,27 @@ int main()
     {
         switch (testInstance.getOper())
         {
-            case '1':
-                testInstance.createTree();
-                break;
-            case '2':
-                if (testInstance.getElem("Please input key which inserted: "))
-                {
-                    testInstance.insertElem();
-                }
-                break;
-            case '3':
-                if (testInstance.getElem("Please input key which searched: "))
-                {
-                    testInstance.findElem();
-                }
-                break;
-            case '4':
-                loop = false;
-                break;
-            default:
-                cout << "Operation Error!" << endl;
-                break;
+        case '1':
+            testInstance.createTree();
+            break;
+        case '2':
+            if (testInstance.getElem("Please input key which inserted: "))
+            {
+                testInstance.insertElem();
+            }
+            break;
+        case '3':
+            if (testInstance.getElem("Please input key which searched: "))
+            {
+                testInstance.findElem();
+            }
+            break;
+        case '4':
+            loop = false;
+            break;
+        default:
+            cout << "Operation Error!" << endl;
+            break;
         }
     }
     return 0;

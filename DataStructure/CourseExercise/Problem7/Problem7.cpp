@@ -2,6 +2,7 @@
 #include <string>
 #include <cmath>
 #include <functional>
+#include <exception>
 using namespace std;
 
 template <typename Type>
@@ -96,7 +97,7 @@ struct BiTreeNode
     BiTreeNode(Type x, BiTreeNode *left, BiTreeNode *right) : val(x), left(left), right(right) {}
     ostream &operator<<(ostream &out)
     {
-
+        out << this->val;
         return out;
     }
 };

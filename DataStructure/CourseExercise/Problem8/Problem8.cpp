@@ -6,19 +6,34 @@ using namespace std;
 class GraphForSol
 {
 private:
-    int vNum, ** adjMatrix;
-    int* parent, * key;
-    bool* mstSet;
-    string* nameRes, start;
+    int vNum;        // 小区数量
+    int **adjMatrix; // 邻接矩阵
+    int *parent;     // 存储最小生成树
+    int *key;        // 用于选择最短权值
+    bool *mstSet;    // 与key[]对应，标记可选的顶点
+    string *nameRes; // 小区名称库
+    string start;    // 起始顶点名称
 
 public:
     GraphForSol();
     ~GraphForSol();
+
+    // 添加顶点
     void addVertex();
-    int findIndex(string& name);
+
+    // 获取name顶点在名称库中的位置
+    int findIndex(string &name);
+
+    // 添加边
     void addEdge();
+
+    // 在所有可能选择的边中找到权值最小的，是Prim算法的辅助函数
     int minKey();
+
+    // Prim算法生成最小生成树
     void primMST();
+
+    // 打印最小生成树
     void printMST();
 };
 
@@ -56,7 +71,7 @@ void GraphForSol::addVertex()
     }
 }
 
-int GraphForSol::findIndex(string& name)
+int GraphForSol::findIndex(string &name)
 {
     for (int i = 0; i < vNum; i++)
     {
@@ -70,7 +85,7 @@ int GraphForSol::findIndex(string& name)
 
 void GraphForSol::addEdge()
 {
-    adjMatrix = new int* [vNum];
+    adjMatrix = new int *[vNum];
     for (int i = 0; i < vNum; i++)
     {
         adjMatrix[i] = new int[vNum];
@@ -81,7 +96,7 @@ void GraphForSol::addEdge()
         string start, end;
         int weight, sIndex, eIndex;
         cout << endl
-            << "请输入两个顶点及边：";
+             << "请输入两个顶点及边：";
         cin >> start >> end >> weight;
         sIndex = findIndex(start);
         eIndex = findIndex(end);
@@ -111,6 +126,8 @@ void GraphForSol::primMST()
     parent = new int[vNum];
     key = new int[vNum];
     mstSet = new bool[vNum];
+
+    // 初始化
     for (int i = 0; i < vNum; i++)
     {
         key[i] = INT_MAX, mstSet[i] = false;
@@ -119,13 +136,14 @@ void GraphForSol::primMST()
     parent[0] = -1;
     for (int count = 0; count < vNum - 1; count++)
     {
-        int u = minKey();
-        mstSet[u] = true;
+        int u = minKey(); // 获取可选的最小权值顶点
+        mstSet[u] = true; // 标记为已选择
         for (int v = 0; v < vNum; v++)
         {
             if (adjMatrix[u][v] && mstSet[v] == false && adjMatrix[u][v] < key[v])
             {
-                parent[v] = u, key[v] = adjMatrix[u][v];
+                parent[v] = u;            // 将其加入到MST中
+                key[v] = adjMatrix[u][v]; // 更新key值
             }
         }
     }
@@ -157,22 +175,22 @@ int main()
         cin >> oper;
         switch (oper)
         {
-            case 'A':
-                graph.addVertex();
-                break;
-            case 'B':
-                graph.addEdge();
-                break;
-            case 'C':
-                graph.primMST();
-                break;
-            case 'D':
-                graph.printMST();
-                break;
-            case 'E':
-                loop = 0;
-            default:
-                break;
+        case 'A':
+            graph.addVertex();
+            break;
+        case 'B':
+            graph.addEdge();
+            break;
+        case 'C':
+            graph.primMST();
+            break;
+        case 'D':
+            graph.printMST();
+            break;
+        case 'E':
+            loop = 0;
+        default:
+            break;
         }
     }
 
