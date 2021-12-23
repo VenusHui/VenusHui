@@ -14,7 +14,7 @@ public:
     FileToSol();
     ~FileToSol();
     void printSource();
-    void getNext(string subString, int* next);
+    void getNext(string sub, int *next);
     int KMP(string main, string sub);
     int search(string s);
 };
@@ -49,7 +49,7 @@ void FileToSol::printSource()
     char buffer[256];
     fin = ifstream(fileName.c_str());
     cout << endl
-        << "显示源文件“" << fileName << "”：" << endl;
+         << "显示源文件“" << fileName << "”：" << endl;
     while (!fin.eof())
     {
         fin.getline(buffer, 256);
@@ -59,46 +59,57 @@ void FileToSol::printSource()
     fin.close();
 }
 
-void FileToSol::getNext(string subString, int* next)
+void getNext(string sub, int *next)
 {
-    unsigned int i = 1, j = 0;
-    next[1] = 0;
-    while (i < subString.size())
+    int len = 0;
+    unsigned int i = 1;
+    next[0] = 0;
+    while (i < sub.size())
     {
-        if (j == 0 || subString.at(i - 1) == subString.at(j - 1))
+        if (sub[i] == sub[len])
         {
-            next[++i] = ++j;
+            len++;
+            next[i] = len;
+            i++;
         }
         else
         {
-            j = next[j];
+            if (len != 0)
+            {
+                len = next[len - 1];
+            }
+            else
+            {
+                next[i] = 0;
+                i++;
+            }
         }
     }
 }
 
 int FileToSol::KMP(string main, string sub)
 {
-    int ans = 0;
-    unsigned int i = 0, j = 0;
-    int* next = new int[sub.size() - 1];
+    int ans = -1;
+    int *next = new int[sub.size()];
     getNext(sub, next);
-    while (i < main.size())
+    unsigned int i = 0, j = 0;
+    while (i < sub.size())
     {
-        if (main[i] == sub[j])
+        if (sub[j] == main[i])
         {
-            i++;
             j++;
+            i++;
         }
         if (j == sub.size())
         {
-            ans++;
-            j = next[j];
+            ans = i - j;
+            j = next[j - 1];
         }
-        else if (i < main.size() && main.at(i) != sub.at(j))
+        else if (i < main.size() && sub[j] != main[i])
         {
             if (j != 0)
             {
-                j = next[j];
+                j = next[j - 1];
             }
             else
             {
@@ -121,9 +132,11 @@ int FileToSol::search(string key)
         }
         else
         {
-            times += KMP(tmp, key);
+            if (KMP(tmp, key) != -1)
+            {
+                times++;
+            }
             tmp.clear();
-            continue;
         }
     }
     return times;
