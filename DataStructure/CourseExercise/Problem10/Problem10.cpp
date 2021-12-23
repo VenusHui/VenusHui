@@ -11,12 +11,12 @@ const int FunctionNum = 8; // 8种排序方式
 class SortFunctions
 {
 private:
-    int* num, nNum;        // 待排序数组及其规模
+    char oper;             // 用户选择的操作
+    int *num, nNum;        // 待排序数组及其规模
+    int compCount;         // 排序所用的操作次数
     clock_t start, finish; // 排序的起止时间
     double duration;       // 共计用时
-    int compCount;         // 排序所用的操作次数
-    char oper;             // 用户选择的操作
-    string* sortNames;     // 排序名称集合
+    string *sortNames;     // 排序名称集合
 
 public:
     SortFunctions();
@@ -24,15 +24,16 @@ public:
 
     // 获取用户选择的排序方式
     bool setOper();
-
-    int getArrSize() { return nNum; }
     char getOper() { return oper; }
-    double getDurTime() { return (static_cast<double>(finish) - static_cast<double>(start)) / CLOCKS_PER_SEC; }
+
+    // 获取数组规模
+    int getArrSize() { return nNum; }
 
     // 重置随机数
     void Reset();
 
-    void swap(int& a, int& b);
+    // 进行一次数据交换
+    void swap(int &a, int &b);
 
     // 冒泡排序
     void BubbleSort();
@@ -65,13 +66,10 @@ public:
 SortFunctions::SortFunctions()
 {
     oper = 0;
-    srand((unsigned)time(0));
+    srand((unsigned)time(0)); // 获取随机数种子
     start = finish = clock();
     duration = 0;
     compCount = 0;
-    cout << "请输入要生成随机数的个数：";
-    cin >> nNum;
-    num = new int[nNum];
     cout << "**             排序算法比较            **" << endl;
     cout << "=========================================" << endl;
     cout << "**            1 --- 冒泡排序           **" << endl;
@@ -84,12 +82,26 @@ SortFunctions::SortFunctions()
     cout << "**            8 --- 基数排序           **" << endl;
     cout << "**            9 --- 退出程序           **" << endl;
     cout << "=========================================" << endl;
-    sortNames = new string[FunctionNum + 1]{ "", "冒泡", "选择", "直接插入", "希尔", "快速", "堆", "归并", "基数" };
+    sortNames = new string[FunctionNum + 1]{"", "冒泡", "选择", "直接插入", "希尔", "快速", "堆", "归并", "基数"};
+    cout << "请输入要生成随机数的个数：";
+    while (true)
+    {
+        cin >> nNum;
+        if (cin.fail() || nNum <= 0)
+        {
+            cout << "输入不合法，请检查后重新输入：";
+            cin.clear();
+            cin.ignore(65536, '\n');
+        }
+        break;
+    }
+    num = new int[nNum];
 }
 
 SortFunctions::~SortFunctions()
 {
     delete[] num;
+    delete[] sortNames;
 }
 
 bool SortFunctions::setOper()
@@ -97,7 +109,7 @@ bool SortFunctions::setOper()
     cout << "请选择排序算法：";
     while (cin >> oper)
     {
-        if (oper >= '0' && oper <= '9')
+        if (oper >= '1' && oper <= '9')
         {
             return true;
         }
@@ -107,15 +119,15 @@ bool SortFunctions::setOper()
 
 void SortFunctions::Reset()
 {
-    compCount = 0;
+    compCount = 0; // 重置比较次数
     for (int i = 0; i < nNum; i++)
     {
         num[i] = rand() % nNum;
     }
-    start = clock();
+    start = clock(); // 记录起始时间
 }
 
-void SortFunctions::swap(int& a, int& b)
+void SortFunctions::swap(int &a, int &b)
 {
     int tmp = a;
     a = b;
@@ -136,7 +148,7 @@ void SortFunctions::BubbleSort()
                 flag = false;
             }
         }
-        if (flag)
+        if (flag) // 如果此次没有数据交换则证明已经有序
         {
             break;
         }
@@ -150,7 +162,7 @@ void SortFunctions::SelectSort()
         int min = i;
         for (int j = i + 1; j < nNum; j++)
         {
-            if (num[j] < num[min])
+            if (num[j] < num[min]) // 找到未排序序列中的最小值
             {
                 min = j;
             }
@@ -226,7 +238,7 @@ void SortFunctions::QuickSort(int low, int high)
 
 void SortFunctions::HeapSort(int n)
 {
-    function<void(int, int)> heapify = [&](int n, int i)
+    function<void(int, int)> heapify = [&](int n, int i) // 大根堆调整
     {
         int largest = i;
         int left = 2 * i + 1;
@@ -245,14 +257,14 @@ void SortFunctions::HeapSort(int n)
             heapify(n, largest);
         }
     };
-    for (int i = nNum / 2 - 1; i >= 0; i--)
+    for (int i = nNum / 2 - 1; i >= 0; i--) // 将所给数据构建为一个大顶堆
     {
         heapify(n, i);
     }
     for (int i = nNum - 1; i > 0; i--)
     {
-        swap(num[0], num[i]);
-        heapify(i, 0);
+        swap(num[0], num[i]); // 将堆顶与子序列最后一个元素进行交换
+        heapify(i, 0);        // 重新调整为大根堆
     }
 }
 
@@ -262,8 +274,8 @@ void SortFunctions::MergeSort(const int low, const int high)
     {
         const int subArrayOne = mid - left + 1;
         const int subArrayTwo = right - mid;
-        int* leftArray = new int[subArrayOne],
-            * rightArray = new int[subArrayTwo];
+        int *leftArray = new int[subArrayOne],
+            *rightArray = new int[subArrayTwo];
         for (int i = 0; i < subArrayOne; i++)
             leftArray[i] = num[left + i];
         for (int j = 0; j < subArrayTwo; j++)
@@ -298,15 +310,17 @@ void SortFunctions::MergeSort(const int low, const int high)
             indexOfSubArrayTwo++;
             indexOfMergedArray++;
         }
+        delete[] leftArray;
+        delete[] rightArray;
     };
     if (low >= high)
     {
         return;
     }
-    const int midNum = low + (high - low) / 2;
-    MergeSort(low, midNum);
-    MergeSort(midNum + 1, high);
-    Merge(low, midNum, high);
+    const int midNum = low + (high - low) / 2; // 二路归并，平分两序列
+    MergeSort(low, midNum);                    // 递归排序左侧序列
+    MergeSort(midNum + 1, high);               // 递归排序右侧序列
+    Merge(low, midNum, high);                  // 合并两序列
 }
 
 void SortFunctions::RadixSort()
@@ -321,8 +335,8 @@ void SortFunctions::RadixSort()
     }
     function<void(int)> CountSort = [&](int exp)
     {
-        int* output = new int[nNum];
-        int i, count[10] = { 0 };
+        int *output = new int[nNum];
+        int i, count[10] = {0};
         for (i = 0; i < nNum; i++)
         {
             count[(num[i] / exp) % 10]++;
@@ -350,10 +364,11 @@ void SortFunctions::RadixSort()
 
 void SortFunctions::PrintDetail()
 {
-    finish = clock();
-    cout << sortNames[oper - '0'] << "排序所用时间" << setprecision(6) << (static_cast<double>(finish) - static_cast<double>(start)) / CLOCKS_PER_SEC << " s" << endl;
+    finish = clock(); // 记录排序结束时的时间
+    cout << sortNames[oper - '0'] << "排序所用时间" << setprecision(6)
+         << (static_cast<double>(finish) - static_cast<double>(start)) / CLOCKS_PER_SEC << " s" << endl;
     cout << sortNames[oper - '0'] << "排序交换次数" << compCount << endl
-        << endl;
+         << endl;
 }
 
 int main()
@@ -366,35 +381,35 @@ int main()
         testInstance.Reset();
         switch (testInstance.getOper())
         {
-            case '1':
-                testInstance.BubbleSort();
-                break;
-            case '2':
-                testInstance.SelectSort();
-                break;
-            case '3':
-                testInstance.InsertSort();
-                break;
-            case '4':
-                testInstance.ShellSort();
-                break;
-            case '5':
-                testInstance.QuickSort(0, testInstance.getArrSize() - 1);
-                break;
-            case '6':
-                testInstance.HeapSort(testInstance.getArrSize() - 1);
-                break;
-            case '7':
-                testInstance.MergeSort(0, testInstance.getArrSize() - 1);
-                break;
-            case '8':
-                testInstance.RadixSort();
-                break;
-            case '9':
-                loop = false;
-                break;
-            default:
-                break;
+        case '1':
+            testInstance.BubbleSort();
+            break;
+        case '2':
+            testInstance.SelectSort();
+            break;
+        case '3':
+            testInstance.InsertSort();
+            break;
+        case '4':
+            testInstance.ShellSort();
+            break;
+        case '5':
+            testInstance.QuickSort(0, testInstance.getArrSize() - 1);
+            break;
+        case '6':
+            testInstance.HeapSort(testInstance.getArrSize() - 1);
+            break;
+        case '7':
+            testInstance.MergeSort(0, testInstance.getArrSize() - 1);
+            break;
+        case '8':
+            testInstance.RadixSort();
+            break;
+        case '9':
+            loop = false;
+            break;
+        default:
+            break;
         }
         if (loop)
         {
