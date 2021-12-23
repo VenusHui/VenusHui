@@ -106,7 +106,7 @@ bool Maze::dfs(int start_x, int start_y)
         return false;
     }
     visited[start_x][start_y] = true; // 将该位置标记为已访问
-    if (dfs(start_x - 1, start_y))    // 访问左边
+    if (dfs(start_x - 1, start_y)) // 访问左边
     {
         cout << "(" << start_x - 1 << ", " << start_y << ")"
              << " ---> ";

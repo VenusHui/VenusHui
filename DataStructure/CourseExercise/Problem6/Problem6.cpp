@@ -108,6 +108,7 @@ bool Tree<Type>::remove(TreeNode<Type>* pNode)
             {
                 RemoveSubTree(rNode->firstChild);
                 RemoveSubTree(rNode->nextSibling);
+                delete rNode;
             }
         };
         RemoveSubTree(pNode->firstChild);
