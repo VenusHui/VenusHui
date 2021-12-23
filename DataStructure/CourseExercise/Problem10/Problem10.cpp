@@ -66,6 +66,7 @@ public:
 SortFunctions::SortFunctions()
 {
     oper = 0;
+    nNum = 0;
     srand((unsigned)time(0)); // 获取随机数种子
     start = finish = clock();
     duration = 0;
@@ -206,7 +207,7 @@ void SortFunctions::ShellSort()
                 num[j] = num[j - gap];
                 compCount++;
             }
-            num[j - gap] = tmp;
+            num[j] = tmp;
         }
     }
 }
@@ -365,7 +366,7 @@ void SortFunctions::RadixSort()
 void SortFunctions::PrintDetail()
 {
     finish = clock(); // 记录排序结束时的时间
-    cout << sortNames[oper - '0'] << "排序所用时间" << setprecision(6)
+    cout << sortNames[oper - '0'] << "排序所用时间" << setiosflags(ios::fixed) << setprecision(6)
          << (static_cast<double>(finish) - static_cast<double>(start)) / CLOCKS_PER_SEC << " s" << endl;
     cout << sortNames[oper - '0'] << "排序交换次数" << compCount << endl
          << endl;
