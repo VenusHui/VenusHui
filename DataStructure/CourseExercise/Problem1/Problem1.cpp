@@ -418,7 +418,7 @@ void StudentList::summary()
     }
 }
 
-ostream &operator<<(ostream &out, StudentList &list) %
+ostream &operator<<(ostream &out, StudentList &list)
 {
     if (list.listSize == 0)
     {

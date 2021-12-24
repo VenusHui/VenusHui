@@ -168,7 +168,6 @@ FamilyTree::FamilyTree()
 
 FamilyTree::~FamilyTree()
 {
-    Tree<string>::~Tree();
 }
 
 char FamilyTree::GetOper()

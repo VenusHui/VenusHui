@@ -1,6 +1,7 @@
 // 电网造价模拟系统
 #include <iostream>
 #include <string>
+#include <climits>
 using namespace std;
 
 class GraphForSol
