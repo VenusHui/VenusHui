@@ -6,7 +6,7 @@
 using namespace std;
 
 const int gap = 8;
-enum gender
+enum Gender
 {
     Female,
     Male
@@ -22,16 +22,19 @@ private:
     string _category; // 报考类别
 
 public:
+    // 构造和析构函数
     Student();
-    Student(int id, int gender, int age, string name, string category);
     ~Student();
 
+    // 设置和获取准考证号
     int getID() { return _admissionID; }
     void setID(int id) { _admissionID = id; }
 
+    // 设置和获取性别
     int getGender() { return _gender; }
     void setGender(int gender) { _gender = gender; }
 
+    // 设置和获取考生
     int getAge() { return _age; }
     void setAge(int age) { _age = age; }
 
@@ -47,10 +50,6 @@ public:
     friend ostream &operator<<(ostream &out, Student &s);
 };
 
-
-
-
-
 /*                          Student.cpp                         */
 Student::Student()
 {
@@ -59,15 +58,6 @@ Student::Student()
     _age = 0;
     _name = "";
     _category = "";
-}
-
-Student::Student(int id, int gender, int age, string name, string category)
-{
-    _admissionID = id;
-    _gender = gender;
-    _age = age;
-    _name = name;
-    _category = category;
 }
 
 Student::~Student()
@@ -79,8 +69,8 @@ bool Student::changeInfo(Student &newStudent)
     this->_admissionID = newStudent.getID();
     this->_name = newStudent.getName();
     this->_gender = newStudent.getGender();
-    this->_age = newStudent.getAge();
     this->_category = newStudent.getCategory();
+
     return true;
 }
 
@@ -120,10 +110,6 @@ ostream &operator<<(ostream &out, Student &s)
     return out;
 }
 
-
-
-
-
 /*                          StudentList.h                         */
 template <typename Type>
 struct ListNode // 链表结点
@@ -146,11 +132,11 @@ struct CatePair
 class StudentList
 {
 private:
-    ListNode<Student> *first;
-    int listSize;
-    int maleNum;
-    int femaleNum;
-    ListNode<CatePair> *cateFirst;
+    int listSize;                  // 表长
+    int maleNum;                   // 男生人数
+    int femaleNum;                 // 女生人数
+    ListNode<Student> *first;      // 考生链表的头结点
+    ListNode<CatePair> *cateFirst; // 报考种类链表的头结点
 
 public:
     StudentList(int num);
@@ -162,17 +148,14 @@ public:
     ListNode<Student> *getFirstNode() const { return first; }
     int getElemByID(int admissionID) const; // 获取学号为admissionID的Student在List中的编号
 
-    Student &getElem(int index) const; // 获取编号为index的Student
-    void insertElem(int index);        // 在编号index的Student后插入
-    void deleteElem(int index);        // 删除编号为index的Student
+    ListNode<Student> *getElem(int index); // 获取编号为index的Student
+    void insertElem(int index);            // 在编号index的Student后插入
+    void deleteElem(int index);            // 删除编号为index的Student
+    void changeElem();                     // 更改考生信息
     void summary();
 
     friend ostream &operator<<(ostream &out, StudentList &list);
 };
-
-
-
-
 
 /*                          StudentList.cpp                         */
 StudentList::StudentList(int num)
@@ -207,12 +190,16 @@ StudentList::StudentList(int num)
             if (cateNode->data.category == pNode->data.getCategory())
             {
                 cateNode->data.num++;
+                break;
             }
             cateNode = cateNode->next;
         }
-        cateNode = new ListNode<CatePair>(pNode->data.getCategory());
-        cateNode->next = cateFirst;
-        cateFirst = cateNode;
+        if (cateNode == nullptr)
+        {
+            cateNode = new ListNode<CatePair>(pNode->data.getCategory());
+            cateNode->next = cateFirst;
+            cateFirst = cateNode;
+        }
 
         rNode->next = pNode;
         rNode = pNode;
@@ -223,6 +210,7 @@ StudentList::~StudentList()
 {
     while (first != nullptr)
     {
+
         ListNode<Student> *nextNode = first->next;
         delete first;
         first = nextNode;
@@ -245,20 +233,21 @@ int StudentList::getElemByID(int admissionID) const
     return -1;
 }
 
-Student &StudentList::getElem(int index) const
+ListNode<Student> *StudentList::getElem(int index)
 {
     ListNode<Student> *temp = first;
     for (int i = 0; i < this->getElemByID(index); i++)
     {
         temp = temp->next;
     }
-    return temp->data;
+    return temp;
 }
 
 void StudentList::insertElem(int index)
 {
     int i = 1;
     ListNode<Student> *listDex = this->first;
+    // 插入位置合法性判断
     if (listDex == nullptr || index > listSize + 1)
     {
         cout << "选择的插入位置超出信息表范围！" << endl;
@@ -267,6 +256,8 @@ void StudentList::insertElem(int index)
     ListNode<Student> *temp = new ListNode<Student>;
     cout << "请依次输入考生的考号、姓名、性别、年龄及报考类别！" << endl;
     cin >> temp->data;
+
+    // 考号重复
     if (this->getElemByID(temp->data.getID()) != -1)
     {
         cout << "考号为 " << temp->data.getID() << " 的考生已经存在，请核对后重新输入" << endl;
@@ -288,18 +279,24 @@ void StudentList::insertElem(int index)
         if (cateNode->data.category == temp->data.getCategory())
         {
             cateNode->data.num++;
+            break;
         }
         cateNode = cateNode->next;
     }
-    cateNode = new ListNode<CatePair>(temp->data.getCategory());
-    cateNode->next = cateFirst;
-    cateFirst = cateNode;
+    if (cateNode == nullptr)
+    {
+        cateNode = new ListNode<CatePair>(temp->data.getCategory());
+        cateNode->next = cateFirst;
+        cateFirst = cateNode;
+    }
 
+    // 定位插入位置
     while (i < index)
     {
         listDex = listDex->next;
         i++;
     }
+    // 进行插入
     temp->next = listDex->next;
     listDex->next = temp;
     this->listSize++;
@@ -315,9 +312,92 @@ void StudentList::deleteElem(int index)
     }
     else
     {
-        ListNode<Student> temp = getElem(index);
+        ListNode<Student> *pre = getElem(index - 1);
+        ListNode<Student> *tmp = pre->next;
+        // 处理性别
+        if (tmp->data.getGender() == Male)
+        {
+            maleNum--;
+        }
+        else
+        {
+            femaleNum--;
+        }
+        // 处理报考类别
+        ListNode<CatePair> *cateNode = cateFirst;
+        while (cateNode != nullptr)
+        {
+            if (cateNode->data.category == tmp->data.getCategory())
+            {
+                cateNode->data.num--;
+                break;
+            }
+            cateNode = cateNode->next;
+        }
+        pre->next = tmp->next;
+        cout << "你删除的考生信息为：" << tmp->data << endl;
+        delete tmp;
     }
     listSize--;
+}
+
+void StudentList::changeElem()
+{
+    int index;
+    Student newStudent;
+    cout << "请输入要修改学生的考号：";
+    cin >> index;
+    if (getElemByID(index) == -1)
+    {
+        cout << "考号为 " << index << " 的考生不存在，请核对后重新输入" << endl;
+        return;
+    }
+    cout << "请依次输入修改后该学生的考号、姓名、性别、年龄及报考类别！" << endl;
+    cin >> newStudent;
+    ListNode<Student> *temp = getElem(index);
+    temp->data.changeInfo(newStudent);
+    // 处理性别
+    if (temp->data.getGender() != newStudent.getGender())
+    {
+        if (temp->data.getGender() == Male)
+        {
+            maleNum--, femaleNum++;
+        }
+        else
+        {
+            maleNum++, femaleNum--;
+        }
+    }
+    // 处理报考类别
+    if (temp->data.getCategory() != newStudent.getCategory())
+    {
+        ListNode<CatePair> *cateNode = cateFirst;
+        while (cateNode != nullptr)
+        {
+            if (cateNode->data.category == temp->data.getCategory())
+            {
+                cateNode->data.num--;
+                break;
+            }
+            cateNode = cateNode->next;
+        }
+        cateNode = cateFirst;
+        while (cateNode != nullptr)
+        {
+            if (cateNode->data.category == newStudent.getCategory())
+            {
+                cateNode->data.num++;
+                break;
+            }
+            cateNode = cateNode->next;
+        }
+        if (cateNode == nullptr)
+        {
+            cateNode = new ListNode<CatePair>(newStudent.getCategory());
+            cateNode->next = cateFirst;
+            cateFirst = cateNode;
+        }
+    }
 }
 
 void StudentList::summary()
@@ -328,12 +408,17 @@ void StudentList::summary()
     ListNode<CatePair> *cateNode = cateFirst;
     while (cateNode != nullptr)
     {
+        if (cateNode->data.num <= 0)
+        {
+            cateNode = cateNode->next;
+            continue;
+        }
         cout << "报考 " << cateNode->data.category << " 的人共有 " << cateNode->data.num << " 人" << endl;
         cateNode = cateNode->next;
     }
 }
 
-ostream &operator<<(ostream &out, StudentList &list)
+ostream &operator<<(ostream &out, StudentList &list) %
 {
     if (list.listSize == 0)
     {
@@ -359,10 +444,6 @@ ostream &operator<<(ostream &out, StudentList &list)
     return out;
 }
 
-
-
-
-
 /*                          Problem1.cpp                         */
 void menuChoose(char &op)
 {
@@ -374,6 +455,9 @@ void menuChoose(char &op)
         {
             break;
         }
+        cout << "操作输入有误" << endl;
+        cin.clear();
+        cin.ignore(65536, '\n');
     }
 }
 
@@ -394,7 +478,6 @@ int main()
         switch (operation)
         {
         case '0':
-            delete temp;
             return 0;
         case '1':
             cout << "请输入你要插入考生的位置：";
@@ -409,7 +492,7 @@ int main()
             }
             cout << "请输入要删除考生的考号：";
             cin >> index;
-            sList.deleteElem(sList.getElemByID(index));
+            sList.deleteElem(index);
             break;
         case '3':
             if (!sList.size())
@@ -419,7 +502,7 @@ int main()
             }
             cout << "请输入要查找学生的考号：";
             cin >> index;
-            *temp = sList.getElem(index);
+            temp = sList.getElem(index);
             cout << "你所查找的学生信息为：" << endl
                  << temp->data << endl;
             break;
@@ -429,28 +512,14 @@ int main()
                 cout << "信息表已为空，无法修改" << endl;
                 break;
             }
-            cout << "请输入要修改学生的考号：";
-            cin >> index;
-            if (sList.getElemByID(temp->data.getID()) == -1)
-            {
-                cout << "考号为 " << index << " 的考生不存在，请核对后重新输入" << endl;
-                break;
-            }
-            cout << "请依次输入修改后该学生的考号、姓名、性别、年龄及报考类别！" << endl;
-            cin >> temp->data;
-            if (sList.getElem(index).changeInfo(temp->data))
-            {
-                cout << "修改成功" << endl;
-            }
-            else
-            {
-                cout << "修改失败" << endl;
-            }
+            sList.changeElem();
             break;
         case '5':
             sList.summary();
             break;
         }
+        cin.clear();
+        cin.ignore(65536, '\n');
         cout << endl
              << sList;
     }

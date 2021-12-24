@@ -8,33 +8,33 @@ template <typename Type>
 struct TreeNode // 树结点，使用孩子兄弟表示法
 {
     Type val;
-    TreeNode* firstChild;
-    TreeNode* nextSibling;
+    TreeNode *firstChild;
+    TreeNode *nextSibling;
     TreeNode() : firstChild(nullptr), nextSibling(nullptr) {}
     TreeNode(Type x) : val(x), firstChild(nullptr), nextSibling(nullptr) {}
-    TreeNode(Type x, TreeNode* firstChild, TreeNode* nextSibling) : val(x), firstChild(firstChild), nextSibling(nextSibling) {}
+    TreeNode(Type x, TreeNode *firstChild, TreeNode *nextSibling) : val(x), firstChild(firstChild), nextSibling(nextSibling) {}
 };
 
 template <typename Type>
 class Tree
 {
 protected:
-    TreeNode<Type>* root, * prt;
+    TreeNode<Type> *root, *prt;
 
 public:
     Tree();
     ~Tree();
 
-    TreeNode<Type>* getRoot() { return root; }
+    TreeNode<Type> *getRoot() { return root; }
 
     // 查找val为key的结点，返回指向该结点的指针
-    TreeNode<Type>* find(TreeNode<Type>* pNode, Type key);
+    TreeNode<Type> *find(TreeNode<Type> *pNode, Type key);
 
     // 向parent结点插入val为key的孩子
-    bool insert(TreeNode<Type>* parent, Type key);
+    bool insert(TreeNode<Type> *parent, Type key);
 
     // 删除rNode结点，若其不为叶子结点，则将其孩子一并删除
-    bool remove(TreeNode<Type>* pNode);
+    bool remove(TreeNode<Type> *pNode);
 };
 
 template <typename Type>
@@ -50,16 +50,16 @@ Tree<Type>::~Tree()
 }
 
 template <typename Type>
-TreeNode<Type>* Tree<Type>::find(TreeNode<Type>* pNode, Type key)
+TreeNode<Type> *Tree<Type>::find(TreeNode<Type> *pNode, Type key)
 {
-    TreeNode<Type>* result = nullptr;
+    TreeNode<Type> *result = nullptr;
     if (pNode->val == key)
     {
         result = prt = pNode;
     }
     else
     {
-        TreeNode<Type>* tmpNode = pNode->firstChild;
+        TreeNode<Type> *tmpNode = pNode->firstChild;
         while (tmpNode != nullptr && (result = find(tmpNode, key)) == nullptr)
         {
             tmpNode = tmpNode->nextSibling;
@@ -69,9 +69,9 @@ TreeNode<Type>* Tree<Type>::find(TreeNode<Type>* pNode, Type key)
 }
 
 template <typename Type>
-bool Tree<Type>::insert(TreeNode<Type>* parent, Type key)
+bool Tree<Type>::insert(TreeNode<Type> *parent, Type key)
 {
-    TreeNode<Type>* child = new TreeNode<Type>(key);
+    TreeNode<Type> *child = new TreeNode<Type>(key);
     if (parent->firstChild == nullptr)
     {
         parent->firstChild = child;
@@ -90,7 +90,7 @@ bool Tree<Type>::insert(TreeNode<Type>* parent, Type key)
 }
 
 template <typename Type>
-bool Tree<Type>::remove(TreeNode<Type>* pNode)
+bool Tree<Type>::remove(TreeNode<Type> *pNode)
 {
     if (pNode == nullptr)
     {
@@ -98,7 +98,7 @@ bool Tree<Type>::remove(TreeNode<Type>* pNode)
     }
     if (pNode->firstChild != nullptr)
     {
-        function<void(TreeNode<Type>*)> RemoveSubTree = [&](TreeNode<Type>* rNode)
+        function<void(TreeNode<Type> *)> RemoveSubTree = [&](TreeNode<Type> *rNode)
         {
             if (rNode == nullptr)
             {
@@ -132,7 +132,7 @@ public:
     char GetOper();
 
     // 输出家谱中成员的子女
-    void PrintChildren(TreeNode<string>* curNode);
+    void PrintChildren(TreeNode<string> *curNode);
 
     // 为已经在家谱中的成员添加子女
     void CompleteTree();
@@ -158,7 +158,7 @@ FamilyTree::FamilyTree()
     cout << "**          D --- 更改家庭成员姓名       **" << endl;
     cout << "**          E --- 退出程序               **" << endl;
     cout << "===========================================" << endl
-        << endl;
+         << endl;
     cout << "首先建立一个家谱" << endl;
     cout << "请输入祖先的姓名：";
     cin >> name;
@@ -174,13 +174,23 @@ FamilyTree::~FamilyTree()
 char FamilyTree::GetOper()
 {
     cout << endl
-        << "请选择要执行的操作：";
-    // 待完善错误处理
-    cin >> oper;
+         << "请选择要执行的操作：";
+    while (true)
+    {
+        cin >> oper;
+        if (oper >= '0' && oper <= '5')
+        {
+            break;
+        }
+        cout << "操作输入有误" << endl;
+        cin.clear();
+        cin.ignore(65536, '\n');
+    }
+
     return oper;
 }
 
-void FamilyTree::PrintChildren(TreeNode<string>* curNode)
+void FamilyTree::PrintChildren(TreeNode<string> *curNode)
 {
     if (curNode->firstChild != nullptr)
     {
@@ -203,13 +213,13 @@ void FamilyTree::CompleteTree()
 {
     cout << "请输入要建立家庭的人的姓名：";
     cin >> name;
-    TreeNode<string>* curNode = find(root, name);
+    TreeNode<string> *curNode = find(root, name);
     if (curNode != nullptr)
     {
         int childNum;
         cout << "请输入" << name << "的儿女人数：";
         cin >> childNum;
-        string* childName = new string[childNum];
+        string *childName = new string[childNum];
         cout << "请依次输入" << name << "儿女的姓名：";
         for (int i = 0; i < childNum; i++)
         {
@@ -228,7 +238,7 @@ void FamilyTree::InsertMember()
 {
     cout << "请输入要添加儿子（或女儿）的人的姓名：";
     cin >> name;
-    TreeNode<string>* curNode = find(root, name);
+    TreeNode<string> *curNode = find(root, name);
     if (curNode != nullptr)
     {
         string childName;
@@ -247,7 +257,7 @@ void FamilyTree::RemoveMember()
 {
     cout << "请输入要解散家庭的人的姓名：";
     cin >> name;
-    TreeNode<string>* curNode = find(root, name);
+    TreeNode<string> *curNode = find(root, name);
     if (curNode != nullptr)
     {
         PrintChildren(curNode);
@@ -264,7 +274,7 @@ void FamilyTree::ChangeName()
 {
     cout << "请输入要更改姓名的人的目前姓名：";
     cin >> name;
-    TreeNode<string>* curNode = find(root, name);
+    TreeNode<string> *curNode = find(root, name);
     if (curNode != nullptr)
     {
         string newName;
@@ -292,24 +302,24 @@ int main()
     {
         switch (testInstance.GetOper())
         {
-            case 'A':
-                testInstance.CompleteTree();
-                break;
-            case 'B':
-                testInstance.InsertMember();
-                break;
-            case 'C':
-                testInstance.RemoveMember();
-                break;
-            case 'D':
-                testInstance.ChangeName();
-                break;
-            case 'E':
-                cout << "退出家谱系统" << endl;
-                loop = false;
-                break;
-            default:
-                break;
+        case 'A':
+            testInstance.CompleteTree();
+            break;
+        case 'B':
+            testInstance.InsertMember();
+            break;
+        case 'C':
+            testInstance.RemoveMember();
+            break;
+        case 'D':
+            testInstance.ChangeName();
+            break;
+        case 'E':
+            cout << "退出家谱系统" << endl;
+            loop = false;
+            break;
+        default:
+            break;
         }
     }
     return 0;
