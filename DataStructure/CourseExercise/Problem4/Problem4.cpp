@@ -2,6 +2,7 @@
 #include <string>
 #include <cmath>
 #include <ctime>
+#include <climits>
 using namespace std;
 
 class NQueenSol

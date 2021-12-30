@@ -168,7 +168,6 @@ FamilyTree::FamilyTree()
 
 FamilyTree::~FamilyTree()
 {
-    Tree<string>::~Tree();
 }
 
 char FamilyTree::GetOper()
@@ -178,7 +177,7 @@ char FamilyTree::GetOper()
     while (true)
     {
         cin >> oper;
-        if (oper >= '0' && oper <= '5')
+        if (oper >= 'A' && oper <= 'E')
         {
             break;
         }
