@@ -119,7 +119,7 @@
 
 #### 计算机系统操作
 
-* 初始化程序/引导程序(bootstrap program)：通常位于ROM或EEOPROM(Electrical Erasable PROM, 电可擦除可编程ROM)中，称为计算机硬件中的固件，初始化计算机的所有部分，为此，引导程序必须定位操作系统内核并且将其装入内存。
+* 初始化程序/引导程序(bootstrap program)：通常位于ROM或EEPROM(Electrical Erasable Programable ROM, 电可擦除可编程ROM)中，称为计算机硬件中的固件，初始化计算机的所有部分，为此，引导程序必须定位操作系统内核并且将其装入内存。
 
 * 实现输入输出的三种方式
   
