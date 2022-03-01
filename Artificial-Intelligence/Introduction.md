@@ -39,3 +39,8 @@
 
 *Applications*
   + Application of Reinforcement Learning
+
+### Introduction to Artificial Intelligence
+
+* the turing test
+* a bit of history
