@@ -2,7 +2,7 @@
 >  
 > time: 2022.02.22
 >  
-> last edit: 2022.02.28
+> last edit: 2022.03.03
 >
 > Reference :《Database System Concepts》 Seventh Edition
 
@@ -163,7 +163,9 @@ drop table tableName -- the total structure of the table
 alter table tableName add attributeName domainOfAttribute
 alter table tableName drop attributeName
 ```
+
 #### basic query structures
+
 ```sql
 select attributes
 from relations
@@ -186,17 +188,171 @@ select 'value'
 from relations
 
 ```
-- SQL names are case insensitive
-- relational algebra do not allow duplication but SQL allows
-- select clause can contain arithmetic expressions
-- I think select clause returns a particular table
-- the where clause: the additonal comparisions, use and, or, not
-- the from clause
-  - when selecting from several relations, use the form 'tableName.attributeName' to name the result attribute
+
+* SQL names are case insensitive
+* relational algebra do not allow duplication but SQL allows
+* select clause can contain arithmetic expressions
+* I think select clause returns a particular table
+* the where clause: the additonal comparisions, use and, or, not
+* the from clause
+  + when selecting from several relations, use the form 'tableName.attributeName' to name the result attribute
 
 #### the rename operation
+
 ```sql
 select T.attributeName
 from tableName as T, tableName as S
 where T.attributeName > S.attributeName and S.attributeName = ''
+```
+
+#### self join example
+
+```sql
+select T.attributeName1
+from tableName T, tableName S
+where T.attributeName1 = 'value' and T.attributeName2 = S.attributeName1
+```
+
+* recurrence(递归) usually not supported by SQL
+
+#### string operations
+
+* wildcard character(通配符)
+  + `%`: matches any substring
+  + `_`: matches any character
+
+```sql
+-- tansferred meaning character '\'
+where '100\%' escape '\'
+```
+
+* case sensitive
+
+#### ordering the dispaly of tuples
+
+```sql
+order by attributeName desc -- by default asc(升序), here desc means 降序
+
+order by attributeName1, attributename2
+```
+
+#### where clause predicates(条件谓词)
+
+```sql
+where attributeName between 'value1' and 'value2' -- between
+
+where attributeNane (attributeName1, attributeName2) = ('value1', 'value2') -- tuple comparision
+```
+
+#### set operations
+
+```sql
+union
+
+intersect
+
+except
+
+-- retain the duplicated elements
+union all
+
+intersect all
+
+except all
+```
+
+#### null values(don't know)
+
+* the result of any arithmetic expression involving null is null
+
+* the predicate *is null* can be used to check null values
+
+```sql
+where attributeName is null
+```
+
+* treat as unknown of any comparision involving null
+
+* true, false, unknown support boolean calculation(布尔运算/逻辑运算)
+
+#### aggregate functions(聚集函数)
+
+```sql
+avg
+min
+max
+sum
+count
+
+select avg(attributeName)
+from tableName
+where attributebName = 'value'
+
+-- group by
+select attibuteName1, avg(attributeName2) as theNewName
+from tableName
+group by attributeName1
+
+-- having clause
+select attibuteName1, avg(attributeName2) as theNewName
+from tableName
+group by attributeName1
+having avg(attributeName2) > 'value' -- before the group by must be where while afer must be having
+```
+
+#### nested subqueries and set membership
+
+```sql
+select distinct attributeName
+from tableName
+where attributeName not in('value1', 'value2')
+
+select distinct attributeName
+from tableName
+where attributeName in(select attributeName
+                       from tableName
+                       where attributeName = 'value') -- the same using with 'not in'
+```
+
+#### set comparison
+
+* 'some' clause
+
+```sql
+select attributeName
+frome tableName
+where attributeName > some() -- at least one element in this ()
+```
+
+  + some means *exists* not arbitrary
+
+* 'all' clause
+
+```sql
+select attributeName
+frome tableName
+where attributeName > some() -- at least one element in this ()
+```
+
+  + all means *arbitrary*
+
+* 'exists' clause
+
+```sql
+select attributeName
+frome tableName
+where exists(select
+             from
+             where) -- exists return a value whether the inner select is empty or not
+-- usually use rename operation to associate outer select and inner select
+-- the same using with 'not exist'
+```
+
+  - correlation name
+
+- 'unique'
+  - the unique construct evaluates to true if a given subquery cintains no duplicates
+
+```sql
+
 ```

@@ -2,13 +2,13 @@
 >  
 > time: 2022.02.23
 >  
-> last edit: 2022.02.23
+> last edit: 2022.03.02
 >
 > Reference :《Clean Code》
 
 ## System Analysis Design
 
-### Introduction
+### An Overview of System Analysis and Design
 
 #### Overview
 
@@ -31,11 +31,8 @@
 * Team Project (no more than 5 members): 90%
 
   + Project vision, scope and essential requirements will be released in Week 3.
-
   + Software Requirements Specification(说明书): 30%
-
   + Analysis Model(platform independent design; ideal design) and *Middle-Term presentation*: 30%
-
   + Design Model(proof of concept), *final presentation* and qualities of final deliveries: 30%
 
 #### Preperations
@@ -81,3 +78,38 @@
 16. Final Presentation 1
 
 17. Final Presentation 2
+
+* c++
+  + describe the experience: 
+  + the most challenging thing is facing the unknown risks, but is also the exciting thing
+  + turn software programing into real solution
+  + not only solve, but also avoid
+  + collaborate with the upstream and the downstream
+
+* need for system analysis and design
+  + make everyone and share
+
+* architectural design prescribe by the construction and visualized to the apperence
+
+### Project Management and Information Requirements Analysis
+
+#### project management fundamentals
+
+* project initiation
+  + basic vision and scope
+  + problem in organization
+  + defining the problems
+  + set up goals
+  + selection of project
+
+* determining project feasibility(可行性)
+  + estimating workloads
+  + hardware and software needs
+  + managing time and activities
+
+* activity planning and control
+  + think about PPPT: product, people, procise, technology
+
+* project scheduling
+  + gantt chart(甘特图)
+  + PERT diagrams
