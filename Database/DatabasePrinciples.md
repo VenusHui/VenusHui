@@ -348,11 +348,84 @@ where exists(select
 -- the same using with 'not exist'
 ```
 
-  - correlation name
+  + correlation name
 
-- 'unique'
-  - the unique construct evaluates to true if a given subquery cintains no duplicates
+* 'unique'
+  + the unique construct evaluates to true if a given subquery cintains no duplicates
 
 ```sql
 
 ```
+
+### modification of the database
+
+#### deletion
+
+```sql
+delete from tableName -- delete all the data tuples, not affect the defination of the table
+drop table tableName -- delete the total structure of the table
+
+delete from tableName
+where attributeName = 'value' -- also can use subquerys
+```
+
+* the logic: always deal with the subquerys first
+
+#### insertion
+
+```sql
+insert into tableName
+  values('attributeValue', 'attributeValue')
+
+insert into tableName(attributeName, attributeName) -- list all the attribute
+  values('attributeValue', null)
+
+insert into tableName1
+  select attributeName, attributeName -- all the attributes in table1, also can use the fixed data
+  from tableName2
+  where -- conditions
+
+insert into tableName select* from tableName -- double the table
+```
+
+#### upadates
+
+```sql
+update tableName
+  set attributeName = 'value'
+  where -- conditions
+```
+
+* notice the order of the updates
+
+* case statement for conditoinal updates
+
+```sql
+update tableName
+  set attributeName = case
+                        when -- condition 
+                        then -- operation1
+                        else -- operation2
+                      end
+```
+
+### Intermediate SQL
+
+#### join relations
+
+* join operation take two relations and return one relation
+
++ natural join
+  - when the common attributes are the same, they can be natural joined together
+```sql
+select attributeNAme1, attributeName2
+from tableName1 natural join tableName2
+
+select attributeNAme1, attributeName2
+from tableName1, tableName2
+where tableName1.commonAttribute = tableName2.commonAttribute
+```
+  - dangerous
+    - beware the unrelated attributes with same name which get quated incorrectly
++ inner join
++ outer koin
