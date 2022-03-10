@@ -1,22 +1,3 @@
-#include <iostream>
-#include <cstdio>
-#include <iterator>
-#include <fstream>
-#include <sstream>
-#include <algorithm>
-#include <cmath>
-#include <deque>
-#include <vector>
-#include <queue>
-#include <string>
-#include <cstring>
-#include <map>
-#include <stack>
-#include <set>
-#include <iomanip>
-typedef long long ll;
-using namespace std;
-
 // 6016. Excel 表中某个范围内的单元格
 class Solution
 {

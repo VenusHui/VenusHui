@@ -428,4 +428,4 @@ where tableName1.commonAttribute = tableName2.commonAttribute
   - dangerous
     - beware the unrelated attributes with same name which get quated incorrectly
 + inner join
-+ outer koin
++ outer join

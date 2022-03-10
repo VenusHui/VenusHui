@@ -111,5 +111,44 @@
   + think about PPPT: product, people, procise, technology
 
 * project scheduling
-  + gantt chart(甘特图)
-  + PERT diagrams
+  + gantt chart(甘特图) to schedule the project
+  + PERT diagrams 
+    - evaluate the real deadline
+    - time estimation: optimistic(O), most likely(M), pessimistic(P, 悲观) PERT = (O + 4M + P) / 6
+
+* ascerting hardware and software needs
+  + think beyond only our project: use cloud computing platform, service vendor(供应商)
+  + Elastic Container Service(ECS)
+  + supproting enviornment
+  + influence a lot on how to biuld the project
+
+* conttrolling a project
+  + estimating cost and preparing the budget
+  + managing risks: fishbone diagram
+
+* team management
+  + API
+  + OKR: object and key results
+
+* prototyping(原型设计)
+  + information-*gathering* technique
+  + Figma, Lanhu
+  + use program prototype not interface prototype
+
+* the agile approach : classtic mistakes
+  + a project is subdivided into iterations
+  + measure and evaluate the schedule
+  + quality
+  + manipulating scope(操作范围)
+  + [values and principles of agile modeling](https://agilemanifesto.org/iso/zhchs/manifesto.html)
+  + principle
+    - coding
+    - testing
+    - listening
+    - designing
+
+* Gitlab
+  + project management
+  + scrum and kanban-style
+
+- scrum: one of the agile method
