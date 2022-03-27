@@ -72,6 +72,7 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "unordered_set": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "xstring": "cpp"
     }
 }
