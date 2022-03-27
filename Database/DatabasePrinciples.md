@@ -241,7 +241,7 @@ order by attributeName1, attributename2
 ```sql
 where attributeName between 'value1' and 'value2' -- between
 
-where attributeNane (attributeName1, attributeName2) = ('value1', 'value2') -- tuple comparision
+where attributeName (attributeName1, attributeName2) = ('value1', 'value2') -- tuple comparision
 ```
 
 #### set operations
