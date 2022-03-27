@@ -152,3 +152,6 @@
   + scrum and kanban-style
 
 - scrum: one of the agile method
+
+### OOAD, UP and UML
+

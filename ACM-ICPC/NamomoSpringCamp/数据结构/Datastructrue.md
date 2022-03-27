@@ -36,3 +36,15 @@ int calc(int l, int r)
 
 - 对于n行m列的数组，对于i, j位置的数，hash += pow(base, (i - 1) * m + j - 1)
 - 状态压缩
+
+## 堆
+
+### STL(priority_queue)
+
+- 跟手写堆类似的工具，但只能修改队首的元素
+
+- 修改堆中间的元素需要手写堆并维护一个位置数组
+
+- 大根堆`priority_queue<int> q;` `priority_queue<int, vector<int>, less<int>> q;`
+
+- 小根堆`priority_queue<int, vector<int>, greater<int> > q;`
