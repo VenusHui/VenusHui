@@ -21,7 +21,7 @@
 ```cpp
 int n;
 cin >> n;
-vector<char> prime(n + 1, true);
+vector<bool> prime(n + 1, true);
 prime[0] = prime[1] = false;
 for (int i = 2; pow(i, 2) < n; i++)
 {
