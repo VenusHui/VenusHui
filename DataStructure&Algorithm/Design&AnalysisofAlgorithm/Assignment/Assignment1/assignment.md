@@ -41,7 +41,7 @@ partition(Array, p, r)
 
 * D. Time complexity of all computer algorithms can be written as $\Omega(1)$
 
-##### **(a)** The 1-D Discrete Fourier Transform (DFT) of $N$ samples of a signal $f(x)$ sampled at $x =  0, 1, 2, ···, N - 1$ is:$$ F(u) = \frac{1}{n} \sum^{N - 1}_{x = 0}(x) e^{\frac{-j2\pi ux}{}}$$for $u = 0, 1, ···, N - 1$, and $j = \sqrt{-1}$. If $f(x)$ is generally complex, how many complex multiplications are needed to compute the Fourier Transform of the given sample?
+##### **(a)** The 1-D Discrete Fourier Transform (DFT) of $N$ samples of a signal $f(x)$ sampled at $x =  0, 1, 2, ···, N - 1$ is:$$ F(u) = \frac{1}{n} \sum^{N - 1}_{x = 0}(x) e^{\frac{-j2\pi ux}{N}}$$for $u = 0, 1, ···, N - 1$, and $j = \sqrt{-1}$. If $f(x)$ is generally complex, how many complex multiplications are needed to compute the Fourier Transform of the given sample?
 解答：
 对于每一个$u = 0, 1, ···, N - 1$，都需要进行$x = 0, 1, ···, N - 1$共$N$次求和，使用$N$个复数乘法(即$4N$个实数乘法)。所以共需要进行$N^2$次复数乘法。
 
