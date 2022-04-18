@@ -18,6 +18,8 @@ using namespace std;
 
 // Codeforces Round #782 (Div. 2) B. Bit Flipping
 
+// Contest Version
+
 int main()
 {
     ios_base::sync_with_stdio(false);
@@ -77,5 +79,52 @@ int main()
         cout << '\n';
     }
 
+    return 0;
+}
+
+// Tutorial Version
+
+int tutorial()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    int t;
+    cin >> t;
+    while (t--) {
+        int n, k;
+        cin >> n >> k;
+        string s;
+        cin >> s;
+        vector<int> ans(n);
+        int tmpk = k;
+        for (int i = 0; i < n && tmpk > 0; i++) {
+            if (k % 2 == 0 && s[i] == '0') {
+                ans[i] = 1;
+                tmpk--;
+            }
+            else if (k % 2 == 1 && s[i] == '1') {
+                ans[i] = 1;
+                tmpk--;
+            }
+        }
+        ans[n - 1] += tmpk;
+        for (int i = 0; i < n; i++) {
+            if ((k - ans[i]) % 2 == 1) {
+                if (s[i] == '1') {
+                    s[i] = '0';
+                }
+                else {
+                    s[i] = '1';
+                }
+            }
+        }
+        cout << s << '\n';
+        for (int i = 0; i < n; i++) {
+            cout << ans[i] << " "; 
+        }
+        cout << '\n';
+    }
+    
     return 0;
 }
