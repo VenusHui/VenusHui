@@ -19,6 +19,8 @@ using namespace std;
 
 // Codeforces Round #782 (Div. 2) C. Line Empire
 
+// Tutorial Version
+
 int main()
 {
     ios_base::sync_with_stdio(false);
@@ -37,6 +39,7 @@ int main()
         // 可以用partial_sum方法求前缀和：
         // partial_sum(x.begin(), x.end(), p.begin());
         ll ans = 1e18 + 1;
+        // 枚举最后capital的位置
         for (int i = 0; i <= n; i++) {
             ans = min(ans, (a + b) * (x[i] - x[0]) + b * (p[n] - p[i] - (n - i) * x[i]));
         }

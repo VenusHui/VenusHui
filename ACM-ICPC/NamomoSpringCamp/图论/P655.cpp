@@ -16,7 +16,7 @@
 typedef long long ll;
 using namespace std;
 
-// 最短路：Bellman-Ford
+// 最短路：Bellman-Ford 一般在有负权边的时候用，也可以用于判断负环
 int n, m, k;
 
 int bellman(vector<vector<int>>& edge, int s, int e) {
