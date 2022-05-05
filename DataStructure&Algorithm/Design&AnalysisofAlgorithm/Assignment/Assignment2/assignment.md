@@ -74,6 +74,9 @@ MergeSort(A, p, r) {
 }
 ```
 
+复杂度分析：
+
+
 #### Suppose there are six items with weights of (6, 2, 4, 3, 9, 12) and values of (9, 4, 6, 5, 14, 20). The capacity of the backpack is 16. You cannot break any item, either pick the complete item or don't pick it. Can you use branch ans bound method to determin which items you should pick in order to maximize the value of the items without surpassing the capacity of your backpage? You should write the pseudocode(return the maximum value) and draw a solution space tree for this problem
 
 解答：
