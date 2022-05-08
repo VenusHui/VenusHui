@@ -48,3 +48,42 @@ int calc(int l, int r)
 - 大根堆`priority_queue<int> q;` `priority_queue<int, vector<int>, less<int>> q;`
 
 - 小根堆`priority_queue<int, vector<int>, greater<int> > q;`
+
+## 字典树Trie
+
+Trie是一种存储字符串的树形数据结构，除了根节点，每个节点可以存储一个字符，从根节点到书上某一节点的路径代表一个字符串，如果一个字符串在某个结点结束，则给这个结点打上一个结束标记
+
+```cpp
+const int maxn = 10000;  // 所有字符串的长度之和
+const int charsize = 26; // 字符集大小
+
+int nxt[maxn + 1][charsize], cnt = 0;
+
+bool leaf[maxn + 1];
+
+void insert(char s[], int len) {
+    int now = 0;
+    for (int i = 1; i <= len; i++) {
+        int x = s[i] - 'a';
+        if (!nxt[now][x]) {
+            // cnt表示目前除了根节点之外还有几个点，新建一个点 cnt+1
+            nxt[now][x] = ++cnt;
+        }
+        now = nxt[now][x];
+    }
+    leaf[now] = 1;
+}
+
+bool find(char s[], int len) {
+    int now = 0;
+    for (int i = 1; i <= len; i++) {
+        int x = s[i] - 'a';
+        if (!nxt[now][x]) {
+            return false;
+        }
+        now = nxt[now][x];
+        return leaf[now];
+    }
+}
+
+```
