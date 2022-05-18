@@ -67,6 +67,8 @@ string add(string num1, string num2)
 }
 ```
 
+## 数论
+
 ### 埃拉托色尼筛法(Sieve of Eratosthenes)
 
 * 埃拉托色尼素数筛选法是找出在$[1, n]$范围内所有素数的方法，时间复杂度$O(nloglogn)$
