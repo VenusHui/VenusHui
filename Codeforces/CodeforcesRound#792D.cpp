@@ -1,9 +1,9 @@
 /**
  * @platform: Codeforces
  * @problem: CodeforcesRound#792D 
- * @version: Contest Version - Unsolved
+ * @version: Tutorial Version
  * @author: VenusHui
- * @date: 2022-05-19
+ * @date: 2022-05-20
  */
 #include <bits/stdc++.h>
 typedef long long ll;
@@ -18,32 +18,24 @@ int main() {
     while (t--) {
         int n, k;
         cin >> n >> k;
+        ll ans = 0;
         vector<int> res(n);
-        vector<vector<ll>> dp(n + 1);
         for (int i = 0; i < n; i++) {
             cin >> res[i];
+            ans += res[i];
+            res[i] += i + 1;
         }
-        function<bool(int)> bound = [&] (int num) {
-            if (num > k) {
-                return false;
-            }
-            return true;
-        };
-        ll ans = 2e5 * 1e9;
-        function<void(int, int, int)> dfs = [&] (int pos, int num, ll tmp) {
-            if (pos > n) {
-                ans = min(ans, tmp);
-                return;
-            }
-            if (tmp > ans) {
-                return;
-            }
-            if (num <= k) {
-                dfs(pos + 1, num, tmp + res[pos] + num);
-                dfs(pos + 1, num + 1, tmp);
-            }
-        };
-        dfs(0, 0, 0);
+        if (k >= n) {
+            cout << "0" << '\n';
+            continue;
+        }
+        sort(res.begin(), res.end(), [](int& a, int& b) {
+            return a > b;
+        });
+        for (int i = 0; i < k; i++) {
+            ans -= res[i];
+            ans += n - i;
+        }
         cout << ans << '\n';
     }
 
