@@ -21,3 +21,22 @@ public:
         }
     }
 };
+
+// another version
+class Solution {
+public:
+    int searchInsert(vector<int>& nums, int target) {
+        int size = nums.size();
+        int l = 0, r = size - 1;
+        while (l <= r) {
+            int m = (l + r) >> 1;
+            if (nums[m] < target) {
+                l = m + 1;
+            }
+            else {
+                r = m - 1;
+            }
+        }
+        return l;
+    }
+};
