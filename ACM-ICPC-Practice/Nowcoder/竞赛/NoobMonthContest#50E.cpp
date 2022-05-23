@@ -1,9 +1,9 @@
 /**
  * @platform: Nowcoder
  * @problem: NoobMonthContest#50E 
- * @version: Contest Version
+ * @version: Tutorial Version
  * @author: VenusHui
- * @date: 2022-05-21
+ * @date: 2022-05-23
  */
 #include <bits/stdc++.h>
 typedef long long ll;
@@ -17,20 +17,11 @@ int main() {
     cin >> n >> a >> b >> c;
     if (a <= c) {
         cout << n / a << '\n';
-        return 0;
     }
-    ll l = 0, r = n / b;
-    while (l < r) {
-        ll m = (l + r + 1) >> 1;
-        if ((n - m * c) / a * a + (m - 1) * c <= m * b) {
-            l = m;
-        }
-        else {
-            r = m - 1;
-        }
+    else {
+        int cnt = min((n - c) / b, (n - b) / c);
+        cout << cnt + (n - cnt * c) / a << '\n';
     }
-    cout << l << '\n';
-    cout << (n - l * c) / a + l << '\n';
 
     return 0;
 }

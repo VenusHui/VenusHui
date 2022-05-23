@@ -1,9 +1,9 @@
 /**
  * @platform: Nowcoder
  * @problem: NoobMonthContest#50C 
- * @version: Contest Version
+ * @version: Tutorial Version
  * @author: VenusHui
- * @date: 2022-05-21
+ * @date: 2022-05-23
  */
 #include <bits/stdc++.h>
 typedef long long ll;
@@ -15,49 +15,30 @@ int main() {
     cout.tie(nullptr);
     int n;
     cin >> n;
-    bool flagtwo = true, flagone = true;
+    function<int(int, int)> gcd = [&] (int a, int b) {
+        return b ? gcd(b, a % b) : a;
+    };
+    int flag = 0;
+    bool zflag = true, oflag = true;
     vector<int> res(n);
     for (int i = 0; i < n; i++) {
         cin >> res[i];
-        if (res[i] > 1) {
-            flagtwo = false;
+        flag = gcd(flag, res[i]);
+        if (zflag && res[i] != 0) {
+            zflag = false;
         }
-        if (res[i] > 0) {
-            flagone = false;
+        if (oflag && res[i] > 1) {
+            oflag = false;
         }
     }
-    if (flagone) {
+    if (zflag) {
         cout << "0" << '\n';
-        return 0;
     }
-    if (flagtwo) {
+    else if (oflag || flag > 1) {
         cout << "1" << '\n';
-        return 0;
     }
-    sort(res.begin(), res.end(), [&](int& a, int& b) {
-        return a > b;
-    });
-    if (res[0] >= 2) {
-        for (int i = 0; i < n; i++) {
-            res[i] %= 2;
-        }
-    }
-    flagtwo = true, flagone = true;
-    for (int i = 0; i < n; i++) {
-        if (res[i] > 1) {
-            flagtwo = false;
-        }
-        if (res[i] > 0) {
-            flagone = false;
-        }
-    }
-    if (flagone) {
-        cout << "1" << '\n';
-        return 0;
-    }
-    if (flagtwo) {
+    else {
         cout << "2" << '\n';
-        return 0;
     }
 
     return 0;
