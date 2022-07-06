@@ -1,4 +1,5 @@
 // 2296. 设计一个文本编辑器
+// FST了呜呜呜呜
 class TextEditor {
 private:
     string s;
