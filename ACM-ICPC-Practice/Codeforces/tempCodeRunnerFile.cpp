@@ -1,1 +1,1 @@
-mmax + 1
+cout << ans << '\n';
