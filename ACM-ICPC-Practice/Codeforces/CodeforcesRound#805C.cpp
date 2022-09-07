@@ -1,7 +1,7 @@
 /**
  * @platform: Codeforces
  * @problem: CodeforcesRound#805C 
- * @version: Contest Version - UnSolved
+ * @version: Contest Version - UnSolved (TLE)
  * @author: VenusHui
  * @date: 2022-07-10
  */
