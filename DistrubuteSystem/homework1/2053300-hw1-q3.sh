@@ -25,22 +25,10 @@ awk -v sumline="$sumline" 'BEGIN{
         end_time=substr($1, 0, 2) * 3600 + substr($1, 4, 2) * 60 + substr($1, 7, 2)
     }
 
-    # 获取倒数三行的系统负载值
-    if(NR==sumline - 2){
-        load1+=$(NF-2)
-        load2+=$(NF-1)
-        load3+=$(NF)
-    }
-    else if(NR==sumline - 1){
-        load1+=$(NF-2)
-        load2+=$(NF-1)
-        load3+=$(NF)
-    }
-    else if(NR==sumline){
-        load1+=$(NF-2)
-        load2+=$(NF-1)
-        load3+=$(NF)
-    }
+    # 获取系统负载值
+    load1+=$(NF-2)
+    load2+=$(NF-1)
+    load3+=$(NF)
 }
 END{
     print "文件总行数为："NR
@@ -49,6 +37,6 @@ END{
     seconds=during % 60
     minutes=(during - seconds) / 60
     print "第一行与最后一行输出结果的时间差为："minutes" 分钟 "seconds" 秒"
-    printf("过去1、5、15分钟内系统的负载均值为：%.2f %.2f %.2f\n", load1/3, load2/3, load3/3)
+    printf("过去1、5、15分钟内系统的负载均值为：%.2f %.2f %.2f\n", load1/sumline, load2/sumline, load3/sumline)
 }' $fileName
 
