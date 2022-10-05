@@ -13,7 +13,7 @@
       <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/HttpClient/pom.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/AppRun.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/HttpClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/controller/HttpTools.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/homework2.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -93,6 +93,7 @@
       <updated>1664350014313</updated>
       <workItem from="1664350016044" duration="2500000" />
       <workItem from="1664702943751" duration="1112000" />
+      <workItem from="1664946149840" duration="9140000" />
     </task>
     <servers />
   </component>
