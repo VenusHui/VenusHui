@@ -1,6 +1,7 @@
 package controller;
 
 import model.HttpUrl;
+import model.conngraph.ConnGraph;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.NoHttpResponseException;
@@ -17,7 +18,7 @@ import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.UnknownHostException;
-import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class HttpConnPool {
     private static final String TJUURL = "https://www.tongji.edu.cn";
@@ -25,23 +26,24 @@ public class HttpConnPool {
     private static final String SJTUURL = "https://www.sjtu.edu.cn";
     private static final String MITURL = "https://www.mit.edu";
     private static final PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+    private static final LinkedBlockingQueue<HttpUrl> connQueue = new LinkedBlockingQueue<>();
+
     static {
         // 最大同时连接数
         connectionManager.setMaxTotal(200);
-
         // 每个路由最大连接数
         connectionManager.setDefaultMaxPerRoute(20);
     }
 
-    private Set<HttpUrl> toConnectSet;
-    private Set<HttpUrl> connectedSet;
-
     public HttpConnPool() {
-        // 添加种子地址
-        toConnectSet.add(new HttpUrl(TJUURL, 0));
-        toConnectSet.add(new HttpUrl(FDUURL, 0));
-        toConnectSet.add(new HttpUrl(SJTUURL, 0));
-        toConnectSet.add(new HttpUrl(MITURL, 0));
+        connQueue.add(new HttpUrl(TJUURL, 0));
+        connQueue.add(new HttpUrl(FDUURL, 0));
+        connQueue.add(new HttpUrl(SJTUURL, 0));
+        connQueue.add(new HttpUrl(MITURL, 0));
+        ConnGraph.addVertex(new HttpUrl(TJUURL, 0));
+        ConnGraph.addVertex(new HttpUrl(FDUURL, 0));
+        ConnGraph.addVertex(new HttpUrl(SJTUURL, 0));
+        ConnGraph.addVertex(new HttpUrl(MITURL, 0));
     }
 
     public static CloseableHttpClient getHttpClient(Integer timeOut) {
@@ -91,17 +93,14 @@ public class HttpConnPool {
                 // 把请求相关的超时信息设置到连接客户端
                 .setDefaultRequestConfig(requestConfig)
                 // 把请求重试设置到连接客户端
-                .setRetryHandler(retry)
+                //.setRetryHandler(retry)
                 // 配置连接池管理对象
                 .setConnectionManager(connectionManager)
                 .build();
     }
 
-    public Boolean isDuplicate(HttpUrl url) {
-        if (!toConnectSet.contains(url) && !connectedSet.contains(url)) {
-            return Boolean.FALSE;
-        }
-        return Boolean.TRUE;
+    public static LinkedBlockingQueue<HttpUrl> getConnQueue() {
+        return connQueue;
     }
 
     public void getPoolStats() {

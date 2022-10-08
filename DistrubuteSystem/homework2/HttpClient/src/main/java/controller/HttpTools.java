@@ -1,6 +1,7 @@
 package controller;
 
 import model.HttpUrl;
+import model.conngraph.ConnGraph;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -11,34 +12,58 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HttpTools {
-    private final Integer defaultTimeOut = 1000;
+    private final Integer defaultTimeout = 1000;
+    public boolean isOK(String url) {
+        CloseableHttpClient client = HttpConnPool.getHttpClient(defaultTimeout);
+        HttpGet httpGet = new HttpGet(url);
+        CloseableHttpResponse response = null;
+        try {
+            response = client.execute(httpGet);
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                return true;
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (response != null) {
+                try {
+                    EntityUtils.consume(response.getEntity());
+                } catch (IOException e) {
+                    System.out.println("释放连接错误");
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
 
-    public List<HttpUrl> getOuterUrls(HttpUrl url) {
+    public void getOuterUrls(HttpUrl url) {
         if (url.getCount() > 4) {
-            return null;
+            return;
         }
 
         // 获取base
         String baseUrl = url.getBaseSuffix();
 
         // 获取HTML
-        CloseableHttpClient client = HttpConnPool.getHttpClient(defaultTimeOut);
+        Integer defaultTimeOut = 1000;
+        CloseableHttpClient client = HttpConnPool.getHttpClient(defaultTimeout);
         HttpGet httpGet = new HttpGet(url.getUrl());
         String page = "";
         CloseableHttpResponse response = null;
         try {
             response = client.execute(httpGet);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                System.out.println("访问 " + url.getUrl() + " 成功");
+                System.out.println("connect " + url.getUrl() + " success");
                 page = EntityUtils.toString(response.getEntity(), "utf-8");
             } else {
-                System.out.println("访问 " + url.getUrl() + " 出错");
+                System.out.println("connect " + url.getUrl() + " error");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -46,8 +71,7 @@ public class HttpTools {
             if (response != null) {
                 try {
                     EntityUtils.consume(response.getEntity());
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     System.out.println("释放连接错误");
                     e.printStackTrace();
                 }
@@ -55,7 +79,7 @@ public class HttpTools {
         }
 
         // 解析HTML获取外部链接
-        List<HttpUrl> outerUrls = new ArrayList<>();
+        int num = 0;
         if (!page.isEmpty()) {
             Document document = Jsoup.parse(page);
             List<Element> elements = document.getElementsByTag("a");
@@ -67,13 +91,21 @@ public class HttpTools {
                     Pattern r = Pattern.compile(pattern);
                     Matcher m = r.matcher(str);
                     if (m.matches() && !str.contains(baseUrl)) {
-                        // System.out.println(str);
-                        outerUrls.add(new HttpUrl(str, url.getCount() + 1));
+                        if (ConnGraph.getIndex(str) == -1) {
+                            HttpUrl nxtUrl = new HttpUrl(str, url.getCount() + 1);
+                            if (isOK(nxtUrl.getUrl())) {
+                                ConnGraph.addEdge(url, nxtUrl);
+                                HttpConnPool.getConnQueue().add(nxtUrl);
+                                num++;
+                                if (num >= 6) {
+                                    return;
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
-        return outerUrls;
     }
 }
 
