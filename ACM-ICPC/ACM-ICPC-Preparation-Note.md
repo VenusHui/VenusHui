@@ -6,6 +6,14 @@
 >  
 > Reference: 
 
+### 数学
+
+```cpp
+// gcd & lcm
+inline int gcd(int a, int b) { return b ? gcd(b, a % b) : a; }
+inline int lcm(int a, int b) { return a / gcd(a, b) * b; }
+```
+
 ### 高精度
 
 #### 加法
@@ -93,7 +101,6 @@ for (int i = 2; pow(i, 2) < n; i++) {
 ### 线性基
 
 - 线性基是一个集合，从原集合中选取任意多个数进行异或得到的值都能通过在线性基中选取一些数进行异或得到，可以将线性基理解为对原集合的一个压缩。
-
 
 ## 图论
 
