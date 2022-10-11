@@ -30,7 +30,7 @@ public class HttpConnPool {
 
     static {
         // 最大同时连接数
-        connectionManager.setMaxTotal(200);
+        connectionManager.setMaxTotal(2000);
         // 每个路由最大连接数
         connectionManager.setDefaultMaxPerRoute(20);
     }
@@ -103,7 +103,7 @@ public class HttpConnPool {
         return connQueue;
     }
 
-    public void getPoolStats() {
+    public static void getPoolStats() {
         System.out.println(connectionManager.getTotalStats());
     }
 }

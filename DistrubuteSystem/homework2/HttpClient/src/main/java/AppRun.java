@@ -1,6 +1,9 @@
 import controller.HttpConnPool;
 import controller.HttpTools;
 import model.HttpUrl;
+import model.conngraph.ConnGraph;
+
+import java.io.IOException;
 
 public class AppRun {
     public static void main(String[] args) {
@@ -13,6 +16,13 @@ public class AppRun {
             if (url != null) {
                 tools.getOuterUrls(url);
             }
+        }
+        try {
+            ConnGraph.makeGraph();
+            ConnGraph.showGraph();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

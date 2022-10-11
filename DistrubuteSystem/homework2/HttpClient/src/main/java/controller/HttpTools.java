@@ -5,6 +5,8 @@ import model.conngraph.ConnGraph;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
@@ -12,13 +14,30 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HttpTools {
+    private final Integer maxSkipTime = 4;
+    private final Integer maxUrlNumPerPage = 6;
     private final Integer defaultTimeout = 1000;
+    private final ArrayList<String> errorUrls = new ArrayList<>();
+
+    public HttpTools() {
+        errorUrls.add("http://3101100178.age06.com/x310110/25372/index.aspx");
+        errorUrls.add("https://www.youvisit.com/#/vte/?data-platform=v&data-link-type=immersive&data-inst=63731&data-image-width=100%&data-image-height=100%&data-loc=141509&");
+    }
+
     public boolean isOK(String url) {
+        for (String s : errorUrls) {
+            if (Objects.equals(s, url)) {
+                return false;
+            }
+        }
         CloseableHttpClient client = HttpConnPool.getHttpClient(defaultTimeout);
         HttpGet httpGet = new HttpGet(url);
         CloseableHttpResponse response = null;
@@ -27,9 +46,7 @@ public class HttpTools {
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 return true;
             }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         } finally {
             if (response != null) {
                 try {
@@ -44,7 +61,7 @@ public class HttpTools {
     }
 
     public void getOuterUrls(HttpUrl url) {
-        if (url.getCount() > 4) {
+        if (url.getCount() >= maxSkipTime) {
             return;
         }
 
@@ -63,8 +80,14 @@ public class HttpTools {
                 System.out.println("connect " + url.getUrl() + " success");
                 page = EntityUtils.toString(response.getEntity(), "utf-8");
             } else {
-                System.out.println("connect " + url.getUrl() + " error");
+                System.err.println("connect " + url.getUrl() + " error");
             }
+        } catch (HttpHostConnectException e) {
+            System.err.println("Unknown Host");
+            e.printStackTrace();
+        } catch (SocketTimeoutException | ConnectTimeoutException e) {
+            System.err.println("Connection Time Out");
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -72,7 +95,7 @@ public class HttpTools {
                 try {
                     EntityUtils.consume(response.getEntity());
                 } catch (IOException e) {
-                    System.out.println("释放连接错误");
+                    System.err.println("释放连接错误");
                     e.printStackTrace();
                 }
             }
@@ -83,7 +106,6 @@ public class HttpTools {
         if (!page.isEmpty()) {
             Document document = Jsoup.parse(page);
             List<Element> elements = document.getElementsByTag("a");
-
             for (Element element : elements) {
                 for (Element e : element.getElementsByTag("a")) {
                     String str = e.attr("href");
@@ -97,7 +119,7 @@ public class HttpTools {
                                 ConnGraph.addEdge(url, nxtUrl);
                                 HttpConnPool.getConnQueue().add(nxtUrl);
                                 num++;
-                                if (num >= 6) {
+                                if (num >= maxUrlNumPerPage) {
                                     return;
                                 }
                             }
