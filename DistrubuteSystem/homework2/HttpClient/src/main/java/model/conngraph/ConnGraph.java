@@ -22,12 +22,16 @@ public class ConnGraph {
     private static final ArrayList<HttpUrl> map = new ArrayList<>();
     private static final ArrayList<ArrayList<Integer>> graph = new ArrayList<>(new ArrayList<>());
 
+    private static Integer vertexNum = 0;
+    private static Integer edgeNum = 0;
+
     public static void addVertex(HttpUrl url) {
         for (HttpUrl u : map) {
             if (Objects.equals(u.getUrl(), url.getUrl())) {
                 return;
             }
         }
+        vertexNum++;
         map.add(url);
         graph.add(new ArrayList<>());
     }
@@ -42,6 +46,7 @@ public class ConnGraph {
     }
 
     public static void addEdge(HttpUrl u, HttpUrl v) {
+        edgeNum++;
         addVertex(u);
         addVertex(v);
         graph.get(getIndex(u.getUrl())).add(getIndex(v.getUrl()));
@@ -58,6 +63,38 @@ public class ConnGraph {
             return url;
         }
         return "";
+    }
+
+    public static Integer getVertexNum() {
+        return vertexNum;
+    }
+
+    public static Integer getEdgeNum() {
+        return edgeNum;
+    }
+
+    public static HttpUrl getMaxInDegreeUrl() {
+        ArrayList<Integer> tmp = new ArrayList<Integer>();
+        for (HttpUrl ignored : map) {
+            tmp.add(0);
+        }
+        for (ArrayList<Integer> integers : graph) {
+            if (integers.size() != 0) {
+                for (Integer j : integers) {
+                    tmp.set(j, tmp.get(j) + 1);
+                }
+            }
+        }
+
+        int ans = 0, num = 0;
+        for (int i = 0; i < tmp.size(); i++) {
+            if (tmp.get(i) >= num) {
+                ans = i;
+                num = tmp.get(i);
+            }
+        }
+        System.out.println(num);
+        return map.get(ans);
     }
 
     public static void makeGraph() throws IOException {
@@ -77,5 +114,9 @@ public class ConnGraph {
 
     public static void showGraph() throws IOException {
         Runtime.getRuntime().exec("mspaint " + resPath + fileName + ".png");
+    }
+
+    public static String getGraphPath() {
+        return resPath + fileName + ".png";
     }
 }

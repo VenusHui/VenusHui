@@ -28,13 +28,14 @@ public class HttpTools {
     private final ArrayList<String> errorUrls = new ArrayList<>();
 
     public HttpTools() {
+        errorUrls.add("mp.weixin.qq.com");
         errorUrls.add("http://3101100178.age06.com/x310110/25372/index.aspx");
         errorUrls.add("https://www.youvisit.com/#/vte/?data-platform=v&data-link-type=immersive&data-inst=63731&data-image-width=100%&data-image-height=100%&data-loc=141509&");
     }
 
     public boolean isOK(String url) {
         for (String s : errorUrls) {
-            if (Objects.equals(s, url)) {
+            if (url.contains(s)) {
                 return false;
             }
         }
@@ -47,6 +48,7 @@ public class HttpTools {
                 return true;
             }
         } catch (Exception ignored) {
+            System.out.println("try to connect " + url + " error");
         } finally {
             if (response != null) {
                 try {
@@ -61,15 +63,11 @@ public class HttpTools {
     }
 
     public void getOuterUrls(HttpUrl url) {
-        if (url.getCount() >= maxSkipTime) {
-            return;
-        }
-
+        HttpConnPool.getConnectedSet().add(url.getUrl());
         // 获取base
         String baseUrl = url.getBaseSuffix();
 
         // 获取HTML
-        Integer defaultTimeOut = 1000;
         CloseableHttpClient client = HttpConnPool.getHttpClient(defaultTimeout);
         HttpGet httpGet = new HttpGet(url.getUrl());
         String page = "";
@@ -77,7 +75,7 @@ public class HttpTools {
         try {
             response = client.execute(httpGet);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                System.out.println("connect " + url.getUrl() + " success");
+                System.out.println("connect " + url.getUrl() + " success, " + "skip time: " + url.getCount());
                 page = EntityUtils.toString(response.getEntity(), "utf-8");
             } else {
                 System.err.println("connect " + url.getUrl() + " error");
@@ -113,16 +111,17 @@ public class HttpTools {
                     Pattern r = Pattern.compile(pattern);
                     Matcher m = r.matcher(str);
                     if (m.matches() && !str.contains(baseUrl)) {
-                        if (ConnGraph.getIndex(str) == -1) {
-                            HttpUrl nxtUrl = new HttpUrl(str, url.getCount() + 1);
-                            if (isOK(nxtUrl.getUrl())) {
-                                ConnGraph.addEdge(url, nxtUrl);
-                                HttpConnPool.getConnQueue().add(nxtUrl);
-                                num++;
-                                if (num >= maxUrlNumPerPage) {
-                                    return;
-                                }
+                        HttpUrl nxtUrl = new HttpUrl(str, url.getCount() + 1);
+                        /*if (HttpConnPool.getConnectedSet().contains(nxtUrl.getUrl())) {
+                            return;
+                        }*/
+                        ConnGraph.addEdge(url, nxtUrl);
+                        if (isOK(nxtUrl.getUrl())) {
+                            num++;
+                            if (num > maxUrlNumPerPage || nxtUrl.getCount() >= maxSkipTime) {
+                                return;
                             }
+                            HttpConnPool.getConnQueue().addLast(nxtUrl);
                         }
                     }
                 }

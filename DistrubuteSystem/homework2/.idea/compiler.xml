@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="HttpClient" />
+        <module name="SocketFileTranspoClient" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="18" />

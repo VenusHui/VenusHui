@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6cee054-8b74-49b5-bb08-17d66b8be8e2" name="变更" comment="">
-      <change beforePath="$PROJECT_DIR$/../../ACM-ICPC/ACM-ICPC-Preparation-Note.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../ACM-ICPC/ACM-ICPC-Preparation-Note.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../../.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +34,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectId" id="2FO4tlrR2lCyUYwqpKM9x7AhaGB" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -46,8 +46,8 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="项目" />
-    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.last.edited" value="模块" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="File.Encoding" />
   </component>
@@ -124,6 +124,7 @@
       <configuration name="Application">
         <watch expression="graph" language="JAVA" />
         <watch expression="map" language="JAVA" />
+        <watch expression="HttpConnPool.connQueue" language="JAVA" />
       </configuration>
     </watches-manager>
   </component>
