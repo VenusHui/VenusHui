@@ -1,9 +1,9 @@
 /**
  * @platform: Codeforces
- * @problem: CodeforcesRound#828A 
+ * @problem: CodeforcesRound#829A 
  * @version: Contest Version
  * @author: VenusHui
- * @date: 2022-10-16
+ * @date: 2022-10-23
  */
 #include <bits/stdc++.h>
 typedef long long ll;
@@ -18,11 +18,23 @@ int main() {
     while (t--) {
         int n;
         cin >> n;
-        vector<int> a(n);
+        string s;
+        cin >> s;
+        int tmp = 0;
         for (int i = 0; i < n; i++) {
-            cin >> a[i];
+            if (s[i] == 'Q') {
+                tmp++;
+            }
+            else {
+                tmp = max(0, tmp - 1);
+            }
         }
-        
+        if (tmp <= 0) {
+            cout << "Yes" << '\n';
+        }
+        else {
+            cout << "No" << '\n';
+        }
     }
 
     return 0;

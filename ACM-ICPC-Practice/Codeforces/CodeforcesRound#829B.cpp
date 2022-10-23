@@ -1,9 +1,9 @@
 /**
  * @platform: Codeforces
- * @problem: CodeforcesRound#828A 
+ * @problem: CodeforcesRound#829B 
  * @version: Contest Version
  * @author: VenusHui
- * @date: 2022-10-16
+ * @date: 2022-10-23
  */
 #include <bits/stdc++.h>
 typedef long long ll;
@@ -18,11 +18,18 @@ int main() {
     while (t--) {
         int n;
         cin >> n;
-        vector<int> a(n);
-        for (int i = 0; i < n; i++) {
-            cin >> a[i];
+        vector<int> ans(n);
+        for (int i = 0; i < n / 2; i++) {
+            ans[i * 2] = n / 2 + i + 1;
+            ans[i * 2 + 1] = i + 1;
         }
-        
+        if (n % 2 != 0) {
+            ans[n - 1] = n;
+        }
+        for (int i = 0; i < n; i++) {
+            cout << ans[i] << " ";
+        }
+        cout << '\n';
     }
 
     return 0;
