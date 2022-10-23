@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact name="SocketFileTranspoClient:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SocketFileTranspoClient_jar</output-path>
+    <root id="root">
+      <element id="archive" name="SocketFileTranspoClient.jar">
+        <element id="module-output" name="SocketFileTranspoClient" />
+      </element>
+    </root>
+  </artifact>
+</component>
