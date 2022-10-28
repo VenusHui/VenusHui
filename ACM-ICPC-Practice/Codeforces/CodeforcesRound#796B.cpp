@@ -1,6 +1,6 @@
 /**
  * @platform: Codeforces
- * @problem: CodeforcesGlobalRound#796B 
+ * @problem: CodeforcesRound#796B 
  * @version: Contest Version
  * @author: VenusHui
  * @date: 2022-09-06

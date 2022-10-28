@@ -10,7 +10,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6cee054-8b74-49b5-bb08-17d66b8be8e2" name="变更" comment="">
-      <change beforePath="$PROJECT_DIR$/../../.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../.vscode/settings.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../ACM-ICPC-Practice/LeetCode/P1235.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HttpClient/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/AppRun.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/controller/HttpConnPool.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/controller/HttpTools.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/model/HttpUrl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/homework2.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../ACM-ICPC-Practice/Codeforces/CodeforcesGlobalRound#796B.cpp" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,7 +39,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -52,6 +65,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;openjdk-18&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/Augustern/Desktop/Buffer/console&quot;,
     &quot;project.structure.last.edited&quot;: &quot;工件&quot;,
@@ -115,6 +129,8 @@
       <workItem from="1664350016044" duration="2500000" />
       <workItem from="1664702943751" duration="1112000" />
       <workItem from="1664946149840" duration="17569000" />
+      <workItem from="1666778918272" duration="19000" />
+      <workItem from="1666779086781" duration="985000" />
     </task>
     <servers />
   </component>
