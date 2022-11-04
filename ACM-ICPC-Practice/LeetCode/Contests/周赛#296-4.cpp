@@ -54,3 +54,60 @@ public:
  * string param_3 = obj->cursorLeft(k);
  * string param_4 = obj->cursorRight(k);
  */
+
+// AC Version
+
+class TextEditor {
+public:
+    TextEditor() {
+
+    }
+    
+    void addText(string text) {
+        left += text;
+    }
+    
+    int deleteText(int k) {
+        int llen = left.size();
+        k = min(k, llen);
+        left.erase(left.end()-k, left.end());
+        return k;
+    }
+    
+    string cursorLeft(int k) {
+        int llen = left.size();
+        if(k>=llen){
+            right = left+right;
+            left = "";
+            return left;
+        }
+        right = left.substr(llen-k)+right;
+        left.erase(llen-k);
+        llen = left.size();
+        return left.substr(llen-min(10,llen));
+    }
+    
+    string cursorRight(int k) {
+        if(right.size()<=k){
+            left += right;
+            right = "";
+        }
+        else{
+            left += right.substr(0,k);
+            right.erase(0, k);
+        }
+        int llen = left.size();
+        return left.substr(llen-min(10,llen));
+    }
+private:
+    string left, right;
+};
+
+/**
+ * Your TextEditor object will be instantiated and called as such:
+ * TextEditor* obj = new TextEditor();
+ * obj->addText(text);
+ * int param_2 = obj->deleteText(k);
+ * string param_3 = obj->cursorLeft(k);
+ * string param_4 = obj->cursorRight(k);
+ */
