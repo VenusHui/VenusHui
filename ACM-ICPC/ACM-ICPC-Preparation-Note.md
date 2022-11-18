@@ -6,6 +6,37 @@
 >  
 > Reference: 
 
+### 经典问题
+
+- 使数组有序的最小交换次数
+
+```cpp
+int getMinSwaps(vector<int>& arr) {
+    int size = arr.size();
+    vector<pair<int, int>> res(size);
+    for (int i = 0; i < size; i++) {
+        res[i].first = arr[i];
+        res[i].second = i;
+    }
+    sort(res.begin(), res.end());
+    int ans = 0;
+    vector<bool> vis(size, false);
+    for (int i = 0; i < size; i++) {
+        if (vis[i] || res[i].second == i) {
+            continue;
+        }
+        int idx = i, tmp = 0;
+        while (!vis[idx]) {
+            vis[idx] = true;
+            tmp++;
+            idx = res[idx].second;
+        }
+        ans += (tmp - 1);
+    }
+    return ans;
+}
+```
+
 ### 二分
 
 
@@ -14,8 +45,7 @@
 
 ```cpp
 // gcd & lcm
-inline int gcd(int a, int b) { return b ? gcd(b, a % b) : a; }
-inline int lcm(int a, int b) { return a / gcd(a, b) * b; }
+
 ```
 
 ### 高精度
