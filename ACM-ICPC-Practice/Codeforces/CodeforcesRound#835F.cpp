@@ -43,21 +43,10 @@ int main() {
         function<ll(int)> calc = [&] (int day) {
             ll res = pre[min(day, n - 1)] * (d / (day + 1));
             if (d % (day + 1) != 0) {
-                res += + pre[min(d % (day + 1) - 1, n - 1)];
+                res += pre[min(d % (day + 1) - 1, n - 1)];
             }
             return res;
         };
-        // int l = 0, r = d;
-        // while (l < r) {
-        //     int m = (l + r) >> 1;
-        //     if (calc(m) < c) {
-        //         l = m + 1;
-        //     }
-        //     else {
-        //         r = m;
-        //     }
-        // }
-        // cout << l << '\n';
         int x = 0;
         for (int i = 0; i < d; i++) {
             if (calc(i) >= c) {
