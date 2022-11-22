@@ -10,20 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6cee054-8b74-49b5-bb08-17d66b8be8e2" name="变更" comment="">
-      <change afterPath="$PROJECT_DIR$/../../ACM-ICPC-Practice/LeetCode/P1235.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HttpClient/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/AppRun.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/controller/HttpConnPool.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/controller/HttpTools.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HttpClient/src/main/java/model/HttpUrl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/homework2.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../ACM-ICPC-Practice/Codeforces/CodeforcesGlobalRound#796B.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../ComputerNetwork/ComputerNetwork.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../ComputerNetwork/ComputerNetwork.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +26,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -131,6 +118,8 @@
       <workItem from="1664946149840" duration="17569000" />
       <workItem from="1666778918272" duration="19000" />
       <workItem from="1666779086781" duration="985000" />
+      <workItem from="1669087100277" duration="267000" />
+      <workItem from="1669087932026" duration="18000" />
     </task>
     <servers />
   </component>
