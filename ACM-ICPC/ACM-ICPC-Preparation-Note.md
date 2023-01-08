@@ -2,55 +2,57 @@
 >  
 > time: 2021.09.15
 >
-> last edit: 2021.09.15
+> last edit: 2023.01.09
 >  
 > Reference: 
 
-### 经典问题
+# 基本算法
 
-- 使数组有序的最小交换次数
+## 排序
+
+### 快速排序
 
 ```cpp
-int getMinSwaps(vector<int>& arr) {
-    int size = arr.size();
-    vector<pair<int, int>> res(size);
-    for (int i = 0; i < size; i++) {
-        res[i].first = arr[i];
-        res[i].second = i;
+void quick_sort(vector<int>& a, int l, int r) {
+    if (l == r) {
+        return;
     }
-    sort(res.begin(), res.end());
-    int ans = 0;
-    vector<bool> vis(size, false);
-    for (int i = 0; i < size; i++) {
-        if (vis[i] || res[i].second == i) {
-            continue;
+    int x = a[l + r >> 1]; // 选取partition的方式
+    int i = l - 1, j = r + 1;
+    while (i < j) {
+        do {
+            i++;
+        } while (a[i] < x);
+        do {
+            j--;
+        } while (a[j] > x);
+        if (i < j) {
+            swap(a[i], a[j]);
         }
-        int idx = i, tmp = 0;
-        while (!vis[idx]) {
-            vis[idx] = true;
-            tmp++;
-            idx = res[idx].second;
-        }
-        ans += (tmp - 1);
     }
-    return ans;
+    quick_sort(a, l, j);
+    quick_sort(a, j + 1, r);
+    return;
 }
 ```
 
-### 二分
+## 二分
 
 
 
-### 数学
+## 数学
 
 ```cpp
 // gcd & lcm
-
+inline int gcd(int a, int b) { return b ? gcd(b, a % b) : a; }
+inline int lcm(int a, int b) { return a / gcd(a, b) * b; }
 ```
 
-### 高精度
+## 高精度
 
-#### 加法
+### 加法
+
+- 高精度加法
 
 ```cpp
 // 高精度加法板子
@@ -72,6 +74,8 @@ string add(string num1, string num2)
     return res;
 }
 ```
+
+- 小于等于 `n` 进制高精度加法
 
 ```cpp
 // 小于等于36进制高精度加法板子
@@ -109,15 +113,15 @@ string add(string num1, string num2)
 }
 ```
 
-## 数论
+# 数论
 
-### 埃拉托色尼筛法(Sieve of Eratosthenes)
+## 质数筛
 
-* 埃拉托色尼素数筛选法是找出在$[1, n]$范围内所有素数的方法，时间复杂度$O(nloglogn)$
+### 埃拉托色尼筛法
 
-* 算法思想：
+> Sieve of Eratosthenes
 
-* 代码实现：
+* 埃拉托色尼素数筛选法是找出在$[1, n]$范围内所有素数的方法，时间复杂度 $O(nloglogn)$
 
 ```cpp
 int n;
@@ -132,15 +136,15 @@ for (int i = 2; pow(i, 2) < n; i++) {
     }
 }
 ```
-### 线性基
+## 线性基
 
 - 线性基是一个集合，从原集合中选取任意多个数进行异或得到的值都能通过在线性基中选取一些数进行异或得到，可以将线性基理解为对原集合的一个压缩。
 
-## 图论
+# 图论
 
-### 最短路
+## 最短路
 
-#### Dijkstra堆优化
+### Dijkstra堆优化
 
 ```cpp
 // edge中第i个vector<pair<int, int>>存了第i个点出发的所有边，pair<int, int>中第一个int是终点，第二个int是边权
@@ -169,4 +173,35 @@ inline int dijsktra(vector<vector<pair<int, int>>> edge, int s, int t) {
     return dist[t];
 }
 
+```
+
+# 经典问题
+
+- 使数组有序的最小交换次数
+
+```cpp
+int getMinSwaps(vector<int>& arr) {
+    int size = arr.size();
+    vector<pair<int, int>> res(size);
+    for (int i = 0; i < size; i++) {
+        res[i].first = arr[i];
+        res[i].second = i;
+    }
+    sort(res.begin(), res.end());
+    int ans = 0;
+    vector<bool> vis(size, false);
+    for (int i = 0; i < size; i++) {
+        if (vis[i] || res[i].second == i) {
+            continue;
+        }
+        int idx = i, tmp = 0;
+        while (!vis[idx]) {
+            vis[idx] = true;
+            tmp++;
+            idx = res[idx].second;
+        }
+        ans += (tmp - 1);
+    }
+    return ans;
+}
 ```
