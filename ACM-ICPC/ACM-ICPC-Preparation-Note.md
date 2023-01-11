@@ -99,38 +99,23 @@ while (l < r) {
 return l;
 ```
 
-## 数学
-
-```cpp
-// gcd & lcm
-inline int gcd(int a, int b) { return b ? gcd(b, a % b) : a; }
-inline int lcm(int a, int b) { return a / gcd(a, b) * b; }
-```
-
 ## 高精度
-
-### 加法
 
 - 高精度加法
 
 ```cpp
-// 高精度加法板子
-string add(string num1, string num2)
-{
-    int carry = 0;
-    int i = num1.size() - 1, j = num2.size() - 1;
-    string res;
-    while (i >= 0 || j >= 0 || carry)
-    {
-        int x = i >= 0 ? num1[i] - '0' : 0;
-        int y = j >= 0 ? num2[j] - '0' : 0;
-        int temp = x + y + carry;
-        res += '0' + temp % 10;
-        carry = temp / 10;
+string add(string s1, string s2) {
+    string ans;
+    int t = 0, i = s1.size() - 1, j = s2.size() - 1;
+    while (t || i >= 0 || j >= 0) {
+        t += i >= 0 ? s1[i] - '0' : 0;
+        t += j >= 0 ? s2[j] - '0' : 0;
+        ans += t % 10 + '0';
+        t /= 10;
         i--, j--;
     }
-    reverse(res.begin(), res.end());
-    return res;
+    reverse(ans.begin(), ans.end());
+    return ans;
 }
 ```
 
@@ -138,22 +123,19 @@ string add(string num1, string num2)
 
 ```cpp
 // 小于等于36进制高精度加法板子
-char getChar(int n)
-{
+char getChar(int n) {
     if (n <= 9)
         return n + '0';
     else
         return n - 10 + 'a';
 }
-int getInt(char ch)
-{
+int getInt(char ch) {
     if ('0' <= ch && ch <= '9')
         return ch - '0';
     else
         return ch - 'a' + 10;
 }
-string add(string num1, string num2)
-{
+string add(string num1, string num2) {
     int carry = 0;
     int i = num1.size() - 1, j = num2.size() - 1;
     int x, y;
@@ -172,7 +154,146 @@ string add(string num1, string num2)
 }
 ```
 
+- 高精度减法
+
+```cpp
+string sub(string s1, string s2) {
+    bool flag = s1.size() < s2.size() || s1.size() == s2.size() && s1 < s2;
+    if (flag) swap(s1, s2);
+    string ans;
+    int t = 0, i = s1.size() - 1, j = s2.size() - 1;
+    while (i >= 0) {
+        t = s1[i] - '0' - t;
+        t -= j >= 0 ? s2[j] - '0' : 0;
+        ans += (t + 10) % 10 + '0';
+        t = t < 0 ? 1 : 0;
+        i--, j--;
+    }
+    while (ans.size() > 1 && ans.back() == '0') ans.pop_back(); // 删除前导 0
+    if (flag) ans += '-'; // 按需添加负号
+    reverse(ans.begin(), ans.end());
+    return ans;
+}
+```
+
+- 高精度乘法
+
+```cpp
+string mul(string s, int num) {
+    string ans;
+    int t = 0, i = s.size() - 1;
+    while (t || i >= 0) {
+        if (i >= 0) t += (s[i] - '0') * num;
+        ans += t % 10 + '0';
+        t /= 10, i--;
+    }
+    while (ans.size() > 1 && ans.back() == '0') ans.pop_back();
+    reverse(ans.begin(), ans.end());
+    return ans;
+}
+```
+
+- 高精度除法
+
+```cpp
+pair<string, int> div(string s, int num) {
+    pair<string, int> ans = make_pair("", 0);
+    for (int i = 0; i < s.size(); i++) {
+        ans.second = ans.second * 10 + s[i] - '0';
+        ans.first += ans.second / num + '0';
+        ans.second %= num;
+    }
+    while (ans.first.size() > 1 && ans.first.front() == '0')
+        ans.first.erase(ans.first.begin());
+    return ans;
+}
+```
+
+## 前缀和/差分
+
+### 前缀和
+
+前缀和数组（矩阵）的第一位（第一行和第一列）为辅助位置，通常为 `0`
+
+- 一维前缀和
+
+```cpp
+// stl numeric，pre[0] = a[0]，不含辅助位置
+partial_sum(a.begin(), a.end(), pre.begin());
+```
+
+```cpp
+// pre[0] = 0
+vector<int> pre(n + 1);
+for (int i = 1; i <= n; i++) {
+    pre[i] = pre[i - 1] + a[i - 1];
+}
+```
+
+```cpp
+// 计算区间 [l, r] 的区间和
+pre[r] - pre[l - 1]
+```
+
+- 二维前缀和
+
+```cpp
+vector<vector<int>> pre(n + 1, vector<int>(m + 1));
+for (int i = 1; i <= n; i++) {
+    for (int j = 1; j <= m; j++) {
+        pre[i][j] = pre[i - 1][j] + pre[i][j - 1] - pre[i - 1][j - 1] + a[i - 1][j - 1];
+    }
+}
+```
+
+```cpp
+// 计算 (x1, y1) 到 (x2, y2) 矩形和
+pre[x2][y2] - pre[x1 - 1][y2] - pre[x2][y1 - 1] + pre[x1 - 1][y1 - 1]
+```
+
+### 差分
+
+差分数组（矩阵）的最后一位（最后一行和最后一列）为辅助位置，在求最终数组（矩阵）时不会被计算到
+
+- 一维差分
+
+```cpp
+vector<int> pre(n + 1);
+// 向区间 [l, r] 中的所有数加上 c
+function<void(int, int, int)> insert = [&] (int l, int r, int c) {
+    pre[l] += c, pre[r + 1] -= c;
+};
+// 求最终数列
+vector<int> ans(n);
+partial_sum(pre.begin(), pre.end(), ans.begin());
+```
+
+- 二维差分
+
+```cpp
+vector<vector<int>> pre(n + 1, vector<int>(m + 1));
+// 向 (x1, y1) 到 (x2, y2) 区域内的数都加上 c
+function<void(int, int, int, int, int)> insert = [&] (int x1, int y1, int x2, int y2, int c) {
+    pre[x1][y1] += c, pre[x2 + 1][y1] -= c, pre[x1][y2 + 1] -= c, pre[x2 + 1][y2 + 1] += c;
+};
+// 计算最终矩阵
+vector<vector<int>> ans(n + 1, vector<int>(m + 1));
+for (int i = 1; i <= n; i++) {
+    for (int j = 1; j <= m; j++) {
+        ans[i][j] = ans[i - 1][j] + ans[i][j - 1] - ans[i - 1][j - 1] + pre[i - 1][j - 1];
+    }
+}
+```
+
 # 数论
+
+## 最大公因数/最小公倍数
+
+```cpp
+// gcd & lcm
+inline int gcd(int a, int b) { return b ? gcd(b, a % b) : a; }
+inline int lcm(int a, int b) { return a / gcd(a, b) * b; }
+```
 
 ## 质数筛
 

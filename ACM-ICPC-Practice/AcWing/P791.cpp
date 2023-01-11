@@ -9,22 +9,18 @@
 typedef long long ll;
 using namespace std;
 
-string add(string num1, string num2)
-{
-    int carry = 0;
-    int i = num1.size() - 1, j = num2.size() - 1;
-    string res;
-    while (i >= 0 || j >= 0 || carry)
-    {
-        int x = i >= 0 ? num1[i] - '0' : 0;
-        int y = j >= 0 ? num2[j] - '0' : 0;
-        int temp = x + y + carry;
-        res += '0' + temp % 10;
-        carry = temp / 10;
+string add(string s1, string s2) {
+    string ans;
+    int t = 0, i = s1.size() - 1, j = s2.size() - 1;
+    while (t || i >= 0 || j >= 0) {
+        t += i >= 0 ? s1[i] - '0' : 0;
+        t += j >= 0 ? s2[j] - '0' : 0;
+        ans += t % 10 + '0';
+        t /= 10;
         i--, j--;
     }
-    reverse(res.begin(), res.end());
-    return res;
+    reverse(ans.begin(), ans.end());
+    return ans;
 }
 
 int main() {
