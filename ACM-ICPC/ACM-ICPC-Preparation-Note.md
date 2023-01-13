@@ -2,7 +2,7 @@
 >  
 > time: 2021.09.15
 >
-> last edit: 2023.01.09
+> last edit: 2023.01.13
 >  
 > Reference: 
 
@@ -312,6 +312,99 @@ x >> k & 1;
 
 ```cpp
 x & -x; // 找到 x 二进制表示中最低位 1 的位置，返回的是最低位 1 以及后面的 0 组成的二进制数
+```
+
+## 离散化
+
+> 将值域很大但数量较少的一个有序数列映射到从0开始的连续自然数上（通常可以作为数组下标）
+
+```cpp
+// 首先将所有需要离散化的值存入 alls
+vector<int> alls;
+// 对 alls 排序并去重
+sort(alls.begin(), alls.end());
+alls.erase(unique(alls.begin(), alls.end()), alls.end());
+// 通过二分进行映射
+int size = alls.size();
+function<int(int)> find = [&] (int x) {
+    int l = 0, r = size - 1;
+    while (l < r) {
+        int mid = l + r >> 1;
+        if (alls[mid] < x) {
+            l = mid + 1;
+        }
+        else {
+            r = mid;
+        }
+    }
+    return l + 1; // +1 是映射到从 1 开始的连续自然数上
+};
+```
+
+## 区间合并
+
+> 将有交集的区间进行合并
+
+```cpp
+function<vector<pair<int, int>>(vector<pair<int, int>>&)> merge = [&] (vector<pair<int, int>>& segs) {
+    vector<pair<int, int>> ans;
+    sort(segs.begin(), segs.end()); // 按照左端点升序进行排序
+    pair<int, int> interval = make_pair(INT_MIN, INT_MIN);
+    for (auto& seg : segs) {
+        if (interval.second < seg.first) { // 没有交集，添加答案
+            if (interval.first != INT_MIN) ans.push_back(interval);
+            interval = seg;
+        }
+        else { // 有交集，更新右端点
+            interval.second = max(interval.second, seg.second);
+        }
+    }
+    if (interval.first != INT_MIN) ans.push_back(interval); // 判断是否为空
+    return ans;
+};
+```
+
+# 数据结构
+
+## 链表
+
+- 静态链表：数组模拟链表
+
+```cpp
+// 一般写法
+int head = -1, idx = 0;
+vector<int> list, next;
+// 在第 k 个插入的数后插入一个数，从 -1 算起，k 为 -1 表示向起始位置插入
+function<void(int, int)> add = [&] (int k, int x) {
+    if (k == -1) list.push_back(x), next.push_back(head), head = idx++;
+    else list.push_back(x), next.push_back(next[k]), next[k] = idx++;
+};
+// 删除第 k 个插入的数后面的数，从 -1 算起，k 为 -1 表示移除起始位置的数
+function<void(int)> remove = [&] (int k) {
+    if (k == -1) head = next[head];
+    else next[k] = next[next[k]];
+};
+// 遍历链表
+for (int i = head; i != -1; i = next[i]) {
+    // list[i];
+}
+```
+
+```cpp
+ // 直接将 head 存进数组下标为 0 的位置，避免特判 head
+int idx = 1;
+vector<int> list(1, -1), next(1, -1);
+// 在第 k 个插入的数后插入一个数，从 0 算起，k 为 0 表示向起始位置插入
+function<void(int, int)> add = [&] (int k, int x) {
+    list.push_back(x), next.push_back(next[k]), next[k] = idx++;
+};
+// 删除第 k 个插入的数后面的数，从 0 算起，k 为 0 表示移除起始位置的数
+function<void(int)> remove = [&] (int k) {
+    next[k] = next[next[k]];
+};
+for (int i = 0; i != -1; i = next[i]) {
+    if(i > 0) // list[i]
+}
 ```
 
 # 数论
