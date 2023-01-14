@@ -368,6 +368,8 @@ function<vector<pair<int, int>>(vector<pair<int, int>>&)> merge = [&] (vector<pa
 
 ## 链表
 
+### 单链表
+
 - 静态链表：数组模拟链表
 
 ```cpp
@@ -406,6 +408,109 @@ for (int i = 0; i != -1; i = next[i]) {
     if(i > 0) // list[i]
 }
 ```
+
+### 双向链表
+
+```cpp
+// head 为下标 0 的位置，tail 为下标 1 的位置
+int idx = 2;
+vector<int> list(2, -1), lptr(2, -1), rptr(2, -);
+lptr[1] = 0, rptr[0] = 1;
+// 在第 k 个插入的数后插入一个数，k 为 0 表示向 head 后插入，k 为 lptr[1] 表示向 tail 前插入
+function<void(int, int)> add = [&] (int k, int x) {
+    list.push_back(x);
+    lptr.push_back(k), rptr.push_back(rptr[k]);
+    lptr[rptr[k]] = idx, rptr[k] = idx++;
+};
+// 删除第 k 个插入的数后面的数，从 0 算起，k 为 0 表示移除起始位置的数
+function<void(int)> remove = [&] (int k) {
+    lptr[rptr[k]] = lptr[k], rptr[lptr[k]] = rptr[k];
+};
+// 遍历链表
+for (int i = rptr[0]; i != 1; i = rptr[i]) {
+    // list[i];
+}
+```
+
+## 栈
+
+### 栈
+
+```cpp
+int top = 0;
+vector<int> stk;
+function<void(int)> push = [&] (int x) {
+    if (stk.size() <= top) stk.push_back(x), top++;
+    else stk[top++] = x;
+};
+function<void()> pop = [&] () {
+    top--;
+};
+function<bool()> empty = [&] () {
+    return top <= 0;
+};
+function<int()> query = [&] () {
+    return stk[top - 1];
+};
+```
+
+### 单调栈
+
+> 找到一个序列中每个元素左边第一个不大于该元素的元素
+
+性质：对于栈中 $a_i < a_j$ 且 $i < j$ （即 $a_i$ 在 $a_j$ 的底部），那么 $a_i$ 就没有存在的必要
+
+```cpp
+stack<int> stk;
+vector<int> a(n);
+for (int i = 0; i < n; i++) {
+    while (!stk.empty() && stk.top() >= a[i]) stk.pop();
+    ans[i] = stk.empty() ? -1 : stk.top();
+    stk.push(a[i]);
+}
+```
+
+每个元素最多进栈一次，出栈一次，时间复杂度为 $O(n)$ 
+
+## 队列
+
+### 队列
+
+```cpp
+int head = 0, tail = -1;
+vector<int> q;
+function<void(int)> push = [&] (int x) {
+    q.push_back(x), tail++;
+};
+function<void()> pop = [&] () {
+    head++;
+};
+function<bool()> empty = [&] () {
+    return tail - head < 0;
+};
+function<int()> query = [&] () {
+    return q[head];
+};
+```
+
+### 单调队列
+
+> 求滑动窗口中的最值
+
+```cpp
+int n, k; // k 为滑动窗口的长度
+vector<int> a(n);
+deque<int> q;
+for (int i = 0; i < n; i++) {
+    if (!q.empty() && q.front() < i - k + 1) q.pop_front(); // 队头超出滑窗范围则删去
+    while (!q.empty() && a[q.back()] >= a[i]) q.pop_back(); // >= 为求最小值，若该元素较小，则从队尾删除到队列单调为止
+    q.push_back(i);
+    // 排除滑窗未满的情况
+    if (i >= k - 1) a[q.front()]; // 当前最小值为单调队列的队头
+}
+```
+
+每个元素最多入队一次，出队一次，时间复杂度为 $O(n)$ 
 
 # 数论
 
