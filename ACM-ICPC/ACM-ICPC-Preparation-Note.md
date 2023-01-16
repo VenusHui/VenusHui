@@ -584,13 +584,13 @@ inline int dijsktra(vector<vector<pair<int, int>>> edge, int s, int t) {
 
 # 经典问题
 
-- 求数组的逆序对数量（归并排序）
+### 求数组的逆序对数量
+
+> gui'bing
 
 ```cpp
 function<int(int, int)> merge_sort = [&] (int l, int r) {
-    if (l == r) {
-        return 0;
-    }
+    if (l == r) return 0;
     int mid = l + r >> 1;
     int ans = merge_sort(l, mid) + merge_sort(mid + 1, r);
     int i = l, j = mid + 1;
@@ -604,20 +604,14 @@ function<int(int, int)> merge_sort = [&] (int l, int r) {
             ans += mid - i + 1;
         }
     }
-    while (i <= mid) {
-        tmp.push_back(a[i++]);
-    }
-    while (j <= r) {
-        tmp.push_back(a[j++]);
-    }
-    for (i = l, j = 0; i <= r; i++, j++) {
-        a[i] = tmp[j];
-    }
+    while (i <= mid) tmp.push_back(a[i++]);
+    while (j <= r) tmp.push_back(a[j++]);
+    for (i = l, j = 0; i <= r; i++, j++) a[i] = tmp[j];
     return ans;
 };
 ```
 
-- 使数组有序的最小交换次数
+### 使数组有序的最小交换次数
 
 ```cpp
 int getMinSwaps(vector<int>& arr) {
@@ -631,9 +625,7 @@ int getMinSwaps(vector<int>& arr) {
     int ans = 0;
     vector<bool> vis(size, false);
     for (int i = 0; i < size; i++) {
-        if (vis[i] || res[i].second == i) {
-            continue;
-        }
+        if (vis[i] || res[i].second == i) continue;
         int idx = i, tmp = 0;
         while (!vis[idx]) {
             vis[idx] = true;
@@ -645,3 +637,21 @@ int getMinSwaps(vector<int>& arr) {
     return ans;
 }
 ```
+
+### 字符串分割
+
+```cpp
+vector<string_view> split(const string & str, char target) {
+    vector<string_view> res;
+    string_view s(str);
+    int pos = 0;
+    while (pos < s.size()) {
+        while (pos < s.size() && s[pos] == target) pos++;
+        int start = pos;
+        while (pos < s.size() && s[pos] != target) pos++;
+        if (pos > start) res.emplace_back(s.substr(start, pos - start));
+    }
+    return res;
+}
+```
+
