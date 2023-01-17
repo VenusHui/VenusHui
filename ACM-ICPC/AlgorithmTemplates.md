@@ -518,6 +518,31 @@ for (int i = 0; i < n; i++) {
 
 - KMP字符串匹配
 
+```cpp
+string p, s; // p 为 模式串，长度为 n，s 为待匹配字符串，长度为 m
+vector<int> next(n); // next[i] 即为 substr(0, i) 的最长公共前后缀的长度
+// 计算模式串 p 的 next 数组
+for (int i = 1, j = 0; i < n; i++) { // next[0] = 0, 这里直接从 1 开始
+    while (j && p[i] != p[j]) j = next[j - 1]; // 若匹配不成功，则 j 向前回溯
+    if (p[i] == p[j]) j++; // 匹配成功 j 则向后
+    next[i] = j; // 记录当前位置的 next 值
+}
+// s 和 p 进行匹配
+for (int i = 0, j = 0; i < m; i++) {
+    while (j && s[i] != p[j]) j = next[j - 1]; // s[i - 1] 和 p[j - 1] 相等，所以 j 回溯到 next[j - 1]，然后再比较 s[i] 和 p[next[j - 1]]，保证了 i 不会回溯
+    if (s[i] == p[j]) j++;
+    if (j == n) cout << i - j + 1 << " "; // 匹配成功，模式串 p 在 字符串 s 中出现的起始下标位置
+}
+```
+
+## 字典树 `Trie` 
+
+> 存储和查找字符串集合
+
+
+
+
+
 # 数论
 
 ## 最大公因数/最小公倍数
