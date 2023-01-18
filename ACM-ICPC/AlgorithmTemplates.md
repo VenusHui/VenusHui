@@ -539,9 +539,32 @@ for (int i = 0, j = 0; i < m; i++) {
 
 > 存储和查找字符串集合
 
-
-
-
+```cpp
+const int maxn = 26; // 出现的字符种类数，以 26 个小写英文字母为例
+// 字典树，用一个 vector 存储所有节点，节点为一个 pair，first 为该节点之后下一位置的下标，无效为 0；second 为以该节点结尾的字符串的个数
+vector<pair<vector<int>, int>> trie(1, make_pair(vector<int>(maxn), 0));
+// 向字典树中添加一个字符串 s
+function<void(string)> insert = [&] (string s) {
+    int pos = 0;
+    for (auto& e : s) {
+        if (trie[pos].first[e - 'a'] == 0) { // 不存在则添加
+            trie[pos].first[e - 'a'] = trie.size();
+            trie.push_back(make_pair(vector<int>(maxn), 0));
+        }
+        pos = trie[pos].first[e - 'a'];
+    }
+    trie[pos].second++; // 记录结尾
+};
+// 查找字典树中字符串 s 出现的次数
+function<int(string)> query = [&] (string s) {
+    int pos = 0;
+    for (auto& e : s) {
+        if (trie[pos].first[e - 'a'] == 0) return 0;
+        pos = trie[pos].first[e - 'a'];
+    }
+    return trie[pos].second;
+};
+```
 
 # 数论
 
