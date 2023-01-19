@@ -35,7 +35,7 @@ void merge_sort(vector<int>& a, int l, int r) {
     if (l == r) return;
     int mid = l + r >> 1;
     merge_sort(a, l, mid);
-  	merge_sort(a, mid + 1, r);
+    merge_sort(a, mid + 1, r);
     vector<int> tmp;
     int i = l, j = mid + 1;
     while (i <= mid && j <= r) {
@@ -44,7 +44,7 @@ void merge_sort(vector<int>& a, int l, int r) {
     }
     while (i <= mid) tmp.push_back(a[i++]);
     while (j <= r) tmp.push_back(a[j++]);
-  	// i 循环原始数组，j 循环 tmp 数组
+    // i 循环原始数组，j 循环 tmp 数组
     for (i = l, j = 0; i <= r; i++, j++) a[i] = tmp[j];
     return;
 }
@@ -538,6 +538,58 @@ function<int(string)> query = [&] (string s) {
     return trie[pos].second;
 };
 ```
+
+## 并查集
+
+> 维护一些集合的集合，可以将其中的两个集合合并，可以快速判断两个元素是否属于同一个集合
+
+### 基本操作
+
+```cpp
+vector<int> disjoint_set;
+// 查找 x 的父节点，同时进行路径压缩
+function<int(int)> find = [&] (int x) {
+    if (disjoint_set[x] != x) disjoint_set[x] = find(disjoint_set[x]);
+    return disjoint_set[x];
+};
+// 将 a, b 元素所在的两个集合合并
+function<void(int, int)> union = [&] (int a, int b) {
+    disjoint_set[find(a)] = find(b); // 即将 b 所在树的根节点加到 a 所在树根节点的下面
+};
+// 查询 a, b 元素是否在同一个集合中
+function<bool(int, int)> query = [&] (int a, int b) {
+    return find(a) == find(b);
+};
+```
+
+### 维护额外信息
+
+- 集合元素个数
+
+```cpp
+vector<pair<int, int>> disjoint_set; // pair 中的 first 为当前节点的父节点下标，second 为当前节点为根时集合中的元素个数，当且仅当 disjoint_set[x] = x 即当前节点为根节点时 second 值才有意义
+// 查找 x 的父节点，同时进行路径压缩
+function<int(int)> find = [&] (int x) {
+    if (disjoint_set[x].first != x) disjoint_set[x].first = find(disjoint_set[x].first);
+    return disjoint_set[x].first;
+};
+// 查询 a, b 元素是否在同一个集合中
+function<bool(int, int)> together = [&] (int a, int b) {
+    return find(a) == find(b);
+};
+// 将 a, b 元素所在的两个集合合并
+function<void(int, int)> set_union = [&] (int a, int b) {
+    if (together(a, b)) return;
+    disjoint_set[find(b)].second += disjoint_set[find(a)].second;
+    disjoint_set[find(a)].first = find(b);
+};
+// 返回元素 a 所在集合的元素个数
+function<int(int)> set_size = [&] (int a) {
+    return disjoint_set[find(a)].second;
+};
+```
+
+
 
 # 数论
 
