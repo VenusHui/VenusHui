@@ -14,21 +14,13 @@
 
 ```cpp
 void quick_sort(vector<int>& a, int l, int r) {
-    if (l == r) {
-        return;
-    }
+    if (l == r) return;
     int x = a[l + r >> 1]; // 选取partition的方式
     int i = l - 1, j = r + 1;
     while (i < j) {
-        do {
-            i++;
-        } while (a[i] < x); // 注意这里是小于而不是小于等于
-        do {
-            j--;
-        } while (a[j] > x);
-        if (i < j) {
-            swap(a[i], a[j]);
-        }
+        do i++; while (a[i] < x); // 注意这里是小于而不是小于等于
+        do j--; while (a[j] > x);
+        if (i < j) swap(a[i], a[j]);
     }
     quick_sort(a, l, j);
     quick_sort(a, j + 1, r);
@@ -40,31 +32,20 @@ void quick_sort(vector<int>& a, int l, int r) {
 
 ```cpp
 void merge_sort(vector<int>& a, int l, int r) {
-    if (l == r) {
-        return;
-    }
+    if (l == r) return;
     int mid = l + r >> 1;
     merge_sort(a, l, mid);
-    merge_sort(a, mid + 1, r);
+  	merge_sort(a, mid + 1, r);
     vector<int> tmp;
     int i = l, j = mid + 1;
     while (i <= mid && j <= r) {
-        if (a[i] <= a[j]) {
-            tmp.push_back(a[i++]);
-        }
-        else {
-            tmp.push_back(a[j++]);
-        }
+        if (a[i] <= a[j]) tmp.push_back(a[i++]);
+        else tmp.push_back(a[j++]);
     }
-    while (i <= mid) {
-        tmp.push_back(a[i++]);
-    }
-    while (j <= r) {
-        tmp.push_back(a[j++]);
-    }
-    for (i = l, j = 0; i <= r; i++, j++) { // i 循环原始数组，j 循环 tmp 数组
-        a[i] = tmp[j];
-    }
+    while (i <= mid) tmp.push_back(a[i++]);
+    while (j <= r) tmp.push_back(a[j++]);
+  	// i 循环原始数组，j 循环 tmp 数组
+    for (i = l, j = 0; i <= r; i++, j++) a[i] = tmp[j];
     return;
 }
 ```
@@ -75,12 +56,8 @@ void merge_sort(vector<int>& a, int l, int r) {
 int l = 0, r = n - 1;
 while (l < r) {
     int m = l + r >> 1; // 是否 +1 与区间的更新方式有关
-    if (check(m)) {
-        l = mid + 1;
-    }
-    else {
-        r = mid;
-    }
+    if (check(m)) l = mid + 1;
+    else r = mid;
 }
 return l;
 ```
@@ -89,12 +66,8 @@ return l;
 int l = 0, r = n - 1;
 while (l < r) {
 	int m = l + r + 1 >> 1; // 是否 +1 与区间的更新方式有关
-	if (check(m)) {
-		l = mid;
-	}
-	else {
-		r = mid - 1;
-	}
+	if (check(m)) l = mid;
+	else r = mid - 1;
 }
 return l;
 ```
@@ -640,7 +613,7 @@ inline int dijsktra(vector<vector<pair<int, int>>> edge, int s, int t) {
 
 ### 求数组的逆序对数量
 
-> gui'bing
+> 归并排序
 
 ```cpp
 function<int(int, int)> merge_sort = [&] (int l, int r) {
