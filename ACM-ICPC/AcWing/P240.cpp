@@ -25,7 +25,7 @@ int main() {
         if (together(a, b)) return;
         disjoint_set[find(a)].first = find(b);
     };
-    function<int(int)> set_size = [&] (int a) {
+    function<int(int)> set_query = [&] (int a) {
         return disjoint_set[find(a)].second;
     };
     int n, k;
@@ -40,7 +40,7 @@ int main() {
             set_union(x, y);
         }
         if (d == 2) {
-
+            if (set_query(x) == 'x' && set_query(y) == 'x')
         }
     }
 
