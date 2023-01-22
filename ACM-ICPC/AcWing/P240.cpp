@@ -13,36 +13,43 @@ int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.tie(nullptr);
-    vector<pair<int, char>> disjoint_set;
-    function<int(int)> find = [&] (int x) {
-        if (disjoint_set[x].first != x) disjoint_set[x].first = find(disjoint_set[x].first);
-        return disjoint_set[x].first;
-    };
-    function<bool(int, int)> together = [&] (int a, int b) {
-        return find(a) == find(b);
-    };
-    function<void(int, int)> set_union = [&] (int a, int b) {
-        if (together(a, b)) return;
-        disjoint_set[find(a)].first = find(b);
-    };
-    function<int(int)> set_query = [&] (int a) {
-        return disjoint_set[find(a)].second;
+    vector<pair<int, int>> disjoint_set;
+    function<pair<int, int>(int)> find = [&] (int x) {
+        if (disjoint_set[x].first != x) {
+            pair<int, int> t = find(disjoint_set[x].first);
+            disjoint_set[x].second += disjoint_set[disjoint_set[x].first].second;
+            disjoint_set[x].first = t.first;
+        }
+        return disjoint_set[x];
     };
     int n, k;
     cin >> n >> k;
-    for (int i = 0; i <= n; i++) disjoint_set.push_back(i, 'x');
+    for (int i = 0; i <= n; i++) disjoint_set.push_back(make_pair(i, 0));
     int ans = 0;
     while (k--) {
         int d, x, y;
         cin >> d >> x >> y;
-        if (x > n || y > n || d == 2 && x == y) ans++, continue;
-        if (d == 1) {
-            set_union(x, y);
+        if (x > n || y > n) {
+            ans++;
+            continue;
         }
-        if (d == 2) {
-            if (set_query(x) == 'x' && set_query(y) == 'x')
+        pair<int, int> px = find(x), py = find(y);
+        if (d == 1) {
+            if (px.first == py.first && (px.second - py.second) % 3) ans++;
+            else if (px.first != py.first) {
+                disjoint_set[px.first].second = disjoint_set[y].second - disjoint_set[x].second;
+                disjoint_set[px.first].first = py.first;
+            }
+        }
+        else if (d == 2) {
+            if (px.first == py.first && (px.second - py.second - 1) % 3) ans++;
+            else if (px.first != py.first) {
+                disjoint_set[px.first].second = disjoint_set[y].second - disjoint_set[x].second + 1;
+                disjoint_set[px.first].first = py.first;
+            }
         }
     }
+    cout << ans << '\n';
 
     return 0;
 }

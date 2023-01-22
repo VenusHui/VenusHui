@@ -6,6 +6,8 @@
 >  
 > Reference: 
 
+[TOC]
+
 # 基本算法
 
 ## 排序
@@ -553,7 +555,7 @@ function<int(int)> find = [&] (int x) {
     return disjoint_set[x];
 };
 // 将 a, b 元素所在的两个集合合并
-function<void(int, int)> union = [&] (int a, int b) {
+function<void(int, int)> set_union = [&] (int a, int b) {
     disjoint_set[find(a)] = find(b); // 即将 b 所在树的根节点加到 a 所在树根节点的下面
 };
 // 查询 a, b 元素是否在同一个集合中
@@ -589,7 +591,26 @@ function<int(int)> set_size = [&] (int a) {
 };
 ```
 
+- 当前节点到根节点的距离
 
+```cpp
+vector<pair<int, int>> disjoint_set; // pair 中的 first 为当前节点的父节点下标，second 为当前节点到根节点的距离
+// 若并不是只有根节点有意义的数据，find 需要返回整个 pair
+function<pair<int, int>(int)> find = [&] (int x) {
+    if (disjoint_set[x].first != x) {
+        pair<int, int> t = find(disjoint_set[x].first); // 先保存当前节点的根节点
+        disjoint_set[x].second += disjoint_set[disjoint_set[x].first].second; // 更新距离
+        disjoint_set[x].first = t.first; // 将当前节点接到根节点，完成路径压缩
+    }
+    return disjoint_set[x];
+};
+```
+
+## 堆
+
+> 维护一个数据集合，能够快速得到该集合的最值
+
+## 哈希表
 
 # 数论
 
