@@ -610,6 +610,77 @@ function<pair<int, int>(int)> find = [&] (int x) {
 
 > 维护一个数据集合，能够快速得到该集合的最值
 
+- 一般的堆，无法对堆中的某个特定数进行操作
+
+```cpp
+int size = n;
+// 下标从 1 开始存储完全二叉树，2x 为 x 的左儿子，2x + 1 为 x 的右儿子，x / 2 为 x 的父节点
+vector<int> heap(size + 1);
+// 向上调整，与父节点比较
+function<void(int)> up = [&] (int x) {
+    while (x / 2 != 0 && heap[x / 2] > heap[x]) {
+        swap(heap[x / 2], heap[x]);
+        x /= 2;
+    }
+};
+// 向下调整，与左右儿子比较，找到三个节点中的最小
+function<void(int)> down = [&] (int x) {
+    int t = x;
+    if (x * 2 <= size && heap[x * 2] < heap[t]) t = x * 2;
+    if (x * 2 + 1 <= size && heap[x * 2 + 1] < heap[t]) t = x * 2 + 1;
+    if (x != t) swap(heap[t], heap[x]), down(t);
+};
+// 删除节点，将节点移到最后，进行删除并调整
+function<void(int)> remove = [&] (int x) {
+    heap[x] = heap[size--];
+    up(x), down(x);
+};
+// 初始化堆，从 size / 2 处开始向下调整即可（叶子节点无需向下调整），初始化的复杂度为 O(n)
+for (int i = size / 2; i >= 0; i--) down(i);
+```
+
+- 需要对堆中某个数进行操作，从而需要维护下标间映射关系
+
+```cpp
+int size = 0, idx = 0; // idx 为已经插入点的数量
+// 映射关系：ph[k] 第 k 个插入点在堆中的下标，hp[k] 堆中下标为 k 数的插入次序（ph 数组中的下标）
+vector<int> heap(maxn), ph(maxn), hp(maxn);
+// 交换的同时需要更新映射关系
+function<void(int, int)> heap_swap = [&] (int x, int y) {
+    swap(ph[hp[x]], ph[hp[y]]);
+    swap(hp[x], hp[y]);
+    swap(heap[x], heap[y]);
+};
+function<void(int)> up = [&] (int x) {
+    while (x / 2 != 0 && heap[x] < heap[x / 2]) {
+        heap_swap(x, x / 2);
+        x /= 2;
+    }
+};
+function<void(int)> down = [&] (int x) {
+    int t = x;
+    if (x * 2 <= size && heap[x * 2] < heap[t]) t = x * 2;
+    if (x * 2 + 1 <= size && heap[x * 2 + 1] < heap[t]) t = x * 2 + 1;
+    if (x != t) heap_swap(x, t), down(t);
+};
+// 向堆中插入一个数，插入到堆的最后，更新映射关系后再向上调整
+function<void(int)> insert = [&] (int x) {
+    idx++, size++;
+    ph[idx] = size; hp[size] = idx;
+    heap[size] = x;
+    up(size);
+};
+function<void(int)> remove = [&] (int x) {
+    heap_swap(x, size--);
+    up(x), down(x);
+};
+// 修改下标为 k 的节点值为 x
+function<void(int, int)> modify = [&] (int k, int x) {
+    heap[k] = x;
+    up(k), down(k);
+};
+```
+
 ## 哈希表
 
 # 数论
