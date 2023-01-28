@@ -613,26 +613,33 @@ function<pair<int, int>(int)> find = [&] (int x) {
 - 一般的堆，无法对堆中的某个特定数进行操作
 
 ```cpp
-int size = n;
+int size = 0;
 // 下标从 1 开始存储完全二叉树，2x 为 x 的左儿子，2x + 1 为 x 的右儿子，x / 2 为 x 的父节点
 vector<int> heap(size + 1);
 // 向上调整，与父节点比较
 function<void(int)> up = [&] (int x) {
     while (x / 2 != 0 && heap[x / 2] > heap[x]) {
-        swap(heap[x / 2], heap[x]);
+        swap(heap[x], heap[x / 2]);
         x /= 2;
     }
 };
 // 向下调整，与左右儿子比较，找到三个节点中的最小
 function<void(int)> down = [&] (int x) {
     int t = x;
-    if (x * 2 <= size && heap[x * 2] < heap[t]) t = x * 2;
-    if (x * 2 + 1 <= size && heap[x * 2 + 1] < heap[t]) t = x * 2 + 1;
-    if (x != t) swap(heap[t], heap[x]), down(t);
+    if (x * 2 <= size & heap[x * 2] < heap[t]) t = x * 2;
+    if (x * 2 + 1 <= size & heap[x * 2 + 1] < heap[t]) t = x * 2 + 1;
+    if (t != x) swap(heap[x], heap[t]), down(t);
+};
+// 插入节点，将节点插入到尾部，再向上调整
+function<void(int)> insert = [&] (int x) {
+    size++;
+    if (heap.size() > size) heap[size] = x;
+    else heap.push_back(x);
+    up(size);
 };
 // 删除节点，将节点移到最后，进行删除并调整
 function<void(int)> remove = [&] (int x) {
-    heap[x] = heap[size--];
+    swap(heap[x], heap[size--]);
     up(x), down(x);
 };
 // 初始化堆，从 size / 2 处开始向下调整即可（叶子节点无需向下调整），初始化的复杂度为 O(n)
@@ -682,6 +689,110 @@ function<void(int, int)> modify = [&] (int k, int x) {
 ```
 
 ## 哈希表
+
+### 一般哈希
+
+- 链式寻址法
+
+```cpp
+const int mod = 100003; // 质数且距离 2 的整次幂较远时冲突概率较小
+int idx = 0;
+vector<int> hash_list, list, next;
+// idx list next 为单链表相关，用这样一个单链表模拟多个邻接的链表，即 next 数组中有多少个 -1，就有多少个邻接的链表，hash_list[i] 为头节点
+// 哈希函数
+function<int(int)> hash = [&] (int x) {
+    return (x % mod + mod) % mod;
+};
+// 向哈希表中添加元素 x
+function<void(int)> insert = [&] (int x) {
+    int code = hash(x);
+    list.push_back(x), next.push_back(hash_list[code]);
+    hash_list[code] = idx++;
+};
+// 查询 x 是否再哈希表中
+function<bool(int)> query = [&] (int x) {
+    int code = hash(x);
+    for (int i = hash_list[code]; i != -1; i = next[i]) {
+        if (list[i] == x) return true;
+    }
+    return false;
+};
+```
+
+- 开放寻址法
+
+```cpp
+// 开放寻址法哈希表的长度通常要开到数据量的两到三倍，降低冲突概率
+// 0x3f3f3f3f 的十进制为 1061109567，1e9 数量级
+const int mod = 200003, mark = 0x3f3f3f3f;
+vector<int> hash_list(mod, mark);
+function<int(int)> hash = [&] (int x) {
+    return (x % mod + mod) % mod;
+};
+// 开放寻址法的核心，若 x 存在返回 x 的位置，不存在则返回 x 应该插入的位置
+function<int(int)> find = [&] (int x) {
+    int code = hash(x);
+    while (hash_list[code] != mark && hash_list[code] != x) {
+        code++;
+        if (code == mod) code = 0;
+    }
+    return code;
+};
+function<void(int)> insert = [&] (int x) {
+    int pos = find(x);
+    hash_list[pos] = x;
+};
+function<bool(int)> query = [&] (int x) {
+    int pos = find(x);
+    return hash_list[pos] != mark;
+};
+```
+
+### 字符串哈希
+
+> 字符串前缀哈希法
+>
+> 可以快速判断两个字符串的子串是否相同
+
+#### 哈希原理
+
+将字符串看作一个 `p` 进制的数，可以通过如下公式将任意一个字符串映射成一个 `0` 到 `q - 1` 的值
+$$
+hash("ABCD") = hash(1234)_p = (1 \times p^3 + 2 \times p^2 + 3 \times p^1 + 4 \times p^0) \bmod q
+$$
+通常情况下取经验值：
+$$
+p = 131 或 13331 \\
+q = 2^{64}
+$$
+
+#### 求任意字串的哈希值
+
+预处理字符串 `s` 的每一个前缀的哈希值
+$$
+hash(0, i) = hash(0, i - 1) \times p + s[i]
+$$
+已知 `hash(0, l)` 和 `hash(0, r)` 的情况下求 `hash(l, r)` 
+$$
+hash(l, r) = (hash(0, r) - hash(0, l) \times p^{r - l + 1}) \bmod q
+$$
+
+```cpp
+const ull p = 131;
+int n;
+string s;
+cin >> n >> s;
+vector<ull> hash(n + 1), base(n + 1, 1);
+// 预处理 p 的幂以及 s 的前缀哈希值
+for (int i = 1; i <= n; i++) {
+    base[i] = base[i - 1] * p;
+    hash[i] = hash[i - 1] * p + s[i - 1];
+}
+// 查询某个字串的哈希值（数组下标从 0 开始）
+function<ull(int, int)> query = [&] (int l, int r) {
+    return hash[r + 1] - hash[l] * base[r - l + 1];
+};
+```
 
 # 数论
 
