@@ -837,15 +837,26 @@ for (int i = 2; pow(i, 2) < n; i++) {
 
   在向上回溯的过程中一定要恢复现场，保证分支上的同一节点的状态相同
 
-  ```
-  status = new;
-  dfs(status);
-  status = old;
-  ```
+```
+func dfs(status) {
+		status = new;
+		dfs(status);
+		status = old;
+}
+```
 
 - 剪枝
 
 ## 广度优先搜索
+
+```
+queue<status> q;
+while (!empty()) {
+  	status cnt = q.front();
+  	q.pop();
+  	q.push(from status get other status)
+}
+```
 
 ## 最短路
 
