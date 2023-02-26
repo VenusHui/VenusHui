@@ -1,6 +1,12 @@
 # 计算机网络（自顶向下方法）
 
 >中国科学技术大学 - 郑烇、杨坚
+>
+>课程视频：[bilibili链接](https://www.bilibili.com/video/BV1JV411t7ow/)
+>
+>笔记：VenusHui
+>
+>最后更新：2023.02.26
 
 [TOC]
 
