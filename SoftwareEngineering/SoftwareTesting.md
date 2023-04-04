@@ -26,3 +26,8 @@
 4. Evaluation of Exit Criteria and Reporting，回到 2，3 
    - Exit Criteria：放行标准，所有的代码段至少被执行一次才能放行
 5. Test Closure Activities，回到 1，2 
+
+
+
+
+
