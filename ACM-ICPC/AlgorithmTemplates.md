@@ -17,7 +17,7 @@
 ```cpp
 void quick_sort(vector<int>& a, int l, int r) {
     if (l == r) return;
-    int x = a[l + r >> 1]; // 选取partition的方式
+    int x = a[l + r >> 1]; // 选取 partition 的方式
     int i = l - 1, j = r + 1;
     while (i < j) {
         do i++; while (a[i] < x); // 注意这里是小于而不是小于等于
@@ -53,6 +53,8 @@ void merge_sort(vector<int>& a, int l, int r) {
 ```
 
 ## 二分
+
+- **最大化最小 / 最小化最大** 问题通常用二分求解
 
 ```cpp
 int l = 0, r = n - 1;
@@ -794,7 +796,102 @@ function<ull(int, int)> query = [&] (int l, int r) {
 };
 ```
 
-# 数论
+# 数学
+
+## 质数
+
+### 质数判断
+
+```cpp
+function<bool(int)> check_prime = [&] (int num) {
+  	if (n < 2) return false;
+		for (int i = 2; i <= n / i; i++)
+  			if (n % i == 0) return false;
+		return true;
+};
+```
+
+### 分解质因数
+
+```cpp
+function<vector<pair<int, int>>(int)> get_prime_fact = [&] (int n) {
+  	// pair<int, int> 为质因数的底数和指数
+    vector<pair<int, int>> res;
+    for (int i = 2; i <= n / i; i++) {
+        if (n % i == 0) {
+            int s = 0;
+            while (n % i == 0) {
+                n /= i;
+                s++;
+            }
+            res.push_back({i, s});
+        }
+    }
+    if (n > 1) res.push_back({n, 1});
+    return res;
+};
+```
+
+### 质数筛
+
+- 埃氏筛
+
+埃拉托色尼素数筛选法是找出在$[1, n]$范围内所有素数的方法，时间复杂度 $O(nloglogn)$ 
+
+```cpp
+function<vector<bool>(int)> get_prime = [&] (int maxn) {
+    vector<bool> is_prime(maxn + 1, true);
+    is_prime[0] = is_prime[1] = false;
+    for (int i = 2; i <= maxn / i; i++) {
+        if (is_prime[i]) {
+            for (int j = i * i; j <= maxn; j += i) {
+                is_prime[j] = false;
+            }
+        }
+    }
+    return is_prime;
+};
+```
+
+- 线性筛
+
+```cpp
+function<vector<bool>(int)> get_prime = [&] (int maxn) {
+    vector<int> primes;
+    vector<bool> is_prime(maxn + 1, true);
+    is_prime[0] = is_prime[1] = false;
+    for (int i = 2; i <= maxn; i++) {
+        if (is_prime[i]) primes.push_back(i);
+        for (int j = 0; primes[j] <= maxn / i; j++) {
+            is_prime[primes[j] * i] = false;
+            if (i % primes[j] == 0) break;
+        }
+    }
+    return is_prime;
+};
+```
+
+## 因数
+
+### 所有因数
+
+```cpp
+function<vector<int>(int)> get_fact = [&] (int num) {
+    vector<int> res;
+    for (int i = 1; i <= num / i; i++) {
+        if (num % i == 0) {
+            res.push_back(i);
+            if (i != num / i) res.push_back(num / i);
+        }
+    }
+    sort(res.begin(), res.end());
+    return res;
+};
+```
+
+### 因数个数
+
+
 
 ## 最大公因数/最小公倍数
 
@@ -804,27 +901,6 @@ inline int gcd(int a, int b) { return b ? gcd(b, a % b) : a; }
 inline int lcm(int a, int b) { return a / gcd(a, b) * b; }
 ```
 
-## 质数筛
-
-### 埃拉托色尼筛法
-
-> Sieve of Eratosthenes
-
-* 埃拉托色尼素数筛选法是找出在$[1, n]$范围内所有素数的方法，时间复杂度 $O(nloglogn)$
-
-```cpp
-int n;
-cin >> n;
-vector<bool> prime(n + 1, true);
-prime[0] = prime[1] = false;
-for (int i = 2; pow(i, 2) < n; i++) {
-    if (prime[i]) {
-        for (int j = pow(i, 2); j <= n; j += i) {
-            prime[j] = false;
-        }
-    }
-}
-```
 ## 线性基
 
 - 线性基是一个集合，从原集合中选取任意多个数进行异或得到的值都能通过在线性基中选取一些数进行异或得到，可以将线性基理解为对原集合的一个压缩。
@@ -1161,9 +1237,9 @@ int getMinSwaps(vector<int>& arr) {
 ### 字符串分割
 
 ```cpp
-vector<string_view> split(const string & str, char target) {
-    vector<string_view> res;
-    string_view s(str);
+vector<string> split(const string & str, char target) {
+    vector<string> res;
+    string s(str);
     int pos = 0;
     while (pos < s.size()) {
         while (pos < s.size() && s[pos] == target) pos++;
