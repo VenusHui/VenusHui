@@ -21,14 +21,16 @@ int main() {
         cin >> n >> d;
         string s;
         cin >> s;
-        string ans = s;
+        bool flag = false;
         for (int i = 0; i < n; i++) {
-            string tmp = s;
-            tmp.insert(tmp.begin() + i, d + '0');
-            if (tmp[0] != '0') ans = max(ans, tmp);
+            if (s[i] - '0' < d) {
+                flag = true;
+                s.insert(s.begin() + i, d + '0');
+                break;
+            }
         }
-        s += d + '0';
-        cout << max(ans, s) << '\n';
+        if (!flag) s += d + '0';
+        cout << s << '\n';
     }
 
     return 0;
