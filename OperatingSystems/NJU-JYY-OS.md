@@ -1,12 +1,20 @@
-## 操作系统概述
+# 操作系统：设计与实现
+
+> 南京大学 2022 Spring
+>
+> 讲师：蒋炎岩
+>
+> 课程网站：https://jyywiki.cn/OS/2022/
+
+## 1. 操作系统概述
 
 ### 什么是操作系统
 
-make it easy to run programs, allowing programs to share memories
+> Make it easy to run programs, allowing programs to share memories
 
 没有必要下一个严谨的定义（管理软硬件资源，为程序提供服务），边界模糊
 
-## 操作系统上的程序
+## 2. 操作系统上的程序
 
 ### 程序的状态机模型
 
@@ -51,7 +59,6 @@ int main() {
     }
     return 0;
 }
-
 ```
 
 ### 什么是程序
@@ -66,8 +73,6 @@ int main() {
     - 函数调用：push frame，函数返回：pop frame
   - 初始状态：main的第一条语句
   - 迁移：执行一条简单语句
-
-![非递归汉诺塔实现](./Resources/hanoi-unrec.png)
 
 #### 二进制视角/机器视角（还是状态机）
 

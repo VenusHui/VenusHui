@@ -1,5 +1,11 @@
 # 操作系统：设计与实现
 
+> 南京大学 2023 Spring
+>
+> 讲师：蒋炎岩
+>
+> 课程网站：https://jyywiki.cn/OS/2023/
+
 ## 1. 操作系统概述
 
 学习任何东西的目的
@@ -42,6 +48,11 @@
 
 ```c
 #include <stdio.h>
-
+int main() {
+    printf("helllo\n");
+    return 0;
+}
 ```
+
+
 
