@@ -909,6 +909,19 @@ inline int lcm(int a, int b) { return a / gcd(a, b) * b; }
 
 对于不全为 $0$ 的任意整数 $a, b$ ，记 $g = gcd(a, b)$ ，则对于任意整数 $x, y$ 都满足 $a \times x + b \times y$ 是 $g$ 的倍数。
 
+## 牛顿法求平方根
+
+```cpp
+function<double(double)> sqrt = [&] (double x) {
+	double z = 1.0;
+	for (int i = 0; i < 10; i++) {
+		z -= (z * z - x) / (2 * z)
+	}
+	return z;
+}
+
+```
+
 # 搜索与图论
 
 ## 深度优先搜索
