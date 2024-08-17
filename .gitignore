@@ -1,11 +1,8 @@
 # vscode配置文件
 .vscode/
-.vscode/c_cpp_properties.json
-.vscode/launch.json
-.vscode/tasks.json
 *.class
 
-# test cpp file
+# test cpp file of windows
 ACM-ICPC-Practice/Codeforces/tempCodeRunnerFile.cpp
 
 # mac tmp storage
