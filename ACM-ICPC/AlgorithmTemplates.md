@@ -901,6 +901,32 @@ inline int gcd(int a, int b) { return b ? gcd(b, a % b) : a; }
 inline int lcm(int a, int b) { return a / gcd(a, b) * b; }
 ```
 
+## 快速幂
+
+在 $O(logk)$ 的时间复杂度下求得 $a^k$ $mod$ $p$ 的结果
+
+- 原理：
+
+  由 $k = 2^{x_1}+2^{x_2}+...+2^{x_n}, n = log(k)$ 
+
+  且 $a^{2^{x_i}} = (a^{2^{x_i} - 1})^2$
+
+  可以预处理得到所有 $a^{2^{x_i}}$ $mod$ $p$ 的值，根据 $k$ 的二进制表示边求和边取模即可
+
+```cpp
+using ll = long long;
+const int mod = 1e9 + 7;
+function<ll(int, int)> fast_power = [&] (int a, int k) {
+    ll res = 1;
+    while (k) {
+        if (k & 1) res = res * a % mod;
+        a = a * a % mod;
+        k >>= 1;
+    }
+    return res;
+};
+```
+
 ## 线性基
 
 - 线性基是一个集合，从原集合中选取任意多个数进行异或得到的值都能通过在线性基中选取一些数进行异或得到，可以将线性基理解为对原集合的一个压缩。
