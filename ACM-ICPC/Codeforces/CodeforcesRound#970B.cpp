@@ -25,17 +25,20 @@ int main() {
             cout << "No" << '\n';
             continue;
         }
-        if (n == 4 && s[0] == '1' && s[1] == '1' && s[2] == '1' && s[3] == '1') {
-            cout << "Yes" << '\n';
-            continue;
-        }
         int l = sqrt(n);
-        if (s[l + 1] == '0') {
-            cout << "Yes" << '\n';
+        bool ans = true;
+        for (int i = 0; i < l; i++) {
+            for (int j = 0; j < l; j++) {
+                if (i == 0 || j == 0 || i == l - 1 || j == l - 1) {
+                    ans = ans && s[i * l + j] == '1';
+                }
+                else {
+                    ans = ans && s[i * l + j] == '0';
+                }
+            }
         }
-        else {
-            cout << "No" << '\n';
-        }
+        if (ans) cout << "Yes" << '\n';
+        else cout << "No" << '\n';
     }
 
     return 0;
