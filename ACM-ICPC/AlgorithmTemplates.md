@@ -1009,6 +1009,11 @@ inline int dijsktra(vector<vector<pair<int, int>>> edge, int s, int t) {
 }
 ```
 
+## 树的存储
+
+- 邻接矩阵
+- 邻接表 
+
 # 动态规划
 
 ## 动态规划问题的分析方法
