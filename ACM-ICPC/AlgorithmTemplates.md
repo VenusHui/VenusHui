@@ -1014,6 +1014,64 @@ inline int dijsktra(vector<vector<pair<int, int>>> edge, int s, int t) {
 - 邻接矩阵
 - 邻接表 
 
+## 最小生成树
+
+### Prim 算法
+
+> 与 Dijsktra 算法类似，同样有朴素版本和堆优化版本
+
+时间复杂度：
+
+- 朴素版本 $O(n^2)$  适用于稠密图
+- 堆优化版本 $O(mlogn)$  适用于稀疏图，通常用 Kruskal 算法代替
+
+算法思路：
+
+```
+dist(n, -0x3f3f3f3f)
+for (int i = 0; i < n; i++)
+		找到集合外距离集合最近的点t，用 t 更新其他点到集合的距离;
+		s[t] = true;
+```
+
+模板
+
+```cpp
+// g中第i个vector<pair<int, int>>存了第i个点出发的所有边，pair<int, int>中第一个int是终点，第二个int是边权，点的编号从 0 开始
+function<int(vector<vector<pair<int, int>>>&, int)> prim = [&] (vector<vector<pair<int, int>>>& g, int n) {
+    vector<bool> s(n, false); // true 代表已经加入集合
+    vector<int> dist(n, 0x3f3f3f3f); // dist[i] 代表编号为 i 的点到集合的距离
+    int ans = 0;
+    for (int i = 0; i < n; i++) {
+        // 找到集合外距离集合最近的点
+        int t = -1;
+        for (int j = 0; j < n; j++) {
+            if (s[j] == false && (t == -1 || dist[j] < dist[t])) {
+                t = j;
+            }
+        }
+        
+        // 如果是孤立点，则无法构造最小生成树
+        if (i && dist[t] == 0x3f3f3f3f) return 0x3f3f3f3f;
+
+        if (i) ans += dist[t];
+      
+      	// 用 t 更新其他点到集合的距离
+        for (auto & e : g[t]) {
+            dist[e.first] = min(dist[e.first], e.second);
+        }
+        s[t] = true;
+    }
+    return ans; // 返回最小生成树的边权和
+};           
+```
+
+
+
+### Kruskal 算法
+
+时间复杂度：$O(mlogm)$ 适用于稀疏图
+
 # 动态规划
 
 ## 动态规划问题的分析方法
