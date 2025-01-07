@@ -1072,6 +1072,55 @@ function<int(vector<vector<pair<int, int>>>&, int)> prim = [&] (vector<vector<pa
 
 时间复杂度：$O(mlogm)$ 适用于稀疏图
 
+算法思路：
+
+```
+将所有边按照权重从小到大排序
+
+res = 0
+for edge(u, v, w) in sorted_edges:
+		if u, v 不连通
+				将 u, v 连通，res += w
+```
+
+- 是否连通可以借助 **并查集** 进行实现
+
+模版
+
+```cpp
+function<int(vector<vector<int>>&, int)> kruskal = [&] (vector<vector<int>>& g, int n) {
+    vector<int> disjoint_set(n);
+    for (int i = 0; i < n; i++) disjoint_set[i] = i;
+    function<int(int)> find = [&] (int x) {
+        if (disjoint_set[x] != x) disjoint_set[x] = find(disjoint_set[x]);
+        return disjoint_set[x];        
+    };
+    function<void(int, int)> set_union = [&] (int a, int b) {
+        disjoint_set[find(a)] = find(b);
+    };
+    function<bool(int, int)> is_union = [&] (int a, int b) {
+        return find(a) == find(b);
+    };
+
+    sort(g.begin(), g.end(), [&] (vector<int>& a, vector<int>& b) {
+        return a[2] < b[2];
+    });
+
+    int ans = 0, edge_num = 0;
+    for (auto& e : g) {
+        if (!is_union(e[0], e[1])) {
+            ans += e[2];
+            set_union(e[0], e[1]);
+            edge_num++;
+        }
+    }
+    if (edge_num == n - 1) return ans;
+    else return -1;
+};
+```
+
+
+
 # 动态规划
 
 ## 动态规划问题的分析方法
