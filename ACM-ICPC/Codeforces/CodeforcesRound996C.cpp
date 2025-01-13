@@ -20,18 +20,18 @@ int main() {
         cin >> n >> m;
         string s;
         cin >> s;
-        vector<vector<int>> a(n, vector<int>(m));
+        vector<vector<ll>> a(n, vector<ll>(m));
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 cin >> a[i][j];
             }
         }
-        int sum = 0;
+        ll sum = 0;
         int size = s.size();
         int x = 0, y = 0;
         for (int p = 0; p <= size; p++) {
             if (s[p] == 'D' || p == size) {
-                int res = 0;
+                ll res = 0;
                 for (int i = 0; i < m; i++) {
                     res -= a[x][i];
                 }
@@ -39,7 +39,7 @@ int main() {
                 x++;
             }
             else {
-                int res = 0;
+                ll res = 0;
                 for (int i = 0; i < n; i++) {
                     res -= a[i][y];
                 }
