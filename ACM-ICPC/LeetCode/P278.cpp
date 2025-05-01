@@ -4,22 +4,18 @@
 
 class Solution {
 public:
-    int firstBadVersion(int n) {
-        int ll = 1, rr = n;
-        while (ll <= rr)
-        {
-            int mid = (ll + rr) / 2;
-            if (isBadVersion(mid) == true)
-            {
-                rr = mid - 1;
-            }
-            else
-            {
-                ll = mid + 1;
-            }
-        }
-        return ll;
+  int firstBadVersion(int n) {
+    int ll = 1, rr = n;
+    while (ll <= rr) {
+      int mid = (ll + rr) / 2;
+      if (isBadVersion(mid) == true) {
+        rr = mid - 1;
+      } else {
+        ll = mid + 1;
+      }
     }
+    return ll;
+  }
 };
 
 // My standard binarySearch version
@@ -28,17 +24,16 @@ public:
 
 class Solution {
 public:
-    int firstBadVersion(int n) {
-        int l = 1, r = n;
-        while (l < r) {
-            int m = (r - l) / 2 + l;
-            if (isBadVersion(m)) {
-                r = m;
-            }
-            else {
-                l = m + 1;
-            }
-        }
-        return l;
+  int firstBadVersion(int n) {
+    int l = 1, r = n;
+    while (l < r) {
+      int m = (r - l) / 2 + l;
+      if (isBadVersion(m)) {
+        r = m;
+      } else {
+        l = m + 1;
+      }
     }
+    return l;
+  }
 };

@@ -11,20 +11,22 @@
  */
 class Solution {
 public:
-    ListNode* mergeInBetween(ListNode* list1, int a, int b, ListNode* list2) {
-        ListNode* node = list1, *left = nullptr, *right = nullptr;
-        int res = 0;
-        while (node) {
-            if (res == a - 1) left = node;
-            if (res == b + 1) right = node;
-            res++;
-            node = node->next;
-        }
-        left->next = list2;
-        while (list2->next) {
-            list2 = list2->next;
-        }
-        list2->next = right;
-        return list1;
+  ListNode *mergeInBetween(ListNode *list1, int a, int b, ListNode *list2) {
+    ListNode *node = list1, *left = nullptr, *right = nullptr;
+    int res = 0;
+    while (node) {
+      if (res == a - 1)
+        left = node;
+      if (res == b + 1)
+        right = node;
+      res++;
+      node = node->next;
     }
+    left->next = list2;
+    while (list2->next) {
+      list2 = list2->next;
+    }
+    list2->next = right;
+    return list1;
+  }
 };

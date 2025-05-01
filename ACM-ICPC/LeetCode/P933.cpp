@@ -1,17 +1,18 @@
 // 933. 最近的请求次数
 class RecentCounter {
 private:
-    queue<int> q;
-public:
-    RecentCounter() {}
+  queue<int> q;
 
-    int ping(int t) {
-        q.push(t);
-        while (q.front() < t - 3000) {
-            q.pop();
-        }
-        return q.size();
+public:
+  RecentCounter() {}
+
+  int ping(int t) {
+    q.push(t);
+    while (q.front() < t - 3000) {
+      q.pop();
     }
+    return q.size();
+  }
 };
 
 /**

@@ -9,15 +9,16 @@
  */
 class Solution {
 public:
-    ListNode* deleteNode(ListNode* head, int val) {
-        if (head->val == val) return head->next;
-        ListNode* pre = nullptr, *cnt = head;
-        while (cnt) {
-            if (cnt->val == val) {
-                pre->next = cnt->next;
-            }
-            pre = cnt, cnt = cnt->next;
-        }
-        return head;
+  ListNode *deleteNode(ListNode *head, int val) {
+    if (head->val == val)
+      return head->next;
+    ListNode *pre = nullptr, *cnt = head;
+    while (cnt) {
+      if (cnt->val == val) {
+        pre->next = cnt->next;
+      }
+      pre = cnt, cnt = cnt->next;
     }
+    return head;
+  }
 };

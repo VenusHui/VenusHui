@@ -9,12 +9,12 @@
  */
 class Solution {
 public:
-    ListNode* getKthFromEnd(ListNode* head, int k) {
-        vector<ListNode*> res;
-        while (head) {
-            res.push_back(head);
-            head = head->next;
-        }
-        return res[res.size() - k];
+  ListNode *getKthFromEnd(ListNode *head, int k) {
+    vector<ListNode *> res;
+    while (head) {
+      res.push_back(head);
+      head = head->next;
     }
+    return res[res.size() - k];
+  }
 };

@@ -1,6 +1,6 @@
 /**
  * @platform: Codeforces
- * @problem: CodeforcesRound#832D 
+ * @problem: CodeforcesRound#832D
  * @version: Contest Version
  * @author: VenusHui
  * @date: 2022-11-04
@@ -10,14 +10,13 @@ typedef long long ll;
 using namespace std;
 
 int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    int t;
-    cin >> t;
-    while (t--) {
-        
-    }
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  int t;
+  cin >> t;
+  while (t--) {
+  }
 
-    return 0;
+  return 0;
 }

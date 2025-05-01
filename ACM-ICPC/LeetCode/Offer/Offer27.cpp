@@ -10,13 +10,14 @@
  */
 class Solution {
 public:
-    TreeNode* mirrorTree(TreeNode* root) {
-        function<void(TreeNode*)> convert = [&] (TreeNode* node) {
-            if (node == nullptr) return;
-            convert(node->left), convert(node->right);
-            swap(node->left, node->right);
-        };
-        convert(root);
-        return root;
-    }
+  TreeNode *mirrorTree(TreeNode *root) {
+    function<void(TreeNode *)> convert = [&](TreeNode *node) {
+      if (node == nullptr)
+        return;
+      convert(node->left), convert(node->right);
+      swap(node->left, node->right);
+    };
+    convert(root);
+    return root;
+  }
 };

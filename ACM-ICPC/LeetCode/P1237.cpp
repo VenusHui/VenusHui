@@ -13,14 +13,15 @@
 
 class Solution {
 public:
-    vector<vector<int>> findSolution(CustomFunction& customfunction, int z) {
-        const int maxn = 1000;
-        vector<vector<int>> ans;
-        for (int i = 1; i <= maxn; i++) {
-            for (int j = 1; j <= maxn; j++) {
-                if (customfunction.f(i, j) == z) ans.push_back({i, j});
-            }
-        }
-        return ans;
+  vector<vector<int>> findSolution(CustomFunction &customfunction, int z) {
+    const int maxn = 1000;
+    vector<vector<int>> ans;
+    for (int i = 1; i <= maxn; i++) {
+      for (int j = 1; j <= maxn; j++) {
+        if (customfunction.f(i, j) == z)
+          ans.push_back({i, j});
+      }
     }
+    return ans;
+  }
 };
