@@ -1,9 +1,9 @@
-> writer: VenusHui
->  
+writer: VenusHui
+
 > time: 2021.09.15
->
-> last edit: 2023.01.13
 >  
+> last edit: 2023.01.13
+>
 > Reference: 
 
 [TOC]
@@ -1009,7 +1009,11 @@ inline int dijsktra(vector<vector<pair<int, int>>> edge, int s, int t) {
 }
 ```
 
-## 树的存储
+## 图的存储
+
+> 树是一种无环联通图
+>
+> 无向图是是一种双向有向图
 
 - 邻接矩阵
 - 邻接表 
