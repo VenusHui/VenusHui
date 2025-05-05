@@ -11,22 +11,23 @@
  */
 class Solution {
 public:
-    vector<int> nextLargerNodes(ListNode* head) {
-        stack<int> stk;
-        vector<int> ans, a;
-        while (head) {
-            a.push_back(head->val);
-            head = head->next;
-        }
-        reverse(a.begin(), a.end());
-        for (auto& e : a) {
-            while (!stk.empty() && stk.top() <= e) stk.pop();
-            ans.push_back(stk.empty() ? 0 : stk.top());
-            stk.push(e);
-        }
-        reverse(ans.begin(), ans.end());
-        return ans;
+  vector<int> nextLargerNodes(ListNode *head) {
+    stack<int> stk;
+    vector<int> ans, a;
+    while (head) {
+      a.push_back(head->val);
+      head = head->next;
     }
+    reverse(a.begin(), a.end());
+    for (auto &e : a) {
+      while (!stk.empty() && stk.top() <= e)
+        stk.pop();
+      ans.push_back(stk.empty() ? 0 : stk.top());
+      stk.push(e);
+    }
+    reverse(ans.begin(), ans.end());
+    return ans;
+  }
 };
 
 /**
@@ -41,19 +42,19 @@ public:
  */
 class Solution {
 public:
-    vector<int> nextLargerNodes(ListNode* head) {
-        vector<int> ans;
-        stack<pair<int, int>> stk;
-        int idx = -1;
-        while (head) {
-            idx++, ans.push_back(0);
-            while (!stk.empty() && head->val > stk.top().first) {
-                ans[stk.top().second] = head->val;
-                stk.pop();
-            }
-            stk.push(make_pair(head->val, idx));
-            head = head->next;
-        }
-        return ans;
+  vector<int> nextLargerNodes(ListNode *head) {
+    vector<int> ans;
+    stack<pair<int, int>> stk;
+    int idx = -1;
+    while (head) {
+      idx++, ans.push_back(0);
+      while (!stk.empty() && head->val > stk.top().first) {
+        ans[stk.top().second] = head->val;
+        stk.pop();
+      }
+      stk.push(make_pair(head->val, idx));
+      head = head->next;
     }
+    return ans;
+  }
 };

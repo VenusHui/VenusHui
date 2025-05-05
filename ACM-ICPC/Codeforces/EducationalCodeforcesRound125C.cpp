@@ -1,73 +1,68 @@
-#include <iostream>
-#include <cstdio>
-#include <fstream>
 #include <algorithm>
 #include <cmath>
-#include <deque>
-#include <vector>
-#include <queue>
-#include <string>
+#include <cstdio>
 #include <cstring>
-#include <map>
-#include <stack>
-#include <set>
+#include <deque>
+#include <fstream>
 #include <iomanip>
+#include <iostream>
+#include <map>
+#include <queue>
+#include <set>
+#include <stack>
+#include <string>
+#include <vector>
 typedef long long ll;
 using namespace std;
 
 // Educational Codeforces Round 125 (Div. 2) C. Bracket Sequence Deletion
 
 // 补题passed
-int main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
-    int t;
-    cin >> t;
-    while (t--)
-    {
-        int n;
-        string s;
-        cin >> n >> s;
-        int operNum = 0, pos = 0;
-        while (pos < n) {
-            if (s[pos] == '(' && pos + 1 < n) {
-                operNum++;
-                pos += 2;
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(0);
+  cout.tie(0);
+  int t;
+  cin >> t;
+  while (t--) {
+    int n;
+    string s;
+    cin >> n >> s;
+    int operNum = 0, pos = 0;
+    while (pos < n) {
+      if (s[pos] == '(' && pos + 1 < n) {
+        operNum++;
+        pos += 2;
+      } else {
+        int len;
+        bool flag = false;
+        for (len = 2; len <= n - pos; len++) {
+          flag = true;
+          int l = pos, r = min(pos + len - 1, n - 1);
+          while (l <= r) {
+            if (s[l] == s[r]) {
+              l++;
+              r--;
+            } else {
+              flag = false;
+              break;
             }
-            else {
-                int len;
-                bool flag = false;
-                for (len = 2; len <= n - pos; len++) {
-                    flag = true;
-                    int l = pos, r = min(pos + len - 1, n - 1);
-                    while (l <= r)
-                    {
-                        if (s[l] == s[r]) {
-                            l++;
-                            r--;
-                        }
-                        else {
-                            flag = false;
-                            break;
-                        }
-                    }
-                    if (flag) {
-                        pos += len;
-                        operNum++;
-                        break;
-                    }
-                }
-                if (len >= n - pos - 1 && !flag) {
-                    break;
-                }
-            }
+          }
+          if (flag) {
+            pos += len;
+            operNum++;
+            break;
+          }
         }
-        cout << operNum << " " << n - pos << '\n';
+        if (len >= n - pos - 1 && !flag) {
+          break;
+        }
+      }
     }
+    cout << operNum << " " << n - pos << '\n';
+  }
 
-    return 0;
+  return 0;
 }
 
 // 不找规律的纯模拟 pertest passed but TLE at final test 10

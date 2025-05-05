@@ -11,19 +11,20 @@
  */
 class Solution {
 public:
-    void reorderList(ListNode* head) {
-        vector<ListNode*> nodes;
-        while (head) {
-            nodes.push_back(head);
-            head = head->next;
-        }
-        int l = 0, r = nodes.size() - 1;
-        while (l < r) {
-            nodes[l++]->next = nodes[r];
-            if (l == r) break;
-            nodes[r--]->next = nodes[l];
-        }
-        nodes[l]->next = nullptr;
-        return;
+  void reorderList(ListNode *head) {
+    vector<ListNode *> nodes;
+    while (head) {
+      nodes.push_back(head);
+      head = head->next;
     }
+    int l = 0, r = nodes.size() - 1;
+    while (l < r) {
+      nodes[l++]->next = nodes[r];
+      if (l == r)
+        break;
+      nodes[r--]->next = nodes[l];
+    }
+    nodes[l]->next = nullptr;
+    return;
+  }
 };

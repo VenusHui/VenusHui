@@ -1,19 +1,19 @@
-#include <iostream>
-#include <cstdio>
-#include <fstream>
 #include <algorithm>
 #include <cmath>
-#include <deque>
-#include <vector>
-#include <queue>
-#include <string>
+#include <cstdio>
 #include <cstring>
-#include <map>
-#include <unordered_map>
-#include <stack>
-#include <set>
-#include <numeric>
+#include <deque>
+#include <fstream>
 #include <iomanip>
+#include <iostream>
+#include <map>
+#include <numeric>
+#include <queue>
+#include <set>
+#include <stack>
+#include <string>
+#include <unordered_map>
+#include <vector>
 typedef long long ll;
 using namespace std;
 
@@ -22,52 +22,48 @@ using namespace std;
 // Contest Version
 
 inline bool calc(string s) {
-    int size = s.size();
-    if (size == 1) {
-        return false;
-    }
-    else {
-        return true;
-    }
+  int size = s.size();
+  if (size == 1) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
-int main()
-{
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    int t;
-    cin >> t;
-    while (t--) {
-        string s, tmp;
-        cin >> s;
-        int size = s.size();
-        char ch = s[0];
-        bool ans = true;
-        for (int i = 0; i < size; i++) {
-            if (s[i] == ch) {
-                tmp += s[i];
-            }
-            else {
-                if (!calc(tmp)) {
-                    ans = false;
-                    break;
-                }
-                tmp.clear();
-                ch = s[i];
-                tmp += s[i];
-            }
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
+  cout.tie(nullptr);
+  int t;
+  cin >> t;
+  while (t--) {
+    string s, tmp;
+    cin >> s;
+    int size = s.size();
+    char ch = s[0];
+    bool ans = true;
+    for (int i = 0; i < size; i++) {
+      if (s[i] == ch) {
+        tmp += s[i];
+      } else {
+        if (!calc(tmp)) {
+          ans = false;
+          break;
         }
-        if (!tmp.empty() && ans) {
-            ans = calc(tmp);
-        }
-        if (ans) {
-            cout << "YES" << '\n';
-        }
-        else {
-            cout << "NO" << '\n';
-        }
+        tmp.clear();
+        ch = s[i];
+        tmp += s[i];
+      }
     }
-    
-    return 0;
+    if (!tmp.empty() && ans) {
+      ans = calc(tmp);
+    }
+    if (ans) {
+      cout << "YES" << '\n';
+    } else {
+      cout << "NO" << '\n';
+    }
+  }
+
+  return 0;
 }

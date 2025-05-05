@@ -10,12 +10,16 @@
  */
 class Solution {
 public:
-    bool isSymmetric(TreeNode* root) {
-        function<bool(TreeNode*, TreeNode*)> check = [&] (TreeNode* p, TreeNode* q) {
-            if (!p && !q) return true;
-            if (!p || !q) return false;
-            return p->val == q->val && check(p->left, q->right) && check(p->right, q->left);
-        };
-        return check(root, root);
-    }
+  bool isSymmetric(TreeNode *root) {
+    function<bool(TreeNode *, TreeNode *)> check = [&](TreeNode *p,
+                                                       TreeNode *q) {
+      if (!p && !q)
+        return true;
+      if (!p || !q)
+        return false;
+      return p->val == q->val && check(p->left, q->right) &&
+             check(p->right, q->left);
+    };
+    return check(root, root);
+  }
 };
