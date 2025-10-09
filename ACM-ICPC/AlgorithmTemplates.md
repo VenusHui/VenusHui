@@ -958,9 +958,9 @@ function<double(double)> sqrt = [&] (double x) {
 
 ```
 func dfs(status) {
-		status = new;
-		dfs(status);
-		status = old;
+    status = new;
+    dfs(status);
+    status = old;
 }
 ```
 
@@ -979,11 +979,11 @@ while (!empty()) {
 
 ## 最短路
 
-### Dijkstra堆优化
+### Dijkstra 堆优化
 
 ```cpp
 // edge中第i个vector<pair<int, int>>存了第i个点出发的所有边，pair<int, int>中第一个int是终点，第二个int是边权
-inline int dijsktra(vector<vector<pair<int, int>>> edge, int s, int t) {
+inline int dijsktra(vector<vector<pair<int, int>>> edge, int n, int s, int t) {
     vector<int> dist(n + 1, (1 << 30) + 1);
     dist[s] = 0;
     // pair<int, int>的小根堆，第一个int代表边权，第二个int代表点的编号
@@ -1009,11 +1009,15 @@ inline int dijsktra(vector<vector<pair<int, int>>> edge, int s, int t) {
 }
 ```
 
-## 图的存储
+### Dijkstra 记录路径
 
-> 树是一种无环联通图
->
-> 无向图是是一种双向有向图
+```cpp
+inline int dijkstra(vector<vector<pair<int, int>>> edge, int n, int s, int t, vector<int> path) {
+    
+}
+```
+
+## 树的存储
 
 - 邻接矩阵
 - 邻接表 
