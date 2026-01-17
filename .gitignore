@@ -10,3 +10,6 @@ ACM-ICPC/Codeforces/input.txt
 
 # mac tmp storage
 .DS_Store
+
+# nvim compile file
+compile_flags.txt
