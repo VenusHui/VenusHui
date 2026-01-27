@@ -19,34 +19,32 @@ int main() {
   while (t--) {
     int n;
     cin >> n;
-    vector<ll> a(n), b(n);
+    vector<int> a(n), b(n);
     for (int i = 0; i < n; i++)
       cin >> a[i];
     for (int i = 0; i < n; i++)
       cin >> b[i];
-    vector<ll> prefix(n + 1);
-    prefix[0] = 0;
+    vector<ll> pre(n + 1, 0);
     for (int i = 0; i < n; i++) {
-      prefix[i + 1] = prefix[i] + b[i];
+      pre[i + 1] = pre[i] + b[i];
     }
-    sort(a.begin(), a.end(), greater<ll>());
+    function<ll(int)> calc = [&](int cnt) { return pre[cnt]; };
+    sort(a.begin(), a.end());
     ll ans = 0;
     for (int i = 0; i < n; i++) {
-      ll x = a[i];
-      ll cnt = i + 1;
-      int lo = 0, hi = n;
-      while (lo < hi) {
-        int mid = (lo + hi + 1) / 2;
-        if (prefix[mid] <= cnt) {
-          lo = mid;
+      int cnt = n - i;
+      int l = 0, r = n;
+      while (l < r) {
+        int m = (l + r + 1) >> 1;
+        if (calc(m) > cnt) {
+          r = m - 1;
         } else {
-          hi = mid - 1;
+          l = m;
         }
       }
-
-      ans = max(ans, x * lo);
+      ans = max(ans, 1LL * a[i] * l);
     }
-    cout << ans << "\n";
+    cout << ans << '\n';
   }
   return 0;
 }

@@ -2,8 +2,9 @@
 .vscode/
 *.class
 
-# test cpp file of windows
+# test cpp files
 ACM-ICPC-Practice/Codeforces/tempCodeRunnerFile.cpp
+ACM-ICPC/Codeforces/test.cpp
 
 # codeforces input file of mac
 ACM-ICPC/Codeforces/input.txt
