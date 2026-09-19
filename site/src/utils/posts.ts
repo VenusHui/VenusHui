@@ -1,6 +1,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import type { Locale } from '../i18n/ui';
 import { localePath } from '../i18n/utils';
+import { includeDrafts } from './drafts';
 
 export type Post = CollectionEntry<'posts'>;
 
@@ -23,11 +24,12 @@ export interface YearGroup {
   posts: Post[];
 }
 
-/** 草稿只在本地 dev 可见，构建产物（以及线上）不会包含草稿。 */
-const includeDrafts = import.meta.env.DEV;
-
 /**
  * 取某个语言下的博文，按日期倒序。
+ *
+ * **这是取博文的唯一入口**：语言过滤与草稿闸门都在这里，任何需要博文的地方
+ * —— 列表 / 归档 / 标签 / RSS / **详情页的 getStaticPaths** —— 都必须调它，
+ * 不要再自己写 `getCollection('posts', ...)`，否则会漏掉草稿闸门。
  *
  * 集合的产出顺序不确定，必须自己排序；同日再按 id 兜底，
  * 否则同一天的多篇博文在构建产物里顺序可能漂移。

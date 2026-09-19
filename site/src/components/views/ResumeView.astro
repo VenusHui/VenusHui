@@ -1,10 +1,11 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import PageHeader from '../PageHeader.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Locale } from '../../i18n/ui';
 import { t } from '../../i18n/utils';
 import { formatDate } from '../../utils/posts';
+import { getPrimaryResume } from '../../utils/resumes';
 
 interface Props {
   locale: Locale;
@@ -12,19 +13,8 @@ interface Props {
 
 const { locale } = Astro.props;
 
-// 简历内容来自 site/src/resumes/<handle>/README.md，站点侧不硬编码。
-// 当前按 id 取第一篇（非草稿）；日后若有多份 handle，再改造成 /resume/[handle]/。
-//
-// 简历尚未迁入时目录是空的，而内容层对空集合每次都会打一条「collection is empty」警告。
-// 所以先用 Vite 的 glob 探一下有没有文件，没有就直接走空状态。
-// 注意：这里的匹配式必须与 content.config.ts 里 resumes 集合的 base + pattern 保持一致。
-const hasResumeFiles = Object.keys(import.meta.glob('../../resumes/*/README.md')).length > 0;
-const resumes = hasResumeFiles
-  ? (await getCollection('resumes', ({ data }) => !data.draft)).sort((a, b) =>
-      a.id.localeCompare(b.id),
-    )
-  : [];
-const resume = resumes[0];
+// 取简历的查询与草稿闸门都收在 utils/resumes.ts 里；目录为空时返回 undefined，走空状态。
+const resume = await getPrimaryResume();
 const rendered = resume ? await render(resume) : null;
 ---
 
