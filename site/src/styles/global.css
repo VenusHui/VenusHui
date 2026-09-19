@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/*
+ * 深色模式走 `<html class="dark">`（由 BaseLayout 里的防闪烁脚本设置），
+ * 而不是 prefers-color-scheme —— 因为站点提供手动切换，手动选择必须能覆盖系统偏好。
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* 中文优先的字体栈：中文回退到苹方 / 微软雅黑，避免移动端中文落到衬线字体。 */
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-200;
+  }
+
+  /* 键盘焦点必须可见（移动端与键盘用户都要）。 */
+  :focus-visible {
+    outline: 2px solid var(--color-sky-500);
+    outline-offset: 2px;
+  }
+}
+
+/* 尊重系统的「减少动态效果」设置。 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/*
+ * 代码块的双主题切换。
+ * astro.config 里 shikiConfig 配了 light/dark 两套主题，Shiki 会把两套颜色都写进
+ * --shiki-light / --shiki-dark 变量；这里在深色下切到 dark 那一套。
+ * 必须用 !important 覆盖 Shiki 写在行内 style 上的浅色值。
+ */
+html.dark .astro-code,
+html.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}

@@ -1,0 +1,43 @@
+---
+import { render } from 'astro:content';
+import PageHeader from '../PageHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n/ui';
+import { t } from '../../i18n/utils';
+import { formatDate } from '../../utils/posts';
+import { getPrimaryResume } from '../../utils/resumes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+// 取简历的查询与草稿闸门都收在 utils/resumes.ts 里；目录为空时返回 undefined，走空状态。
+const resume = await getPrimaryResume();
+const rendered = resume ? await render(resume) : null;
+---
+
+<BaseLayout
+  title={t(locale, 'resume.title')}
+  description={t(locale, 'resume.description')}
+  locale={locale}
+  translated
+>
+  <PageHeader title={t(locale, 'resume.title')} description={t(locale, 'resume.description')} />
+
+  {rendered && resume ? (
+    <>
+      {resume.data.updated && (
+        <p class="mb-6 text-sm text-slate-500 dark:text-slate-400">
+          {t(locale, 'resume.updated')}：{formatDate(resume.data.updated, locale)}
+        </p>
+      )}
+      <div class="prose prose-slate max-w-none break-words dark:prose-invert prose-pre:overflow-x-auto prose-a:text-sky-600 dark:prose-a:text-sky-400">
+        <rendered.Content />
+      </div>
+    </>
+  ) : (
+    <p class="text-sm text-slate-500 dark:text-slate-400">{t(locale, 'resume.empty')}</p>
+  )}
+</BaseLayout>

@@ -1,0 +1,16 @@
+---
+import { render } from 'astro:content';
+import PostView from '../../../components/views/PostView.astro';
+import { getPosts } from '../../../utils/posts';
+
+// 同中文侧：走 getPosts() 才带上语言过滤与草稿闸门。
+export async function getStaticPaths() {
+  const posts = await getPosts('en');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<PostView post={post} Content={Content} locale="en" />
