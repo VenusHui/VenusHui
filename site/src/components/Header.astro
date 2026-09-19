@@ -1,0 +1,71 @@
+---
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import type { Locale } from '../i18n/ui';
+import { localePath, swapLocalePath, t } from '../i18n/utils';
+
+interface Props {
+  locale: Locale;
+  /** 语言切换目标；未提供时按同构路径推导。 */
+  languageHref?: string;
+}
+
+const { locale, languageHref } = Astro.props;
+
+const homeHref = localePath(locale);
+const nav = [
+  { href: homeHref, label: t(locale, 'nav.home') },
+  { href: localePath(locale, 'posts/'), label: t(locale, 'nav.posts') },
+  { href: localePath(locale, 'tags/'), label: t(locale, 'nav.tags') },
+  { href: localePath(locale, 'archive/'), label: t(locale, 'nav.archive') },
+  { href: localePath(locale, 'resume/'), label: t(locale, 'nav.resume') },
+];
+
+const current = Astro.url.pathname;
+/** 首页要精确匹配，否则任何页面都算「在首页」。 */
+function isActive(href: string): boolean {
+  return href === homeHref ? current === href : current.startsWith(href);
+}
+
+const switchHref = languageHref ?? swapLocalePath(current);
+---
+
+<header class="border-b border-slate-200 dark:border-slate-800">
+  <div class="mx-auto flex w-full max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4 sm:px-6">
+    <a
+      href={homeHref}
+      class="text-base font-semibold tracking-tight text-slate-900 dark:text-slate-50"
+    >
+      {t(locale, 'site.title')}
+    </a>
+
+    {/*
+      移动端优先：导航允许换行而不用 JS 折叠菜单，5 个短标签在窄屏上占两行仍可读。
+    */}
+    <nav aria-label={t(locale, 'nav.main')} class="order-last w-full sm:order-none sm:w-auto">
+      <ul class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+        {nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              class:list={[
+                'transition-colors hover:text-sky-600 dark:hover:text-sky-400',
+                isActive(item.href)
+                  ? 'font-semibold text-sky-600 dark:text-sky-400'
+                  : 'text-slate-600 dark:text-slate-300',
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2">
+      <LanguageSwitcher locale={locale} href={switchHref} />
+      <ThemeToggle locale={locale} />
+    </div>
+  </div>
+</header>

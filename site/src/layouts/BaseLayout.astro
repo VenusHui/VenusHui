@@ -1,0 +1,115 @@
+---
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { rssPath } from '../i18n/rss';
+import type { Locale } from '../i18n/ui';
+import { localePath, localeRelativePath, t } from '../i18n/utils';
+import '../styles/global.css';
+import { withBase } from '../utils/url';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** 该页面在两种语言下都存在同构页面时置 true，用于输出 hreflang 备用链接。 */
+  translated?: boolean;
+  /** 不参与索引的页面（例如 404）：不加 canonical。 */
+  noindex?: boolean;
+  /** 覆盖语言切换目标；博文详情页没有对应译文时指向另一种语言的博文列表。 */
+  languageHref?: string;
+}
+
+const {
+  title,
+  description,
+  locale,
+  translated = false,
+  noindex = false,
+  languageHref,
+} = Astro.props;
+
+const siteName = t(locale, 'site.title');
+const pageTitle = title === siteName ? siteName : `${title} | ${siteName}`;
+const htmlLang = locale === 'zh' ? 'zh-CN' : 'en';
+
+// canonical 用带 base 的绝对地址：Astro.url 已含 base，Astro.site 是站点源。
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+// hreflang 只在两种语言都有同构页面的站点级页面上输出，避免指向不存在的译文页。
+const relative = localeRelativePath(Astro.url.pathname);
+const alternates = translated
+  ? [
+      { hreflang: 'zh-CN', href: new URL(localePath('zh', relative), Astro.site).href },
+      { hreflang: 'en', href: new URL(localePath('en', relative), Astro.site).href },
+      { hreflang: 'x-default', href: new URL(localePath('zh', relative), Astro.site).href },
+    ]
+  : [];
+
+const ogLocale = locale === 'zh' ? 'zh_CN' : 'en_US';
+const ogLocaleAlternate = locale === 'zh' ? 'en_US' : 'zh_CN';
+const rssHref = rssPath(locale);
+---
+
+<!doctype html>
+<html lang={htmlLang} class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    {noindex ? (
+      <meta name="robots" content="noindex" />
+    ) : (
+      <link rel="canonical" href={canonical.href} />
+    )}
+    {alternates.map((alternate) => (
+      <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+    ))}
+
+    <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
+    <link rel="icon" href={withBase('favicon.ico')} sizes="32x32" />
+    <link rel="alternate" type="application/rss+xml" title={siteName} href={rssHref} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={ogLocale} />
+    {translated && <meta property="og:locale:alternate" content={ogLocaleAlternate} />}
+    {!noindex && <meta property="og:url" content={canonical.href} />}
+    <meta name="twitter:card" content="summary" />
+
+    {/*
+      防主题闪烁：必须在首屏绘制前同步执行，所以用 is:inline（不参与打包）。
+      键为 localStorage.theme，同时回落到系统偏好；未存过偏好的访客跟随系统。
+    */}
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        let dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        try {
+          const stored = localStorage.getItem('theme');
+          if (stored === 'dark' || stored === 'light') dark = stored === 'dark';
+        } catch {
+          /* localStorage 不可用（隐私模式等）时按系统偏好渲染 */
+        }
+        root.classList.toggle('dark', dark);
+        root.style.colorScheme = dark ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-slate-900 focus:shadow-lg dark:focus:bg-slate-800 dark:focus:text-slate-50"
+    >
+      {t(locale, 'nav.skipToContent')}
+    </a>
+    <Header locale={locale} languageHref={languageHref} />
+    <main id="main" class="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

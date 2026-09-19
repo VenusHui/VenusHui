@@ -1,0 +1,58 @@
+---
+import PageHeader from '../PageHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n/ui';
+import { t } from '../../i18n/utils';
+import { formatDate, getPosts, groupByYear, postPath } from '../../utils/posts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const years = groupByYear(await getPosts(locale));
+---
+
+<BaseLayout
+  title={t(locale, 'archive.title')}
+  description={t(locale, 'archive.description')}
+  locale={locale}
+  translated
+>
+  <PageHeader title={t(locale, 'archive.title')} description={t(locale, 'archive.description')} />
+
+  {years.length === 0 ? (
+    <p class="text-sm text-slate-500 dark:text-slate-400">{t(locale, 'archive.empty')}</p>
+  ) : (
+    <div class="space-y-10">
+      {years.map((group) => (
+        <section>
+          <h2 class="mb-3 flex items-baseline gap-3 text-lg font-semibold text-slate-900 dark:text-slate-50">
+            {group.year}
+            <span class="text-xs font-normal text-slate-500 dark:text-slate-400">
+              {group.posts.length} {t(locale, 'archive.count')}
+            </span>
+          </h2>
+          <ul class="space-y-2">
+            {group.posts.map((post) => (
+              <li class="flex flex-wrap items-baseline gap-x-3">
+                <time
+                  datetime={post.data.date.toISOString()}
+                  class="w-28 shrink-0 text-sm text-slate-500 dark:text-slate-400"
+                >
+                  {formatDate(post.data.date, locale)}
+                </time>
+                <a
+                  href={postPath(post)}
+                  class="text-slate-700 transition-colors hover:text-sky-600 dark:text-slate-200 dark:hover:text-sky-400"
+                >
+                  {post.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  )}
+</BaseLayout>

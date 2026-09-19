@@ -1,0 +1,27 @@
+---
+import type { Locale } from '../i18n/ui';
+import { localePath } from '../i18n/utils';
+import { tagSlug } from '../utils/posts';
+
+interface Props {
+  tags: string[];
+  locale: Locale;
+}
+
+const { tags, locale } = Astro.props;
+---
+
+{tags.length > 0 && (
+  <ul class="flex flex-wrap gap-2">
+    {tags.map((tag) => (
+      <li>
+        <a
+          href={localePath(locale, `tags/${tagSlug(tag)}/`)}
+          class="inline-block rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600 transition-colors hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-50"
+        >
+          {tag}
+        </a>
+      </li>
+    ))}
+  </ul>
+)}

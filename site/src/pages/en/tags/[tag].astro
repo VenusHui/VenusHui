@@ -1,0 +1,13 @@
+---
+import TagView from '../../../components/views/TagView.astro';
+import { getPosts, groupByTag } from '../../../utils/posts';
+
+export async function getStaticPaths() {
+  const groups = groupByTag(await getPosts('en'));
+  return groups.map((group) => ({ params: { tag: group.slug }, props: { tag: group.tag } }));
+}
+
+const { tag } = Astro.props;
+---
+
+<TagView tag={tag} locale="en" />

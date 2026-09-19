@@ -1,0 +1,25 @@
+---
+import PageHeader from '../PageHeader.astro';
+import PostList from '../PostList.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n/ui';
+import { t } from '../../i18n/utils';
+import { getPosts } from '../../utils/posts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const posts = await getPosts(locale);
+---
+
+<BaseLayout
+  title={t(locale, 'posts.title')}
+  description={t(locale, 'posts.description')}
+  locale={locale}
+  translated
+>
+  <PageHeader title={t(locale, 'posts.title')} description={t(locale, 'posts.description')} />
+  <PostList posts={posts} locale={locale} emptyText={t(locale, 'posts.empty')} />
+</BaseLayout>

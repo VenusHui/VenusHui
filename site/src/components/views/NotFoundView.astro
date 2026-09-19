@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { defaultLocale, type Locale } from '../../i18n/ui';
+import { localePath, t } from '../../i18n/utils';
+
+/**
+ * 404 是单份静态文件（构建成 /404.html），无法按 URL 判断语言，
+ * 因此两种语言的提示都列出来并给出各自的入口，不用 JS 猜。
+ */
+const primary: Locale = defaultLocale;
+const secondary: Locale = primary === 'zh' ? 'en' : 'zh';
+const both: Locale[] = [primary, secondary];
+---
+
+<BaseLayout
+  title={t(primary, 'notFound.title')}
+  description={t(primary, 'notFound.description')}
+  locale={primary}
+  noindex
+  languageHref={localePath(secondary)}
+>
+  <div class="space-y-8">
+    {both.map((locale) => (
+      <section>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+          {t(locale, 'notFound.title')}
+        </h1>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
+          {t(locale, 'notFound.description')}
+        </p>
+        <div class="mt-4 flex flex-wrap gap-3">
+          <a
+            href={localePath(locale)}
+            class="inline-flex h-10 items-center rounded-md bg-sky-600 px-4 text-sm font-medium text-white transition-colors hover:bg-sky-700"
+          >
+            {t(locale, 'notFound.backHome')}
+          </a>
+          <a
+            href={localePath(locale, 'posts/')}
+            class="inline-flex h-10 items-center rounded-md border border-slate-200 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+          >
+            {t(locale, 'notFound.browsePosts')}
+          </a>
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>

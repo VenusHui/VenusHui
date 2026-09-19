@@ -1,0 +1,43 @@
+---
+import PageHeader from '../PageHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n/ui';
+import { localePath, t } from '../../i18n/utils';
+import { getPosts, groupByTag } from '../../utils/posts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const tags = groupByTag(await getPosts(locale));
+---
+
+<BaseLayout
+  title={t(locale, 'tags.title')}
+  description={t(locale, 'tags.description')}
+  locale={locale}
+  translated
+>
+  <PageHeader title={t(locale, 'tags.title')} description={t(locale, 'tags.description')} />
+
+  {tags.length === 0 ? (
+    <p class="text-sm text-slate-500 dark:text-slate-400">{t(locale, 'tags.empty')}</p>
+  ) : (
+    <ul class="flex flex-wrap gap-3">
+      {tags.map((group) => (
+        <li>
+          <a
+            href={localePath(locale, `tags/${group.slug}/`)}
+            class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-50"
+          >
+            {group.tag}
+            <span class="text-xs text-slate-500 dark:text-slate-400">
+              {group.posts.length} {t(locale, 'tags.count')}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</BaseLayout>

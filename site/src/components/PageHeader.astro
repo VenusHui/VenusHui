@@ -1,0 +1,16 @@
+---
+/** 页面级标题区，列表页与详情页共用，保证排版一致。 */
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<header class="mb-8">
+  <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-50">
+    {title}
+  </h1>
+  {description && <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">{description}</p>}
+</header>
