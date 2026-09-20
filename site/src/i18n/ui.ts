@@ -81,7 +81,7 @@ const zh = {
   'resume.title': '简历',
   'resume.description': 'VenusHui 的简历。',
   'resume.empty': '简历内容尚未迁入，稍后回来看看。',
-  'resume.updated': '最后更新',
+  'resume.updated': '最后更新：',
 
   'notFound.title': '页面不存在',
   'notFound.description': '没有找到这个页面，可能是链接过期或地址写错了。',
@@ -160,7 +160,7 @@ const en: Record<UIKey, string> = {
   'resume.title': 'Resume',
   'resume.description': "VenusHui's resume.",
   'resume.empty': 'The resume has not been migrated yet. Check back soon.',
-  'resume.updated': 'Last updated',
+  'resume.updated': 'Last updated: ',
 
   'notFound.title': 'Page not found',
   'notFound.description': 'This page does not exist — the link may be outdated or mistyped.',
