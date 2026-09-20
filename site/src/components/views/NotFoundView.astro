@@ -22,11 +22,13 @@ const both: Locale[] = [primary, secondary];
   <div class="space-y-10">
     {/*
       有趣的 404 辨识：大号等宽编号 + 一行「编译器错误」式提示，克制不喧宾夺主。
+      这个编号是本页唯一的 h1：两段语言提示各自是 section + h2，若都不给 h1，
+      文档大纲会缺根（屏幕阅读器按标题导航会跳空）。
     */}
     <div data-reveal class="text-center">
-      <p class="font-mono text-6xl font-bold leading-none tracking-tight text-ink">
+      <h1 class="font-mono text-6xl font-bold leading-none tracking-tight text-ink">
         <span class="text-accent">4</span>0<span class="text-accent">4</span>
-      </p>
+      </h1>
       <p class="mt-4 font-mono text-sm text-ink-3">
         <span class="text-accent">error[E404]</span>: page not found
       </p>

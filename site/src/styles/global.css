@@ -31,6 +31,10 @@
    * accent / accent-hover：可交互强调色（链接 / 边框 / 图标），浅色偏深、深色偏亮。
    * 浅色值由本块输出到 :root，深色值在 @layer base 的 .dark 里覆盖，
    * 因此组件里写 bg-surface / text-ink / text-accent 即可自动随主题切换。
+   *
+   * 浅色 accent 取 teal-700 而非 teal-600：teal-600 (#0d9488) 在白底只有 3.74:1，
+   * 低于 WCAG AA 正文文本的 4.5:1；teal-700 (#0f766e) 为 5.47:1。
+   * 深色 accent 取 teal-400：#2dd4bf 在页面底 #020617 上是 10.84:1。
    */
   --color-background: #ffffff;
   --color-surface: #f8fafc;
@@ -40,8 +44,8 @@
   --color-ink: #0f172a;
   --color-ink-2: #334155;
   --color-ink-3: #64748b;
-  --color-accent: #0d9488;
-  --color-accent-hover: #0f766e;
+  --color-accent: #0f766e;
+  --color-accent-hover: #115e59;
 
   /* ---- 间距节奏：区块之间的基准间距，避免散落的魔法数字 ----
    * 命名要避开 Tailwind 的 display / 关键字（block / inline / flex / grid / table …）：
@@ -145,9 +149,11 @@
 
 @layer components {
   /* 主/次按钮：首页 hero 与 404 共用，避免重复粘贴 tailwind 类。
-     实心按钮用固定 teal-600/700，白字在浅深两种主题下对比度都达标。 */
+     实心按钮用固定 teal-700/800：白字压在 teal-600 (#0d9488) 上只有 3.74:1，
+     不达 AA 的 4.5:1（14px 常规字号无大字号豁免）；teal-700 (#0f766e) 为 5.47:1，
+     且该按钮底色不随主题切换，浅深两种主题下都达标。 */
   .btn-primary {
-    @apply inline-flex h-10 items-center rounded-lg bg-primary-600 px-4 text-sm font-medium text-white transition-colors hover:bg-primary-700;
+    @apply inline-flex h-10 items-center rounded-lg bg-primary-700 px-4 text-sm font-medium text-white transition-colors hover:bg-primary-800;
   }
 
   .btn-secondary {

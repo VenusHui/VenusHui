@@ -36,7 +36,6 @@ const zh = {
   'home.latestPosts': '最新博文',
   'home.allPosts': '全部博文',
   'home.viewResume': '查看简历',
-  'home.viewProfile': '查看 GitHub',
   'home.empty': '博文还在迁移中，稍后回来看看。',
 
   'posts.title': '博文',
@@ -95,7 +94,6 @@ const en: Record<UIKey, string> = {
   'home.latestPosts': 'Latest posts',
   'home.allPosts': 'All posts',
   'home.viewResume': 'View resume',
-  'home.viewProfile': 'View GitHub',
   'home.empty': 'Posts are still being migrated. Check back soon.',
 
   'posts.title': 'Blog',
