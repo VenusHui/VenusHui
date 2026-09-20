@@ -42,14 +42,16 @@ async function isFile(target) {
 
 /** 把「带 base 的站内路径」映射到 dist/ 里的文件，判断是否存在。 */
 async function resolves(refPath) {
+  // 锚点片段不参与文件解析：`posts/#daily-coding` 与 `posts/` 是同一个页面。
+  const pathOnly = refPath.split('#')[0];
   let rel;
   try {
-    rel = decodeURIComponent(refPath.slice(base.length));
+    rel = decodeURIComponent(pathOnly.slice(base.length));
   } catch {
     return false; // 畸形百分号编码
   }
   const target = path.join(distDir, rel);
-  if (rel === '' || refPath.endsWith('/')) return isFile(path.join(target, 'index.html'));
+  if (rel === '' || pathOnly.endsWith('/')) return isFile(path.join(target, 'index.html'));
   // 无扩展名的引用按目录索引处理，与 GitHub Pages 的行为一致
   return (await isFile(target)) || isFile(path.join(target, 'index.html'));
 }
@@ -104,7 +106,7 @@ for (const file of files) {
       continue;
     }
 
-    // 相对引用：相对当前文件所在目录解析
+    // 相对引用：相对当前文件所在目录解析（锚点片段同样忽略，不参与文件解析）
     if (ref.startsWith('?')) continue;
     let decoded;
     try {
@@ -113,7 +115,7 @@ for (const file of files) {
       problems.push(`${rel}: 相对引用编码异常 -> ${ref}`);
       continue;
     }
-    const target = path.resolve(path.dirname(file), decoded);
+    const target = path.resolve(path.dirname(file), decoded.split('#')[0]);
     if (!(await isFile(target)) && !(await isFile(path.join(target, 'index.html')))) {
       problems.push(`${rel}: 相对引用指向不存在的文件 -> ${ref}`);
     }

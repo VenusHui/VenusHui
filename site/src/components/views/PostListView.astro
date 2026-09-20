@@ -1,17 +1,17 @@
 ---
 import PageHeader from '../PageHeader.astro';
-import PostList from '../PostList.astro';
+import PostCard from '../PostCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Locale } from '../../i18n/ui';
 import { t } from '../../i18n/utils';
-import { getPosts } from '../../utils/posts';
+import { getPosts, groupBySeries, seriesLabel } from '../../utils/posts';
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
-const posts = await getPosts(locale);
+const groups = groupBySeries(await getPosts(locale));
 ---
 
 <BaseLayout
@@ -21,5 +21,28 @@ const posts = await getPosts(locale);
   translated
 >
   <PageHeader title={t(locale, 'posts.title')} description={t(locale, 'posts.description')} />
-  <PostList posts={posts} locale={locale} emptyText={t(locale, 'posts.empty')} />
+
+  {groups.length === 0 ? (
+    <p class="text-sm text-ink-3">{t(locale, 'posts.empty')}</p>
+  ) : (
+    <div>
+      {groups.map((group) => (
+        <section id={group.series || undefined} class="mt-12 first:mt-0">
+          {/*
+            系列分节标题：与首页「最新博文」同款（标题 + 等宽计数），
+            只渲染数据里真实存在的系列，列表本身不硬编码系列名。
+          */}
+          <h2 class="mb-4 flex items-baseline gap-3 text-lg font-semibold text-ink">
+            {seriesLabel(group.series, locale)}
+            <span class="font-mono text-xs text-ink-3">
+              {group.posts.length.toString().padStart(2, '0')}
+            </span>
+          </h2>
+          {group.posts.map((post) => (
+            <PostCard post={post} locale={locale} />
+          ))}
+        </section>
+      ))}
+    </div>
+  )}
 </BaseLayout>

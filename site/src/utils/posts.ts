@@ -1,6 +1,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { POST_SERIES } from '../content.config';
 import type { Locale } from '../i18n/ui';
-import { localePath } from '../i18n/utils';
+import { localePath, t } from '../i18n/utils';
 import { includeDrafts } from './drafts';
 
 export type Post = CollectionEntry<'posts'>;
@@ -19,9 +20,20 @@ export interface TagGroup {
   posts: Post[];
 }
 
-export interface YearGroup {
-  year: number;
+export interface SeriesGroup {
+  /** 系列键；不属于任何系列的博文用空串兜底（如未来的英文随笔）。 */
+  series: Series | '';
   posts: Post[];
+}
+
+/** 系列键。契约在 content.config.ts 的 POST_SERIES，站点侧不另存一份列表。 */
+export type Series = (typeof POST_SERIES)[number];
+
+export interface SeriesNeighbor {
+  /** 同系列内更旧的一篇。 */
+  prev?: Post;
+  /** 同系列内更新的一篇。 */
+  next?: Post;
 }
 
 /**
@@ -89,19 +101,49 @@ export function groupByTag(posts: Post[]): TagGroup[] {
   return [...bySlug.values()].sort((a, b) => a.tag.localeCompare(b.tag));
 }
 
-/** 按年份归档：年份倒序，年内沿用传入顺序（已按日期倒序）。 */
-export function groupByYear(posts: Post[]): YearGroup[] {
-  const byYear = new Map<number, Post[]>();
+/**
+ * 按系列分组（一级维度）：系列回答「这是哪种内容」，标签才是主题过滤，二者不混。
+ * 顺序取 schema 契约 POST_SERIES 的声明顺序，不用出现次数排序 ——
+ * 系列列表是内容模型的一部分，不该随数据量漂移。
+ * 不属于任何系列的博文收进末尾兜底组，无此类博文则不出现在结果里。
+ * 组内沿用传入顺序（getPosts 已按日期倒序）。
+ */
+export function groupBySeries(posts: Post[]): SeriesGroup[] {
+  const bySeries = new Map<Series | '', SeriesGroup>();
   for (const post of posts) {
-    // 用 UTC 年份，避免构建机时区把跨年边界的博文分到不同年份。
-    const year = post.data.date.getUTCFullYear();
-    const bucket = byYear.get(year);
-    if (bucket) bucket.push(post);
-    else byYear.set(year, [post]);
+    const series = post.data.series ?? '';
+    const existing = bySeries.get(series);
+    if (existing) existing.posts.push(post);
+    else bySeries.set(series, { series, posts: [post] });
   }
-  return [...byYear.entries()]
-    .map(([year, yearPosts]) => ({ year, posts: yearPosts }))
-    .sort((a, b) => b.year - a.year);
+  const groups: SeriesGroup[] = [];
+  for (const series of POST_SERIES) {
+    const group = bySeries.get(series);
+    if (group) groups.push(group);
+  }
+  const uncategorized = bySeries.get('');
+  if (uncategorized) groups.push(uncategorized);
+  return groups;
+}
+
+/** 系列展示名。文案表 `series.<键>` 缺键会在 astro check 阶段报错（en 缺键也报），这里不再兜底。 */
+export function seriesLabel(series: Series | '', locale: Locale): string {
+  return series ? t(locale, `series.${series}`) : t(locale, 'series.uncategorized');
+}
+
+/**
+ * 同一系列内的上一篇 / 下一篇，供详情页底部导航。
+ * 系列内按日期正序（旧 → 新）排列：`prev` 是更旧的一篇，`next` 是更新的一篇。
+ * 无系列、或系列内只有当前一篇时返回空对象，调用方据此隐藏导航。
+ */
+export function seriesNeighbors(post: Post, posts: Post[]): SeriesNeighbor {
+  if (!post.data.series) return {};
+  const siblings = posts
+    .filter((p) => p.data.series === post.data.series)
+    .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf() || a.id.localeCompare(b.id));
+  const index = siblings.findIndex((p) => p.id === post.id);
+  if (index === -1) return {};
+  return { prev: siblings[index - 1], next: siblings[index + 1] };
 }
 
 /** 日期展示格式。显式指定 UTC 时区，保证产物与构建机时区无关。 */

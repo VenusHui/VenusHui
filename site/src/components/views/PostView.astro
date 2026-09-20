@@ -4,18 +4,31 @@ import TagChips from '../TagChips.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Locale } from '../../i18n/ui';
 import { localePath, t } from '../../i18n/utils';
-import { formatDate, readingTime, type Post, type RenderedContent } from '../../utils/posts';
+import {
+  formatDate,
+  postPath,
+  readingTime,
+  seriesLabel,
+  type Post,
+  type RenderedContent,
+  type SeriesNeighbor,
+} from '../../utils/posts';
 
 interface Props {
   post: Post;
   /** 由路由里 `render(post)` 得到的正文组件。 */
   Content: RenderedContent;
   locale: Locale;
+  /** 同系列上一篇/下一篇，路由层算好传进来；无系列或系列内单篇时不传。 */
+  neighbors?: SeriesNeighbor;
 }
 
-const { post, Content, locale } = Astro.props;
+const { post, Content, locale, neighbors } = Astro.props;
 const { title, date, summary, tags } = post.data;
 const otherLocale: Locale = locale === 'zh' ? 'en' : 'zh';
+const { prev, next } = neighbors ?? {};
+/** 有相邻篇目才渲染系列导航，避免只给当前一篇时出现空壳区块。 */
+const hasSeriesNav = Boolean(post.data.series && (prev || next));
 ---
 
 <BaseLayout
@@ -49,7 +62,43 @@ const otherLocale: Locale = locale === 'zh' ? 'en' : 'zh';
     </div>
   </article>
 
-  <p class="mt-12 border-t border-line pt-6 text-sm">
+  {hasSeriesNav && (
+    <nav aria-label={t(locale, 'posts.seriesNav')} class="mt-12 border-t border-line pt-6">
+      {/*
+        同系列上一篇/下一篇：系列内按日期正序，上一篇是更旧的一篇、下一篇是更新的一篇。
+        只有单边相邻时保留单侧链接，另一侧留空保持两栏网格不错位。
+      */}
+      <p class="mb-3 font-mono text-xs text-ink-3">{seriesLabel(post.data.series!, locale)}</p>
+      <div class="grid gap-6 sm:grid-cols-2">
+        <div>
+          {prev ? (
+            <a href={postPath(prev)} class="group block">
+              <span class="block font-mono text-xs text-ink-3">
+                {t(locale, 'posts.prevInSeries')}
+              </span>
+              <span class="mt-1 block text-sm font-medium leading-snug text-ink transition-colors group-hover:text-accent">
+                {prev.data.title}
+              </span>
+            </a>
+          ) : null}
+        </div>
+        <div class="sm:text-right">
+          {next ? (
+            <a href={postPath(next)} class="group block">
+              <span class="block font-mono text-xs text-ink-3">
+                {t(locale, 'posts.nextInSeries')}
+              </span>
+              <span class="mt-1 block text-sm font-medium leading-snug text-ink transition-colors group-hover:text-accent">
+                {next.data.title}
+              </span>
+            </a>
+          ) : null}
+        </div>
+      </div>
+    </nav>
+  )}
+
+  <p class={hasSeriesNav ? 'mt-8 text-sm' : 'mt-12 border-t border-line pt-6 text-sm'}>
     <a
       href={localePath(locale, 'posts/')}
       class="link-underline text-accent hover:text-accent-hover"
