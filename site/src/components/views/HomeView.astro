@@ -5,7 +5,13 @@ import { AUTHOR, GITHUB_PROFILE } from '../../consts';
 import { rssPath } from '../../i18n/rss';
 import type { Locale } from '../../i18n/ui';
 import { localePath, t } from '../../i18n/utils';
-import { getPosts } from '../../utils/posts';
+import {
+  getPosts,
+  groupBySeries,
+  seriesLabel,
+  type Series,
+  type SeriesGroup,
+} from '../../utils/posts';
 
 interface Props {
   locale: Locale;
@@ -16,6 +22,10 @@ const tr = (key: Parameters<typeof t>[1]) => t(locale, key);
 
 const posts = await getPosts(locale);
 const latest = posts.slice(0, 5);
+// 首页只列有名字的系列，无系列的博文在博文页的兜底区可见。
+const seriesGroups = groupBySeries(posts).filter(
+  (group): group is SeriesGroup & { series: Series } => group.series !== '',
+);
 
 // hero 渐进入场的错峰延迟（毫秒）；reduced-motion 下由 CSS 直接显示，不生效。
 const heroReveal = ['0ms', '80ms', '160ms', '240ms'];
@@ -124,4 +134,31 @@ const heroReveal = ['0ms', '80ms', '160ms', '240ms'];
       </p>
     )}
   </section>
+
+  {/*
+    分类分区：把「最新博文」的平铺时间线之外，再给一个按系列进博文页锚点的入口，
+    落地 joshwcomeau 的分区思路。系列列表来自数据，不在首页硬编码。
+  */}
+  {seriesGroups.length > 0 && (
+    <section class="mt-section">
+      <div data-reveal class="mb-4 flex items-baseline gap-3">
+        <h2 class="text-lg font-semibold text-ink">{tr('home.series')}</h2>
+      </div>
+      <ul data-reveal class="flex flex-wrap gap-3">
+        {seriesGroups.map((group) => (
+          <li>
+            <a
+              href={`${localePath(locale, 'posts/')}#${group.series}`}
+              class="chip px-3 py-1 text-sm"
+            >
+              {seriesLabel(group.series, locale)}
+              <span class="text-xs text-ink-3">
+                {group.posts.length} {t(locale, 'series.count')}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
 </BaseLayout>

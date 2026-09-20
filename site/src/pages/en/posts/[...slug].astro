@@ -1,16 +1,19 @@
 ---
 import { render } from 'astro:content';
 import PostView from '../../../components/views/PostView.astro';
-import { getPosts } from '../../../utils/posts';
+import { getPosts, seriesNeighbors } from '../../../utils/posts';
 
-// 同中文侧：走 getPosts() 才带上语言过滤与草稿闸门。
+// 同中文侧：走 getPosts() 才带上语言过滤与草稿闸门；相邻篇目同批计算。
 export async function getStaticPaths() {
   const posts = await getPosts('en');
-  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post, neighbors: seriesNeighbors(post, posts) },
+  }));
 }
 
-const { post } = Astro.props;
+const { post, neighbors } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<PostView post={post} Content={Content} locale="en" />
+<PostView post={post} Content={Content} locale="en" neighbors={neighbors} />
