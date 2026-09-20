@@ -22,14 +22,14 @@ const years = groupByYear(await getPosts(locale));
   <PageHeader title={t(locale, 'archive.title')} description={t(locale, 'archive.description')} />
 
   {years.length === 0 ? (
-    <p class="text-sm text-slate-500 dark:text-slate-400">{t(locale, 'archive.empty')}</p>
+    <p class="text-sm text-ink-3">{t(locale, 'archive.empty')}</p>
   ) : (
     <div class="space-y-10">
       {years.map((group) => (
         <section>
-          <h2 class="mb-3 flex items-baseline gap-3 text-lg font-semibold text-slate-900 dark:text-slate-50">
+          <h2 class="mb-3 flex items-baseline gap-3 text-lg font-semibold text-ink">
             {group.year}
-            <span class="text-xs font-normal text-slate-500 dark:text-slate-400">
+            <span class="text-xs font-normal text-ink-3">
               {group.posts.length} {t(locale, 'archive.count')}
             </span>
           </h2>
@@ -38,14 +38,11 @@ const years = groupByYear(await getPosts(locale));
               <li class="flex flex-wrap items-baseline gap-x-3">
                 <time
                   datetime={post.data.date.toISOString()}
-                  class="w-28 shrink-0 text-sm text-slate-500 dark:text-slate-400"
+                  class="w-28 shrink-0 font-mono text-sm text-ink-3"
                 >
                   {formatDate(post.data.date, locale)}
                 </time>
-                <a
-                  href={postPath(post)}
-                  class="text-slate-700 transition-colors hover:text-sky-600 dark:text-slate-200 dark:hover:text-sky-400"
-                >
+                <a href={postPath(post)} class="link-underline text-ink-2 hover:text-accent">
                   {post.data.title}
                 </a>
               </li>

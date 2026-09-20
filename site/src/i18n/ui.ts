@@ -44,6 +44,7 @@ const zh = {
   'posts.backToList': '← 返回博文列表',
   'posts.readMore': '阅读全文',
   'posts.publishedOn': '发布于',
+  'posts.readingTime': '分钟阅读',
 
   'tags.title': '标签',
   'tags.description': '按标签浏览博文。',
@@ -101,6 +102,7 @@ const en: Record<UIKey, string> = {
   'posts.backToList': '← Back to all posts',
   'posts.readMore': 'Read more',
   'posts.publishedOn': 'Published on',
+  'posts.readingTime': 'min read',
 
   'tags.title': 'Tags',
   'tags.description': 'Browse posts by tag.',

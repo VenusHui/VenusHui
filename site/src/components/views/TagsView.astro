@@ -22,17 +22,14 @@ const tags = groupByTag(await getPosts(locale));
   <PageHeader title={t(locale, 'tags.title')} description={t(locale, 'tags.description')} />
 
   {tags.length === 0 ? (
-    <p class="text-sm text-slate-500 dark:text-slate-400">{t(locale, 'tags.empty')}</p>
+    <p class="text-sm text-ink-3">{t(locale, 'tags.empty')}</p>
   ) : (
     <ul class="flex flex-wrap gap-3">
       {tags.map((group) => (
         <li>
-          <a
-            href={localePath(locale, `tags/${group.slug}/`)}
-            class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 transition-colors hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-50"
-          >
+          <a href={localePath(locale, `tags/${group.slug}/`)} class="chip px-3 py-1 text-sm">
             {group.tag}
-            <span class="text-xs text-slate-500 dark:text-slate-400">
+            <span class="text-xs text-ink-3">
               {group.posts.length} {t(locale, 'tags.count')}
             </span>
           </a>

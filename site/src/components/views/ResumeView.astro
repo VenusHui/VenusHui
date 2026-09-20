@@ -29,15 +29,30 @@ const rendered = resume ? await render(resume) : null;
   {rendered && resume ? (
     <>
       {resume.data.updated && (
-        <p class="mb-6 text-sm text-slate-500 dark:text-slate-400">
+        <p class="mb-6 text-sm text-ink-3">
           {t(locale, 'resume.updated')}：{formatDate(resume.data.updated, locale)}
         </p>
       )}
-      <div class="prose prose-slate max-w-none break-words dark:prose-invert prose-pre:overflow-x-auto prose-a:text-sky-600 dark:prose-a:text-sky-400">
+      {/*
+        正文排版由 @tailwindcss/typography 统一负责，颜色经 global.css 里的
+        `.prose` 覆盖到语义 token（随主题切换）。`resume-prose` 把 h2 渲染成
+        带主色标记的分节标题，让长简历有分区节奏。
+        简历内容仍是 Markdown 唯一源；卡片/时间轴布局需结构化字段，待与内容工程师对齐。
+      */}
+      <div class="resume-prose prose max-w-none break-words prose-pre:overflow-x-auto">
         <rendered.Content />
       </div>
     </>
   ) : (
-    <p class="text-sm text-slate-500 dark:text-slate-400">{t(locale, 'resume.empty')}</p>
+    <div
+      data-reveal
+      class="rounded-lg border border-dashed border-line bg-surface px-6 py-12 text-center"
+    >
+      <p class="font-mono text-sm text-ink-3">
+        <span class="text-accent">$</span> cat resume.md
+        <span class="text-line"># not found</span>
+      </p>
+      <p class="mt-3 text-sm text-ink-3">{t(locale, 'resume.empty')}</p>
+    </div>
   )}
 </BaseLayout>

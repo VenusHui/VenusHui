@@ -87,6 +87,9 @@ const rssHref = rssPath(locale);
     <script is:inline>
       (() => {
         const root = document.documentElement;
+        // 标记 JS 可用：滚动渐入的隐藏态只在该标记存在时才生效，
+        // 禁用 JS 时内容始终可见（内容优先，不依赖脚本渲染）。
+        root.dataset.js = '';
         let dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         try {
           const stored = localStorage.getItem('theme');
@@ -102,7 +105,7 @@ const rssHref = rssPath(locale);
   <body class="flex min-h-dvh flex-col">
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-slate-900 focus:shadow-lg dark:focus:bg-slate-800 dark:focus:text-slate-50"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-ink focus:shadow-lg"
     >
       {t(locale, 'nav.skipToContent')}
     </a>
@@ -111,5 +114,34 @@ const rssHref = rssPath(locale);
       <slot />
     </main>
     <Footer locale={locale} />
+
+    {/*
+      滚动渐进入场：给带 data-reveal 的元素加 .revealed（进入视口时）。
+      遵守减少动态偏好（CSS 里也只在该偏好下隐藏）；不支持
+      IntersectionObserver 时直接全部显示，保证内容永远可见。
+    */}
+    <script is:inline>
+      (() => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const elements = document.querySelectorAll('[data-reveal]');
+        if (elements.length === 0) return;
+        if (!('IntersectionObserver' in window)) {
+          elements.forEach((el) => el.classList.add('revealed'));
+          return;
+        }
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.1 },
+        );
+        elements.forEach((el) => observer.observe(el));
+      })();
+    </script>
   </body>
 </html>

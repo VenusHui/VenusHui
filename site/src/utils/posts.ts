@@ -113,3 +113,21 @@ export function formatDate(date: Date, locale: Locale): string {
     timeZone: 'UTC',
   }).format(date);
 }
+
+/**
+ * 估算阅读时长（分钟）。中英文混排时按各自语速折算：
+ * 中日韩字符按 500 字/分钟，其余按 200 词/分钟（英文常规语速）。
+ * 下限 1 分钟，短篇也不会显示 0 分钟。基于 Markdown 原文统计，
+ * 标点与代码符号占比不计，偏保守但足够当「阅读时长」标签用。
+ */
+export function readingTime(body: string | undefined): number {
+  const text = body ?? '';
+  const cjk = (text.match(/[぀-ヿ㐀-䶿一-鿿豈-﫿]/g) ?? []).length;
+  const other = text
+    .replace(/[぀-ヿ㐀-䶿一-鿿豈-﫿]/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+  const minutes = cjk / 500 + other / 200;
+  return Math.max(1, Math.round(minutes));
+}

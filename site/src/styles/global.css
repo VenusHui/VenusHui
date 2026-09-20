@@ -8,11 +8,60 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* 中文优先的字体栈：中文回退到苹方 / 微软雅黑，避免移动端中文落到衬线字体。 */
+  /* ---- 品牌主色：teal -----------------------------------------------------
+   * 收口原先散用的 sky，全站强调色一律用 primary-*（或下面的语义 accent），
+   * 不直接写 teal-*。在 emerald / teal 两档里选 teal 的理由见 PR 描述。
+   */
+  --color-primary-50: oklch(0.984 0.014 180.72);
+  --color-primary-100: oklch(0.953 0.051 180.801);
+  --color-primary-200: oklch(0.91 0.096 180.426);
+  --color-primary-300: oklch(0.855 0.138 181.071);
+  --color-primary-400: oklch(0.777 0.152 181.912);
+  --color-primary-500: oklch(0.704 0.14 182.503);
+  --color-primary-600: oklch(0.6 0.118 184.704);
+  --color-primary-700: oklch(0.511 0.096 186.391);
+  --color-primary-800: oklch(0.437 0.078 188.216);
+  --color-primary-900: oklch(0.386 0.063 188.416);
+  --color-primary-950: oklch(0.277 0.046 192.524);
+
+  /* ---- 语义 token：背景层级 ------------------------------------------------
+   * background / surface / surface-2：页面底、卡片底、chip/悬浮底。
+   * line / line-soft：边框（strong / subtle）。
+   * ink / ink-2 / ink-3：文字三级（标题 / 正文 / 弱化）。
+   * accent / accent-hover：可交互强调色（链接 / 边框 / 图标），浅色偏深、深色偏亮。
+   * 浅色值由本块输出到 :root，深色值在 @layer base 的 .dark 里覆盖，
+   * 因此组件里写 bg-surface / text-ink / text-accent 即可自动随主题切换。
+   *
+   * 浅色 accent 取 teal-700 而非 teal-600：teal-600 (#0d9488) 在白底只有 3.74:1，
+   * 低于 WCAG AA 正文文本的 4.5:1；teal-700 (#0f766e) 为 5.47:1。
+   * 深色 accent 取 teal-400：#2dd4bf 在页面底 #020617 上是 10.84:1。
+   */
+  --color-background: #ffffff;
+  --color-surface: #f8fafc;
+  --color-surface-2: #f1f5f9;
+  --color-line: #e2e8f0;
+  --color-line-soft: #f1f5f9;
+  --color-ink: #0f172a;
+  --color-ink-2: #334155;
+  --color-ink-3: #64748b;
+  --color-accent: #0f766e;
+  --color-accent-hover: #115e59;
+
+  /* ---- 间距节奏：区块之间的基准间距，避免散落的魔法数字 ----
+   * 命名要避开 Tailwind 的 display / 关键字（block / inline / flex / grid / table …）：
+   * 定义 `--spacing-block` 会让 Tailwind 把 `inline-block` 解析成
+   * `inline-size: var(--spacing-block)`，覆盖掉 display:inline-block，
+   * 全站所有 inline-block 元素宽度都会被撑成该值。 */
+  --spacing-section: 5rem;
+
+  /* 中文优先的字体栈：中文回退到苹方 / 微软雅黑，避免移动端中文落到衬线字体。
+     等宽字体先用系统栈；自托管子集（JetBrains Mono woff2）留作后续优化，
+     避免增加首屏传输体积。 */
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', 'Noto Sans SC', sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  --font-mono:
+    ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 }
 
 @layer base {
@@ -21,13 +70,33 @@
   }
 
   body {
-    @apply bg-white text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-200;
+    @apply bg-background text-ink-2 antialiased;
   }
 
-  /* 键盘焦点必须可见（移动端与键盘用户都要）。 */
+  /* 键盘焦点必须可见（移动端与键盘用户都要）。焦点环用品牌主色。 */
   :focus-visible {
-    outline: 2px solid var(--color-sky-500);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+  }
+
+  /* 选中文字带一层主色，浅色/深色都适用。 */
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-accent) 22%, transparent);
+  }
+
+  /* 深色主题的语义 token 覆盖。放在 @layer base 里，层序晚于 @theme 输出的 :root，
+     同优先级下后出现者生效；`.dark` 挂在 <html> 上，所有后代继承深色值。 */
+  .dark {
+    --color-background: #020617;
+    --color-surface: #0f172a;
+    --color-surface-2: #1e293b;
+    --color-line: #1e293b;
+    --color-line-soft: #26313f;
+    --color-ink: #f8fafc;
+    --color-ink-2: #e2e8f0;
+    --color-ink-3: #94a3b8;
+    --color-accent: #2dd4bf;
+    --color-accent-hover: #5eead4;
   }
 }
 
@@ -36,6 +105,128 @@
   html {
     scroll-behavior: auto;
   }
+}
+
+/* ---- 滚动渐进入场 ---------------------------------------------------------
+ * 元素带 data-reveal 属性、由 BaseLayout 里的 IntersectionObserver 加 .revealed。
+ * 隐藏态只在 html[data-js]（BaseLayout 首屏脚本设置）下生效，禁用 JS 时内容
+ * 始终可见；prefers-reduced-motion 下也不隐藏。
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-js] [data-reveal] {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s ease;
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  html[data-js] [data-reveal].revealed {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- 链接下划线滑入 -------------------------------------------------------
+ * 给导航 / 卡片标题 / 页脚等正文之外的链接加 class，hover 时下划线从左展开。
+ * 正文（prose）里的链接保留 @tailwindcss/typography 的默认下划线，可读性优先。
+ */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition:
+    background-size 0.25s ease,
+    color 0.2s ease;
+}
+
+.link-underline:hover,
+.link-underline:focus-visible {
+  background-size: 100% 1.5px;
+}
+
+@layer components {
+  /* 主/次按钮：首页 hero 与 404 共用，避免重复粘贴 tailwind 类。
+     实心按钮用固定 teal-700/800：白字压在 teal-600 (#0d9488) 上只有 3.74:1，
+     不达 AA 的 4.5:1（14px 常规字号无大字号豁免）；teal-700 (#0f766e) 为 5.47:1，
+     且该按钮底色不随主题切换，浅深两种主题下都达标。 */
+  .btn-primary {
+    @apply inline-flex h-10 items-center rounded-lg bg-primary-700 px-4 text-sm font-medium text-white transition-colors hover:bg-primary-800;
+  }
+
+  .btn-secondary {
+    @apply inline-flex h-10 items-center rounded-lg border border-line bg-surface px-4 text-sm font-medium text-ink transition-colors hover:border-accent hover:text-accent;
+  }
+
+  /* 统一标签 chip：博文卡片、详情页、标签索引共用一套视觉。 */
+  .chip {
+    @apply inline-flex items-center rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs text-ink-2 transition-colors hover:border-accent hover:text-accent;
+  }
+}
+
+/* ---- 正文排版（@tailwindcss/typography 定制） --------------------------------
+ * 用语义 token 覆盖 prose 的颜色变量。token 会随 .dark 切换，
+ * 所以组件里只写 `prose`（不再写 prose-slate + dark:prose-invert），一套规则管两主题。
+ */
+.prose {
+  --tw-prose-body: var(--color-ink-2);
+  --tw-prose-headings: var(--color-ink);
+  --tw-prose-lead: var(--color-ink-2);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-bold: var(--color-ink);
+  --tw-prose-counters: var(--color-ink-3);
+  --tw-prose-bullets: var(--color-ink-3);
+  --tw-prose-hr: var(--color-line);
+  --tw-prose-quotes: var(--color-ink-2);
+  --tw-prose-quote-borders: var(--color-accent);
+  --tw-prose-captions: var(--color-ink-3);
+  --tw-prose-kbd: var(--color-ink);
+  --tw-prose-code: var(--color-ink);
+  --tw-prose-pre-code: var(--color-ink-2);
+  --tw-prose-th-borders: var(--color-line);
+  --tw-prose-td-borders: var(--color-line-soft);
+}
+
+/* 代码块：加边框与圆角，与正文区块拉开层次。背景色由 Shiki 的主题变量负责
+   （浅色 github-light、深色 github-dark，切换规则见下方 html.dark 覆盖）。 */
+.prose pre {
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+}
+
+/* 行内代码：主色不参与，用 ink 保持低调；避免长串撑破窄屏。 */
+.prose code {
+  border-radius: 0.375rem;
+}
+
+/* ---- 简历页：把 Markdown 的 h2 渲染成分节标题 ---------------------------------
+ * 简历正文仍是 site/src/resumes/ 下的 Markdown（唯一事实来源），这里只加视觉：
+ * 每个 h2 上方一道细分割线 + 左侧一小段主色标记，让「教育 / 技能 / 工作经历 /
+ * 项目经历」这类小节在长页面里有清晰的分区节奏，读起来是「一节一节」而不是通读。
+ * 卡片 / 时间轴布局需要结构化字段，待与内容工程师对齐内容模型后再升级。
+ */
+.resume-prose h2 {
+  position: relative;
+  border-top: 1px solid var(--color-line);
+  padding-top: 1.5rem;
+}
+
+.resume-prose h2::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 2.5rem;
+  height: 2px;
+  background-color: var(--color-accent);
+}
+
+/* 简历里的条目列表收紧一点，靠近时间轴那种「一行一条」的读感。 */
+.resume-prose li {
+  margin-top: 0.375em;
+  margin-bottom: 0.375em;
 }
 
 /*
