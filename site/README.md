@@ -39,6 +39,7 @@ site/
 │   │   └── en/             # 英文路由（/en/...）
 │   ├── posts/              # 博文 Markdown（唯一事实来源）
 │   ├── resumes/            # 简历 Markdown，<handle>/README.md
+│   ├── projects/           # 项目 Markdown，<slug>/README.md（承接 ACM-ICPC / Learning / TongjiClasses）
 │   └── styles/global.css   # Tailwind 入口与主题变量
 └── public/                 # 原样拷贝的静态资源
 ```
@@ -68,16 +69,24 @@ site/
 
 博文 frontmatter（`src/posts/*.md`）：
 
-| 字段      | 必填 | 说明                                        |
-| --------- | ---- | ------------------------------------------- |
-| `title`   | 是   | 标题                                        |
-| `date`    | 是   | 发布日期，`YYYY-MM-DD`                      |
-| `tags`    | 否   | 标签数组，缺省为空                          |
-| `summary` | 是   | 摘要，用于列表与 SEO description            |
-| `draft`   | 否   | `true` 时只在本地 dev 可见，不进构建产物    |
-| `lang`    | 否   | `zh`（默认）或 `en`，决定归入哪种语言的列表 |
+| 字段      | 必填 | 说明                                                                                                          |
+| --------- | ---- | ------------------------------------------------------------------------------------------------------------- |
+| `title`   | 是   | 标题                                                                                                          |
+| `date`    | 是   | 发布日期，`YYYY-MM-DD`                                                                                        |
+| `tags`    | 否   | 主题标签数组，缺省为空                                                                                        |
+| `series`  | 否   | 系列（内容类型）：`daily-coding` / `contest-solution` / `paper-reading`，与主题标签区分；不属于任何系列可省略 |
+| `summary` | 是   | 摘要，用于列表与 SEO description                                                                              |
+| `draft`   | 否   | `true` 时只在本地 dev 可见，不进构建产物                                                                      |
+| `lang`    | 否   | `zh`（默认）或 `en`，决定归入哪种语言的列表                                                                   |
 
-简历（`src/resumes/<handle>/README.md`）一个目录一篇，字段全部可选，待内容迁入后按实际字段收紧。
+简历（`src/resumes/<handle>/README.md`）一个目录一篇。基础字段（`name` / `title` / `summary` / `updated` / `draft`）之外，
+结构化字段（`contact` / `links` / `education` / `experience` / `skills` / `honors` / `languages`）全部可选、逐步迁入，
+只驱动站点侧卡片 / 时间轴等排版，正文保留叙述式 Markdown。字段定义见 `src/content.config.ts`，
+约定与公开范围门禁见 `src/resumes/README.md`。
+
+项目（`src/projects/<slug>/README.md`）一个目录一个项目，`title` / `summary` 必填，
+`repo` / `tech` / `highlight` 可选；承接仓库根目录的 ACM-ICPC / Learning / TongjiClasses 三条内容线，
+正文以仓库既有内容为单一事实来源，站点侧不复制正文。约定见 `src/projects/README.md`。
 
 ## 主题
 
