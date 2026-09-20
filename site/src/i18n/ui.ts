@@ -24,6 +24,7 @@ const zh = {
 
   'nav.home': '首页',
   'nav.posts': '博文',
+  'nav.projects': '项目',
   'nav.tags': '标签',
   'nav.archive': '归档',
   'nav.resume': '简历',
@@ -38,6 +39,11 @@ const zh = {
   'home.allPosts': '全部博文',
   'home.viewResume': '查看简历',
   'home.empty': '博文还在迁移中，稍后回来看看。',
+  'home.projects': '最近在做 / 项目',
+  'home.viewProjects': '全部项目',
+  'home.blocks.posts': '刷题题解、CS 学习笔记与论文阅读。',
+  'home.blocks.resume': '教育背景、实习经历与技能栈。',
+  'home.blocks.archive': '按年份回顾全部博文。',
 
   'posts.title': '博文',
   'posts.description': '按时间倒序排列的全部博文。',
@@ -57,6 +63,11 @@ const zh = {
   'archive.description': '按年份归档的全部博文。',
   'archive.empty': '还没有可归档的博文。',
   'archive.count': '篇',
+
+  'projects.title': '项目',
+  'projects.description': '算法训练、CS 学习笔记与课程项目的索引。',
+  'projects.empty': '项目内容还在整理中，稍后回来看看。',
+  'projects.viewRepo': '查看仓库',
 
   'resume.title': '简历',
   'resume.description': 'VenusHui 的简历。',
@@ -83,6 +94,7 @@ const en: Record<UIKey, string> = {
 
   'nav.home': 'Home',
   'nav.posts': 'Blog',
+  'nav.projects': 'Projects',
   'nav.tags': 'Tags',
   'nav.archive': 'Archive',
   'nav.resume': 'Resume',
@@ -97,6 +109,11 @@ const en: Record<UIKey, string> = {
   'home.allPosts': 'All posts',
   'home.viewResume': 'View resume',
   'home.empty': 'Posts are still being migrated. Check back soon.',
+  'home.projects': 'Now working on',
+  'home.viewProjects': 'All projects',
+  'home.blocks.posts': 'Contest solutions, CS study notes and paper readings.',
+  'home.blocks.resume': 'Education, experience and skills.',
+  'home.blocks.archive': 'Browse every post by year.',
 
   'posts.title': 'Blog',
   'posts.description': 'All posts, newest first.',
@@ -116,6 +133,11 @@ const en: Record<UIKey, string> = {
   'archive.description': 'All posts grouped by year.',
   'archive.empty': 'Nothing to archive yet.',
   'archive.count': 'posts',
+
+  'projects.title': 'Projects',
+  'projects.description': 'Algorithm practice, CS study notes and coursework projects.',
+  'projects.empty': 'Projects are still being organized. Check back soon.',
+  'projects.viewRepo': 'View repo',
 
   'resume.title': 'Resume',
   'resume.description': "VenusHui's resume.",

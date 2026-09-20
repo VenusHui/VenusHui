@@ -6,6 +6,7 @@ import { rssPath } from '../../i18n/rss';
 import type { Locale } from '../../i18n/ui';
 import { localePath, t } from '../../i18n/utils';
 import { getPosts } from '../../utils/posts';
+import { getProjects, projectRepoUrl } from '../../utils/projects';
 
 interface Props {
   locale: Locale;
@@ -16,6 +17,11 @@ const tr = (key: Parameters<typeof t>[1]) => t(locale, key);
 
 const posts = await getPosts(locale);
 const latest = posts.slice(0, 5);
+
+// 首页「最近在做 / 项目」：优先取 highlight 的项目，没有精选时退化为全部项目，最多 3 张卡。
+const allProjects = await getProjects();
+const highlighted = allProjects.filter((project) => project.data.highlight);
+const featuredProjects = (highlighted.length > 0 ? highlighted : allProjects).slice(0, 3);
 
 // hero 渐进入场的错峰延迟（毫秒）；reduced-motion 下由 CSS 直接显示，不生效。
 const heroReveal = ['0ms', '80ms', '160ms', '240ms'];
@@ -106,6 +112,104 @@ const heroReveal = ['0ms', '80ms', '160ms', '240ms'];
       </a>
     </div>
   </section>
+
+  {/*
+    策展式前门：博文 / 简历 / 归档 三个入口块，紧跟 hero，
+    让访客一进来就知道站点有哪些内容区（tagline 承诺的「简历 · 项目 · 博文」）。
+  */}
+  <section class="mt-section">
+    <ul class="grid gap-4 sm:grid-cols-3">
+      {[
+        {
+          href: localePath(locale, 'posts/'),
+          title: tr('nav.posts'),
+          desc: tr('home.blocks.posts'),
+        },
+        {
+          href: localePath(locale, 'resume/'),
+          title: tr('nav.resume'),
+          desc: tr('home.blocks.resume'),
+        },
+        {
+          href: localePath(locale, 'archive/'),
+          title: tr('nav.archive'),
+          desc: tr('home.blocks.archive'),
+        },
+      ].map((block) => (
+        <li>
+          <a
+            href={block.href}
+            class="group block h-full rounded-lg border border-line bg-surface p-4 transition-colors hover:border-accent"
+          >
+            <h2 class="text-sm font-semibold text-ink">{block.title}</h2>
+            <p class="mt-1 text-xs leading-relaxed text-ink-2">{block.desc}</p>
+            <span
+              aria-hidden="true"
+              class="mt-2 inline-block text-accent transition-transform duration-200 group-hover:translate-x-0.5"
+            >
+              →
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  {featuredProjects.length > 0 && (
+    <section class="mt-section">
+      <div data-reveal class="mb-4 flex items-baseline gap-3">
+        <h2 class="text-lg font-semibold text-ink">{tr('home.projects')}</h2>
+        <span class="font-mono text-xs text-ink-3">
+          {featuredProjects.length.toString().padStart(2, '0')}
+        </span>
+      </div>
+      {/*
+        精选项目卡片网格（参考 maggieappleton / maximeheckel 的项目卡片区）：
+        卡片只展示 projects collection 的 frontmatter 元信息，点击去仓库看正文，
+        延续「Markdown 唯一源」原则。
+      */}
+      <ul class="grid gap-4 sm:grid-cols-2">
+        {featuredProjects.map((project) => (
+          <li>
+            <a
+              href={projectRepoUrl(project)}
+              rel="noopener noreferrer"
+              class="group block h-full rounded-lg border border-line bg-surface p-5 transition-colors hover:border-accent"
+            >
+              <h3 class="text-base font-semibold text-ink">{project.data.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-2">{project.data.summary}</p>
+              {project.data.tech.length > 0 && (
+                <ul class="mt-3 flex flex-wrap gap-2">
+                  {project.data.tech.map((tech) => (
+                    <li>
+                      <span class="chip">{tech}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <span class="mt-3 inline-flex items-center gap-1 text-xs text-accent">
+                {tr('projects.viewRepo')}
+                <span
+                  aria-hidden="true"
+                  class="transition-transform duration-200 group-hover:translate-x-0.5"
+                >
+                  →
+                </span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="mt-6 text-sm">
+        <a
+          href={localePath(locale, 'projects/')}
+          class="link-underline text-accent hover:text-accent-hover"
+        >
+          {tr('home.viewProjects')} →
+        </a>
+      </p>
+    </section>
+  )}
 
   <section class="mt-section">
     <div data-reveal class="mb-4 flex items-baseline gap-3">
