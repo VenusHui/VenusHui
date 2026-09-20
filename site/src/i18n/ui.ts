@@ -18,8 +18,9 @@ export const defaultLocale: Locale = 'zh';
 
 const zh = {
   'site.title': 'VenusHui',
-  'site.tagline': '简历 · 项目 · 博文',
-  'site.description': 'VenusHui 的个人站点：简历、项目展示与技术博文。',
+  'site.tagline': '软件工程师 · 同济大学软工 · 云原生与大数据',
+  'site.description':
+    '同济大学软件工程学士，曾在文远知行（WeRide）Data-Infra 团队实习，做分布式大数据基础设施；现在专注云原生与分布式系统，平时在 Codeforces / LeetCode 上刷题。这里沉淀 ACM-ICPC 题解、CS 学习笔记与项目代码。',
 
   'nav.home': '首页',
   'nav.posts': '博文',
@@ -76,8 +77,9 @@ export type UIKey = keyof typeof zh;
 
 const en: Record<UIKey, string> = {
   'site.title': 'VenusHui',
-  'site.tagline': 'Resume · Projects · Blog',
-  'site.description': "VenusHui's personal site: resume, projects and blog posts.",
+  'site.tagline': 'Software Engineer · Tongji SE · Cloud-Native & Big Data',
+  'site.description':
+    'I studied Software Engineering at Tongji University and interned on the Data-Infra team at WeRide, building distributed big-data infrastructure. Now I focus on cloud-native and distributed systems, and keep practicing on Codeforces / LeetCode. This site holds my ACM-ICPC solutions, CS study notes and projects.',
 
   'nav.home': 'Home',
   'nav.posts': 'Blog',

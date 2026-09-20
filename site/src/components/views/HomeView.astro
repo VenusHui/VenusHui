@@ -50,6 +50,10 @@ const heroReveal = ['0ms', '80ms', '160ms', '240ms'];
       <span class="text-accent">.</span>
     </h1>
 
+    {/*
+      自我介绍 bio：tagline 一行身份定位，description 是「做过什么 / 现在在做什么」的
+      叙述段（见 i18n/ui.ts），字号略大于站点描述，保证首屏可读。
+    */}
     <p
       data-reveal
       style={{ '--reveal-delay': heroReveal[2] }}
@@ -60,7 +64,7 @@ const heroReveal = ['0ms', '80ms', '160ms', '240ms'];
     <p
       data-reveal
       style={{ '--reveal-delay': heroReveal[2] }}
-      class="mt-2 max-w-prose text-sm leading-relaxed text-ink-3"
+      class="mt-2 max-w-prose text-base leading-relaxed text-ink-2"
     >
       {tr('site.description')}
     </p>

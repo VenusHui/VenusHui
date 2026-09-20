@@ -243,3 +243,73 @@ html.dark .astro-code span {
   font-weight: var(--shiki-dark-font-weight) !important;
   text-decoration: var(--shiki-dark-text-decoration) !important;
 }
+
+/* ---- 打印 / PDF 导出 -------------------------------------------------------
+ * 简历页最常见的诉求是导出 PDF：隐藏站点 chrome（Header/Footer 已各自标了
+ * `print:hidden`），固定为浅色纸面输出，并控制分页避免标题孤行、条目被拦腰拆散。
+ * 站点 chrome 的隐藏放在组件上用 Tailwind `print:` 变体处理，这里只管纸面全局与分页。
+ */
+@media print {
+  /* 强制浅色 token：打印不跟随屏幕深浅主题，纸面恒为白底黑字。 */
+  :root {
+    --color-background: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #f1f5f9;
+    --color-line: #cbd5e1;
+    --color-line-soft: #e2e8f0;
+    --color-ink: #0f172a;
+    --color-ink-2: #1e293b;
+    --color-ink-3: #475569;
+    --color-accent: #0f766e;
+    --color-accent-hover: #115e59;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  body {
+    /* 浏览器「打印背景图形」默认关闭时也能有纯白底。 */
+    background-color: #ffffff !important;
+  }
+
+  main {
+    max-width: none;
+    padding: 0;
+  }
+
+  /* 滚动渐入的隐藏态会把尚未滚到的内容藏掉（打印时没有视口滚动），强制全部显示。 */
+  html[data-js] [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* 分页控制：标题不孤行挂页底，条目不跨页被拦腰拆散。 */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    break-after: avoid;
+  }
+
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .resume-prose pre,
+  .resume-prose blockquote,
+  .resume-prose table,
+  .resume-prose img {
+    break-inside: avoid;
+  }
+
+  /* 简历分节标题左侧的主色标记保留在 PDF 里，需要显式打印背景色。 */
+  .resume-prose h2::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
