@@ -4,7 +4,7 @@ import TagChips from '../TagChips.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Locale } from '../../i18n/ui';
 import { localePath, t } from '../../i18n/utils';
-import { formatDate, type Post, type RenderedContent } from '../../utils/posts';
+import { formatDate, readingTime, type Post, type RenderedContent } from '../../utils/posts';
 
 interface Props {
   post: Post;
@@ -26,26 +26,33 @@ const otherLocale: Locale = locale === 'zh' ? 'en' : 'zh';
 >
   <article>
     <PageHeader title={title} />
-    <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
+    <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-ink-3">
       <time datetime={date.toISOString()}>
         {t(locale, 'posts.publishedOn')} {formatDate(date, locale)}
       </time>
+      <span aria-hidden="true" class="text-ink-3">
+        ·
+      </span>
+      <span>
+        {readingTime(post.body)} {t(locale, 'posts.readingTime')}
+      </span>
     </div>
     <TagChips tags={tags} locale={locale} />
 
     {/*
       prose 来自 @tailwindcss/typography：Markdown 正文的排版（标题、列表、代码块、引用）
-      由它统一负责，深色下用 prose-invert 反转。min-w-0 + break-words 防止长串/代码块撑破窄屏。
+      由它统一负责，颜色经 global.css 的 `.prose` 覆盖到语义 token（随主题切换）。
+      min-w-0 + break-words 防止长串/代码块撑破窄屏。
     */}
-    <div class="prose prose-slate mt-8 max-w-none break-words dark:prose-invert prose-pre:overflow-x-auto prose-a:text-sky-600 dark:prose-a:text-sky-400">
+    <div class="prose mt-8 max-w-none break-words prose-pre:overflow-x-auto">
       <Content />
     </div>
   </article>
 
-  <p class="mt-12 border-t border-slate-200 pt-6 text-sm dark:border-slate-800">
+  <p class="mt-12 border-t border-line pt-6 text-sm">
     <a
       href={localePath(locale, 'posts/')}
-      class="text-sky-600 transition-colors hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
+      class="link-underline text-accent hover:text-accent-hover"
     >
       {t(locale, 'posts.backToList')}
     </a>

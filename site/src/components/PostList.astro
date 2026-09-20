@@ -14,7 +14,7 @@ const { posts, locale, emptyText } = Astro.props;
 ---
 
 {posts.length === 0 ? (
-  <p class="text-sm text-slate-500 dark:text-slate-400">{emptyText}</p>
+  <p class="text-sm text-ink-3">{emptyText}</p>
 ) : (
   <div>
     {posts.map((post) => (

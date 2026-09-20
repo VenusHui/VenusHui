@@ -19,26 +19,28 @@ const both: Locale[] = [primary, secondary];
   noindex
   languageHref={localePath(secondary)}
 >
-  <div class="space-y-8">
+  <div class="space-y-10">
+    {/*
+      有趣的 404 辨识：大号等宽编号 + 一行「编译器错误」式提示，克制不喧宾夺主。
+    */}
+    <div data-reveal class="text-center">
+      <p class="font-mono text-6xl font-bold leading-none tracking-tight text-ink">
+        <span class="text-accent">4</span>0<span class="text-accent">4</span>
+      </p>
+      <p class="mt-4 font-mono text-sm text-ink-3">
+        <span class="text-accent">error[E404]</span>: page not found
+      </p>
+    </div>
+
     {both.map((locale) => (
-      <section>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
-          {t(locale, 'notFound.title')}
-        </h1>
-        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-          {t(locale, 'notFound.description')}
-        </p>
+      <section class="rounded-lg border border-line bg-surface px-6 py-6">
+        <h2 class="text-lg font-semibold text-ink">{t(locale, 'notFound.title')}</h2>
+        <p class="mt-2 text-sm text-ink-2">{t(locale, 'notFound.description')}</p>
         <div class="mt-4 flex flex-wrap gap-3">
-          <a
-            href={localePath(locale)}
-            class="inline-flex h-10 items-center rounded-md bg-sky-600 px-4 text-sm font-medium text-white transition-colors hover:bg-sky-700"
-          >
+          <a href={localePath(locale)} class="btn-primary">
             {t(locale, 'notFound.backHome')}
           </a>
-          <a
-            href={localePath(locale, 'posts/')}
-            class="inline-flex h-10 items-center rounded-md border border-slate-200 px-4 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-          >
+          <a href={localePath(locale, 'posts/')} class="btn-secondary">
             {t(locale, 'notFound.browsePosts')}
           </a>
         </div>

@@ -36,6 +36,7 @@ const zh = {
   'home.latestPosts': '最新博文',
   'home.allPosts': '全部博文',
   'home.viewResume': '查看简历',
+  'home.viewProfile': '查看 GitHub',
   'home.empty': '博文还在迁移中，稍后回来看看。',
 
   'posts.title': '博文',
@@ -44,6 +45,7 @@ const zh = {
   'posts.backToList': '← 返回博文列表',
   'posts.readMore': '阅读全文',
   'posts.publishedOn': '发布于',
+  'posts.readingTime': '分钟阅读',
 
   'tags.title': '标签',
   'tags.description': '按标签浏览博文。',
@@ -93,6 +95,7 @@ const en: Record<UIKey, string> = {
   'home.latestPosts': 'Latest posts',
   'home.allPosts': 'All posts',
   'home.viewResume': 'View resume',
+  'home.viewProfile': 'View GitHub',
   'home.empty': 'Posts are still being migrated. Check back soon.',
 
   'posts.title': 'Blog',
@@ -101,6 +104,7 @@ const en: Record<UIKey, string> = {
   'posts.backToList': '← Back to all posts',
   'posts.readMore': 'Read more',
   'posts.publishedOn': 'Published on',
+  'posts.readingTime': 'min read',
 
   'tags.title': 'Tags',
   'tags.description': 'Browse posts by tag.',
