@@ -2,6 +2,7 @@
 title: Ad-hoc On-Demand Distance Vector Routing
 date: 2022-11-14
 tags: [network, paper-reading]
+series: paper-reading
 summary: 同济大学软件学院2022-2023秋计算机网络实验论文阅读
 lang: zh
 ---

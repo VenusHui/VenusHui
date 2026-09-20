@@ -2,6 +2,7 @@
 title: Leetcode第287场周赛题解
 date: 2022-04-05
 tags: [leetcode, contest-solution]
+series: contest-solution
 summary: 比赛时间：2022/04/03 10:30-12:00，排名：2019/6811
 lang: zh
 ---

@@ -2,6 +2,7 @@
 title: Leetcode第320场周赛1-3题题解
 date: 2022-11-20
 tags: [leetcode, contest-solution]
+series: contest-solution
 summary: 比赛时间：2022/11/20 10:30-12:00，排名：1776/5678
 lang: zh
 ---

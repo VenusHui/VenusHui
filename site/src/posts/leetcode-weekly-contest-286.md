@@ -2,6 +2,7 @@
 title: Leetcode第286场周赛题解
 date: 2022-03-31
 tags: [leetcode, contest-solution]
+series: contest-solution
 summary: 比赛时间：2022/3/27 10:30-12:00，排名：3395/7248
 lang: zh
 ---
