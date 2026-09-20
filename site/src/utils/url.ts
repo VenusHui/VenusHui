@@ -8,6 +8,9 @@
  */
 const BASE = import.meta.env.BASE_URL;
 
+/** 站点源（astro.config 的 `site`）。绝对地址一律由它拼出，组件里不写死域名。 */
+const SITE = import.meta.env.SITE;
+
 /**
  * 把站内路径转成带 base 的绝对路径。
  *
@@ -17,6 +20,29 @@ const BASE = import.meta.env.BASE_URL;
 export function withBase(path = ''): string {
   const clean = path.replace(/^\/+/, '');
   return clean ? `${BASE}${clean}` : BASE;
+}
+
+/**
+ * 站内路径 → 绝对地址（站点源 + base）。
+ *
+ * @param path 相对站点根的路径，例如 `og.png`、`posts/`；空串得到站点根。
+ * @returns 例如 `https://venushui.github.io/VenusHui/og.png`。
+ *
+ * canonical / og:image / JSON-LD 这类「必须是绝对 URL」的字段统一走它，
+ * 不要在各处自己拼 origin。
+ */
+export function absoluteUrl(path = ''): string {
+  return new URL(withBase(path), SITE).href;
+}
+
+/**
+ * `Astro.url.pathname`（已含 base）→ 绝对地址，即 canonical 地址。
+ *
+ * BaseLayout 的 `<link rel="canonical">` 与页面侧 JSON-LD 的 `url` 共用这一处，
+ * 保证两者永远一致。
+ */
+export function canonicalUrl(pathname: string): string {
+  return new URL(pathname, SITE).href;
 }
 
 /**

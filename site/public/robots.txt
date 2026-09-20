@@ -1,0 +1,6 @@
+# 站点发布在 GitHub Pages 项目子路径下，robots.txt 随 public/ 原样拷到 /VenusHui/robots.txt。
+# Sitemap 由 @astrojs/sitemap 生成（sitemap-index.xml），指令值必须是绝对 URL。
+User-agent: *
+Allow: /
+
+Sitemap: https://venushui.github.io/VenusHui/sitemap-index.xml
