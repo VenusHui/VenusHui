@@ -39,6 +39,7 @@ const zh = {
   'home.allPosts': '全部博文',
   'home.viewResume': '查看简历',
   'home.empty': '博文还在迁移中，稍后回来看看。',
+  'home.series': '按系列浏览',
   'home.projects': '最近在做 / 项目',
   'home.viewProjects': '全部项目',
   'home.blocks.posts': '刷题题解、CS 学习笔记与论文阅读。',
@@ -46,12 +47,15 @@ const zh = {
   'home.blocks.archive': '按年份回顾全部博文。',
 
   'posts.title': '博文',
-  'posts.description': '按时间倒序排列的全部博文。',
+  'posts.description': '按系列分组的全部博文。',
   'posts.empty': '还没有已发布的博文。',
   'posts.backToList': '← 返回博文列表',
   'posts.readMore': '阅读全文',
   'posts.publishedOn': '发布于',
   'posts.readingTime': '分钟阅读',
+  'posts.prevInSeries': '上一篇',
+  'posts.nextInSeries': '下一篇',
+  'posts.seriesNav': '同系列导航',
 
   'tags.title': '标签',
   'tags.description': '按标签浏览博文。',
@@ -60,7 +64,7 @@ const zh = {
   'tags.postsTagged': '带有标签',
 
   'archive.title': '归档',
-  'archive.description': '按年份归档的全部博文。',
+  'archive.description': '按系列归档的全部博文。',
   'archive.empty': '还没有可归档的博文。',
   'archive.count': '篇',
 
@@ -68,6 +72,11 @@ const zh = {
   'projects.description': '算法训练、CS 学习笔记与课程项目的索引。',
   'projects.empty': '项目内容还在整理中，稍后回来看看。',
   'projects.viewRepo': '查看仓库',
+  'series.daily-coding': '刷题日志',
+  'series.contest-solution': '周赛题解',
+  'series.paper-reading': '论文阅读',
+  'series.uncategorized': '其他',
+  'series.count': '篇',
 
   'resume.title': '简历',
   'resume.description': 'VenusHui 的简历。',
@@ -109,6 +118,7 @@ const en: Record<UIKey, string> = {
   'home.allPosts': 'All posts',
   'home.viewResume': 'View resume',
   'home.empty': 'Posts are still being migrated. Check back soon.',
+  'home.series': 'Browse by series',
   'home.projects': 'Now working on',
   'home.viewProjects': 'All projects',
   'home.blocks.posts': 'Contest solutions, CS study notes and paper readings.',
@@ -116,12 +126,15 @@ const en: Record<UIKey, string> = {
   'home.blocks.archive': 'Browse every post by year.',
 
   'posts.title': 'Blog',
-  'posts.description': 'All posts, newest first.',
+  'posts.description': 'All posts, grouped by series.',
   'posts.empty': 'No published posts yet.',
   'posts.backToList': '← Back to all posts',
   'posts.readMore': 'Read more',
   'posts.publishedOn': 'Published on',
   'posts.readingTime': 'min read',
+  'posts.prevInSeries': 'Previous',
+  'posts.nextInSeries': 'Next',
+  'posts.seriesNav': 'Series navigation',
 
   'tags.title': 'Tags',
   'tags.description': 'Browse posts by tag.',
@@ -130,7 +143,7 @@ const en: Record<UIKey, string> = {
   'tags.postsTagged': 'Posts tagged',
 
   'archive.title': 'Archive',
-  'archive.description': 'All posts grouped by year.',
+  'archive.description': 'All posts grouped by series.',
   'archive.empty': 'Nothing to archive yet.',
   'archive.count': 'posts',
 
@@ -138,6 +151,11 @@ const en: Record<UIKey, string> = {
   'projects.description': 'Algorithm practice, CS study notes and coursework projects.',
   'projects.empty': 'Projects are still being organized. Check back soon.',
   'projects.viewRepo': 'View repo',
+  'series.daily-coding': 'Daily Coding',
+  'series.contest-solution': 'Contest Solutions',
+  'series.paper-reading': 'Paper Reading',
+  'series.uncategorized': 'Other',
+  'series.count': 'posts',
 
   'resume.title': 'Resume',
   'resume.description': "VenusHui's resume.",
