@@ -27,11 +27,13 @@ npm run format:check # prettier 校验（CI 用）
 site/
 ├── astro.config.mjs        # site / base / i18n / tailwind / sitemap
 ├── src/
-│   ├── consts.ts           # 站点级常量
-│   ├── content.config.ts   # 内容集合 schema（posts / resumes）
+│   ├── consts.ts           # 站点级常量（作者、平台主页、OG 分享图）
+│   ├── content.config.ts   # 内容集合 schema（posts / resumes / projects）
 │   ├── i18n/               # 文案表、语言工具、RSS 路径
-│   ├── utils/url.ts        # base path 收口点（withBase / stripBase）
-│   ├── utils/posts.ts      # 博文查询、排序、标签与年份聚合、日期格式化
+│   ├── utils/url.ts        # base path 收口点（withBase / absoluteUrl / canonicalUrl）
+│   ├── utils/posts.ts      # 博文查询、排序、标签与系列聚合、日期格式化
+│   ├── utils/seo.ts        # JSON-LD 构造（Person / BlogPosting）
+│   ├── assets/og.svg       # 默认 OG 分享图源文件（渲染产物在 public/og.png）
 │   ├── layouts/BaseLayout.astro
 │   ├── components/         # Header / Footer / 主题与语言切换 / 列表卡片
 │   ├── components/views/   # 页面级视图，两种语言的路由共用
@@ -41,7 +43,8 @@ site/
 │   ├── resumes/            # 简历 Markdown，<handle>/README.md
 │   ├── projects/           # 项目 Markdown，<slug>/README.md（承接 ACM-ICPC / Learning / TongjiClasses）
 │   └── styles/global.css   # Tailwind 入口与主题变量
-└── public/                 # 原样拷贝的静态资源
+├── scripts/                # 一次性工具脚本（generate-og 等），不参与构建
+└── public/                 # 原样拷贝的静态资源（og.png / robots.txt / favicon）
 ```
 
 ## base path 约定（最重要的坑）
@@ -87,6 +90,24 @@ site/
 项目（`src/projects/<slug>/README.md`）一个目录一个项目，`title` / `summary` 必填，
 `repo` / `tech` / `highlight` 可选；承接仓库根目录的 ACM-ICPC / Learning / TongjiClasses 三条内容线，
 正文以仓库既有内容为单一事实来源，站点侧不复制正文。约定见 `src/projects/README.md`。
+
+## SEO
+
+`BaseLayout` 统一输出 `<title>` / `description` / `canonical` / hreflang / Open Graph，
+页面侧只传语义（`title` / `description` / `ogType` / `jsonLd`），不自己写 meta 标签。
+
+- **canonical 与绝对地址**：走 `src/utils/url.ts` 的 `canonicalUrl()` / `absoluteUrl()`，
+  组件里不拼 origin。sitemap 由 `@astrojs/sitemap` 生成（`/VenusHui/sitemap-0.xml`），
+  `public/robots.txt` 指向 `sitemap-index.xml`。
+- **分享图**：全站复用 `public/og.png`（1200x630，品牌 teal + 站点名）。
+  源文件是 `src/assets/og.svg`，改文案 / 配色后重跑 `node scripts/generate-og.mjs`
+  生成（该脚本用 sharp，未进依赖，按需 `npm install --no-save sharp`）；
+  PNG 是位图且**入库**，构建不依赖图形栈。
+- **og:type**：站点页面是 `website`；博文详情页传 `ogType="article"`，
+  额外输出 `article:published_time`（frontmatter `date`）与每个 `article:tag`（frontmatter `tags`）。
+- **结构化数据（JSON-LD）**：构造函数在 `src/utils/seo.ts`，由页面决定语义 ——
+  首页 / 简历页输出 `Person`（`sameAs` 指向 GitHub / LeetCode / Codeforces，
+  地址收在 `src/consts.ts` 的 `PROFILE_LINKS`），博文详情页输出 `BlogPosting`。
 
 ## 主题
 

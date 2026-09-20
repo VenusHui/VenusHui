@@ -13,6 +13,8 @@ import {
   type SeriesGroup,
 } from '../../utils/posts';
 import { getProjects, projectRepoUrl } from '../../utils/projects';
+import { personJsonLd } from '../../utils/seo';
+import { canonicalUrl } from '../../utils/url';
 
 interface Props {
   locale: Locale;
@@ -20,6 +22,9 @@ interface Props {
 
 const { locale } = Astro.props;
 const tr = (key: Parameters<typeof t>[1]) => t(locale, key);
+
+// 首页回答「这是谁」：输出 Person 结构化数据，把站点与各平台账号判为同一实体。
+const jsonLd = personJsonLd({ url: canonicalUrl(Astro.url.pathname) });
 
 const posts = await getPosts(locale);
 const latest = posts.slice(0, 5);
@@ -42,6 +47,7 @@ const heroReveal = ['0ms', '80ms', '160ms', '240ms'];
   description={tr('site.description')}
   locale={locale}
   translated
+  jsonLd={jsonLd}
 >
   <section class="border-b border-line pb-12 pt-10 sm:pt-14">
     {/*

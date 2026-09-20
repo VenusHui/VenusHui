@@ -2,6 +2,7 @@
 import PageHeader from '../PageHeader.astro';
 import TagChips from '../TagChips.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { OG_IMAGE } from '../../consts';
 import type { Locale } from '../../i18n/ui';
 import { localePath, t } from '../../i18n/utils';
 import {
@@ -13,6 +14,8 @@ import {
   type RenderedContent,
   type SeriesNeighbor,
 } from '../../utils/posts';
+import { blogPostingJsonLd } from '../../utils/seo';
+import { absoluteUrl, canonicalUrl } from '../../utils/url';
 
 interface Props {
   post: Post;
@@ -29,6 +32,11 @@ const otherLocale: Locale = locale === 'zh' ? 'en' : 'zh';
 const { prev, next } = neighbors ?? {};
 /** 有相邻篇目才渲染系列导航，避免只给当前一篇时出现空壳区块。 */
 const hasSeriesNav = Boolean(post.data.series && (prev || next));
+
+// 详情页是「文章」而不是「站点页面」：og:type 走 article，并带上发布时间与标签；
+// 结构化数据输出 BlogPosting，让搜索引擎拿到文章级别的元信息。
+const canonical = canonicalUrl(Astro.url.pathname);
+const jsonLd = blogPostingJsonLd({ post, url: canonical, image: absoluteUrl(OG_IMAGE), locale });
 ---
 
 <BaseLayout
@@ -36,6 +44,10 @@ const hasSeriesNav = Boolean(post.data.series && (prev || next));
   description={summary}
   locale={locale}
   languageHref={localePath(otherLocale, 'posts/')}
+  ogType="article"
+  articlePublishedTime={date.toISOString()}
+  articleTags={tags}
+  jsonLd={jsonLd}
 >
   <article>
     <PageHeader title={title} />

@@ -1,11 +1,12 @@
 ---
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import { OG_IMAGE, OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from '../consts';
 import { rssPath } from '../i18n/rss';
 import type { Locale } from '../i18n/ui';
 import { localePath, localeRelativePath, t } from '../i18n/utils';
 import '../styles/global.css';
-import { withBase } from '../utils/url';
+import { absoluteUrl, canonicalUrl, withBase } from '../utils/url';
 
 interface Props {
   title: string;
@@ -17,6 +18,20 @@ interface Props {
   noindex?: boolean;
   /** 覆盖语言切换目标；博文详情页没有对应译文时指向另一种语言的博文列表。 */
   languageHref?: string;
+  /**
+   * Open Graph 类型。列表 / 首页这类「站点页面」是 `website`（默认），
+   * 博文详情页传 `article`，据此额外输出 article:* 属性。
+   */
+  ogType?: 'website' | 'article';
+  /** 仅 `ogType="article"` 时有意义：发布时间（ISO 8601）。 */
+  articlePublishedTime?: string;
+  /** 仅 `ogType="article"` 时有意义：文章标签，每个输出一条 `article:tag`。 */
+  articleTags?: string[];
+  /**
+   * 结构化数据（schema.org）。传对象即输出一段 JSON-LD `<script>`，
+   * 由调用方决定是 Person 还是 BlogPosting —— 布局层不猜页面语义。
+   */
+  jsonLd?: Record<string, unknown>;
 }
 
 const {
@@ -26,28 +41,41 @@ const {
   translated = false,
   noindex = false,
   languageHref,
+  ogType = 'website',
+  articlePublishedTime,
+  articleTags = [],
+  jsonLd,
 } = Astro.props;
 
 const siteName = t(locale, 'site.title');
 const pageTitle = title === siteName ? siteName : `${title} | ${siteName}`;
 const htmlLang = locale === 'zh' ? 'zh-CN' : 'en';
 
-// canonical 用带 base 的绝对地址：Astro.url 已含 base，Astro.site 是站点源。
-const canonical = new URL(Astro.url.pathname, Astro.site);
+// canonical 用带 base 的绝对地址：Astro.url 已含 base，站点源由 url.ts 收口。
+const canonical = canonicalUrl(Astro.url.pathname);
 
 // hreflang 只在两种语言都有同构页面的站点级页面上输出，避免指向不存在的译文页。
 const relative = localeRelativePath(Astro.url.pathname);
 const alternates = translated
   ? [
-      { hreflang: 'zh-CN', href: new URL(localePath('zh', relative), Astro.site).href },
-      { hreflang: 'en', href: new URL(localePath('en', relative), Astro.site).href },
-      { hreflang: 'x-default', href: new URL(localePath('zh', relative), Astro.site).href },
+      { hreflang: 'zh-CN', href: canonicalUrl(localePath('zh', relative)) },
+      { hreflang: 'en', href: canonicalUrl(localePath('en', relative)) },
+      { hreflang: 'x-default', href: canonicalUrl(localePath('zh', relative)) },
     ]
   : [];
 
 const ogLocale = locale === 'zh' ? 'zh_CN' : 'en_US';
 const ogLocaleAlternate = locale === 'zh' ? 'en_US' : 'zh_CN';
 const rssHref = rssPath(locale);
+
+// 全站默认分享图：og:image 必须是绝对 URL（抓取器不做相对解析），且要带 base。
+const ogImage = absoluteUrl(OG_IMAGE);
+
+/**
+ * JSON-LD 内联前的转义：把 `</` 拆成 `<\/`，避免标题 / 标签里出现
+ * `</script>` 提前闭合标签。JSON 里 `\/` 与 `/` 等价，不影响解析。
+ */
+const jsonLdScript = jsonLd ? JSON.stringify(jsonLd).replace(/<\//g, '<\\/') : undefined;
 ---
 
 <!doctype html>
@@ -58,11 +86,7 @@ const rssHref = rssPath(locale);
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    {noindex ? (
-      <meta name="robots" content="noindex" />
-    ) : (
-      <link rel="canonical" href={canonical.href} />
-    )}
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     {alternates.map((alternate) => (
       <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
     ))}
@@ -71,14 +95,36 @@ const rssHref = rssPath(locale);
     <link rel="icon" href={withBase('favicon.ico')} sizes="32x32" />
     <link rel="alternate" type="application/rss+xml" title={siteName} href={rssHref} />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:locale" content={ogLocale} />
     {translated && <meta property="og:locale:alternate" content={ogLocaleAlternate} />}
-    {!noindex && <meta property="og:url" content={canonical.href} />}
-    <meta name="twitter:card" content="summary" />
+    {!noindex && <meta property="og:url" content={canonical} />}
+    {/*
+      分享图：全站复用一张品牌图，不随页面变化（博文尚无配图字段）。
+      宽高显式声明，抓取器首抓时即可按比例预留版面，避免首屏抖动。
+    */}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content={String(OG_IMAGE_WIDTH)} />
+    <meta property="og:image:height" content={String(OG_IMAGE_HEIGHT)} />
+    <meta property="og:image:alt" content={siteName} />
+
+    {/*
+      博文详情页的 article:* 扩展。只有 ogType="article" 才输出 ——
+      给列表页挂 article:published_time 会被抓取器当成错误标注。
+    */}
+    {ogType === 'article' && articlePublishedTime && (
+      <meta property="article:published_time" content={articlePublishedTime} />
+    )}
+    {ogType === 'article' &&
+      articleTags.map((tag) => <meta property="article:tag" content={tag} />)}
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {/* 结构化数据：内容由页面按语义构造（见 utils/seo.ts），此处只负责注入。 */}
+    {jsonLdScript && <script type="application/ld+json" set:html={jsonLdScript}></script>}
 
     {/*
       防主题闪烁：必须在首屏绘制前同步执行，所以用 is:inline（不参与打包）。

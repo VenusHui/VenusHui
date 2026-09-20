@@ -6,6 +6,8 @@ import type { Locale } from '../../i18n/ui';
 import { t } from '../../i18n/utils';
 import { formatDate } from '../../utils/posts';
 import { getPrimaryResume } from '../../utils/resumes';
+import { personJsonLd } from '../../utils/seo';
+import { canonicalUrl } from '../../utils/url';
 
 interface Props {
   locale: Locale;
@@ -16,6 +18,12 @@ const { locale } = Astro.props;
 // 取简历的查询与草稿闸门都收在 utils/resumes.ts 里；目录为空时返回 undefined，走空状态。
 const resume = await getPrimaryResume();
 const rendered = resume ? await render(resume) : null;
+
+// 简历页与首页同属「这是谁」：输出 Person；简历有 name 时以简历为准。
+const jsonLd = personJsonLd({
+  name: resume?.data.name,
+  url: canonicalUrl(Astro.url.pathname),
+});
 ---
 
 <BaseLayout
@@ -23,6 +31,7 @@ const rendered = resume ? await render(resume) : null;
   description={t(locale, 'resume.description')}
   locale={locale}
   translated
+  jsonLd={jsonLd}
 >
   <PageHeader title={t(locale, 'resume.title')} description={t(locale, 'resume.description')} />
 
