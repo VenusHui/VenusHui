@@ -38,7 +38,12 @@ const posts = defineCollection({
 /**
  * 简历集合。
  *
- * 唯一事实来源是 `site/src/resumes/<handle>/README.md`：一个目录一篇简历，目录名即 handle。
+ * 唯一事实来源是 `site/src/resumes/<handle>/README.md`（中文版）与 `README.en.md`（英文版）：
+ * 一个 handle 目录一位成员的一份简历，目录名即 handle，双语各自成篇（与博文一致，不做同篇翻译对齐）。
+ * 语言由文件名推导 —— `README.md` 是中文版（默认，由 `/resume/` 渲染），
+ * `README.en.md` 是英文版（由 `/en/resume/` 渲染），不需要也不依赖 frontmatter 里的 lang 字段。
+ * 两种版本都可独立成篇，也可只放一种语言（该语言路由走空状态）。
+ *
  * 基础字段（name / title / summary / updated / draft）之外，
  * 结构化字段（contact / links / education / experience / skills / honors / languages）
  * 全部可选、逐步迁入 —— 未填的字段站点侧跳过渲染，卡片/时间轴排版由已填字段驱动。
@@ -48,7 +53,14 @@ const posts = defineCollection({
  * 进公开仓库前必须由成员本人确认并脱敏。结构化字段只定义契约，内容迁入另行执行。
  */
 const resumes = defineCollection({
-  loader: glob({ base: './src/resumes', pattern: '*/README.md' }),
+  // 只认 README.md 与 README.en.md 两个文件名，其余（README.backup.md 等）不进集合。
+  // 默认的 id 生成会对文件名做 slug 归一（README.en.md → readmeen，丢掉语言信息），
+  // 所以用「相对 base 的路径」原样做 id，utils 侧才能靠 `.en.md` 后缀判语言。
+  loader: glob({
+    base: './src/resumes',
+    pattern: ['*/README.md', '*/README.en.md'],
+    generateId: ({ entry }) => entry,
+  }),
   schema: z.object({
     name: z.string().optional(),
     title: z.string().optional(),

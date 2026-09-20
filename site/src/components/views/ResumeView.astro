@@ -15,8 +15,9 @@ interface Props {
 
 const { locale } = Astro.props;
 
-// 取简历的查询与草稿闸门都收在 utils/resumes.ts 里；目录为空时返回 undefined，走空状态。
-const resume = await getPrimaryResume();
+// 取简历的查询与草稿闸门都收在 utils/resumes.ts 里；按当前语言取对应变体
+// （zh 走 README.md、en 走 README.en.md），目录为空或该语言无简历时返回 undefined，走空状态。
+const resume = await getPrimaryResume(locale);
 const rendered = resume ? await render(resume) : null;
 
 // 简历页与首页同属「这是谁」：输出 Person；简历有 name 时以简历为准。
@@ -39,7 +40,8 @@ const jsonLd = personJsonLd({
     <>
       {resume.data.updated && (
         <p class="mb-6 text-sm text-ink-3">
-          {t(locale, 'resume.updated')}：{formatDate(resume.data.updated, locale)}
+          {t(locale, 'resume.updated')}
+          {formatDate(resume.data.updated, locale)}
         </p>
       )}
       {/*
