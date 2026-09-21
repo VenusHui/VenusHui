@@ -15,7 +15,7 @@
 
 ## 📈 GitHub Stats
 
-![VenusHui's GitHub stats](https://github-readme-stats.vercel.app/api?username=venushui&show_icons=true&theme=default)
+![VenusHui's GitHub Profile Summary](https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=venushui&theme=default)
 
 ## 🚀 Projects
 
