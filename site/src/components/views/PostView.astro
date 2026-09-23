@@ -1,0 +1,121 @@
+---
+import PageHeader from '../PageHeader.astro';
+import TagChips from '../TagChips.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { OG_IMAGE } from '../../consts';
+import type { Locale } from '../../i18n/ui';
+import { localePath, t } from '../../i18n/utils';
+import {
+  formatDate,
+  postPath,
+  readingTime,
+  seriesLabel,
+  type Post,
+  type RenderedContent,
+  type SeriesNeighbor,
+} from '../../utils/posts';
+import { blogPostingJsonLd } from '../../utils/seo';
+import { absoluteUrl, canonicalUrl } from '../../utils/url';
+
+interface Props {
+  post: Post;
+  /** 由路由里 `render(post)` 得到的正文组件。 */
+  Content: RenderedContent;
+  locale: Locale;
+  /** 同系列上一篇/下一篇，路由层算好传进来；无系列或系列内单篇时不传。 */
+  neighbors?: SeriesNeighbor;
+}
+
+const { post, Content, locale, neighbors } = Astro.props;
+const { title, date, summary, tags } = post.data;
+const otherLocale: Locale = locale === 'zh' ? 'en' : 'zh';
+const { prev, next } = neighbors ?? {};
+/** 有相邻篇目才渲染系列导航，避免只给当前一篇时出现空壳区块。 */
+const hasSeriesNav = Boolean(post.data.series && (prev || next));
+
+// 详情页是「文章」而不是「站点页面」：og:type 走 article，并带上发布时间与标签；
+// 结构化数据输出 BlogPosting，让搜索引擎拿到文章级别的元信息。
+const canonical = canonicalUrl(Astro.url.pathname);
+const jsonLd = blogPostingJsonLd({ post, url: canonical, image: absoluteUrl(OG_IMAGE), locale });
+---
+
+<BaseLayout
+  title={title}
+  description={summary}
+  locale={locale}
+  languageHref={localePath(otherLocale, 'posts/')}
+  ogType="article"
+  articlePublishedTime={date.toISOString()}
+  articleTags={tags}
+  jsonLd={jsonLd}
+>
+  <article>
+    <PageHeader title={title} />
+    <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-ink-3">
+      <time datetime={date.toISOString()}>
+        {t(locale, 'posts.publishedOn')} {formatDate(date, locale)}
+      </time>
+      <span aria-hidden="true" class="text-ink-3">
+        ·
+      </span>
+      <span>
+        {readingTime(post.body)} {t(locale, 'posts.readingTime')}
+      </span>
+    </div>
+    <TagChips tags={tags} locale={locale} />
+
+    {/*
+      prose 来自 @tailwindcss/typography：Markdown 正文的排版（标题、列表、代码块、引用）
+      由它统一负责，颜色经 global.css 的 `.prose` 覆盖到语义 token（随主题切换）。
+      min-w-0 + break-words 防止长串/代码块撑破窄屏。
+    */}
+    <div class="prose mt-8 max-w-none break-words prose-pre:overflow-x-auto">
+      <Content />
+    </div>
+  </article>
+
+  {hasSeriesNav && (
+    <nav aria-label={t(locale, 'posts.seriesNav')} class="mt-12 border-t border-line pt-6">
+      {/*
+        同系列上一篇/下一篇：系列内按日期正序，上一篇是更旧的一篇、下一篇是更新的一篇。
+        只有单边相邻时保留单侧链接，另一侧留空保持两栏网格不错位。
+      */}
+      <p class="mb-3 font-mono text-xs text-ink-3">{seriesLabel(post.data.series!, locale)}</p>
+      <div class="grid gap-6 sm:grid-cols-2">
+        <div>
+          {prev ? (
+            <a href={postPath(prev)} class="group block">
+              <span class="block font-mono text-xs text-ink-3">
+                {t(locale, 'posts.prevInSeries')}
+              </span>
+              <span class="mt-1 block text-sm font-medium leading-snug text-ink transition-colors group-hover:text-accent">
+                {prev.data.title}
+              </span>
+            </a>
+          ) : null}
+        </div>
+        <div class="sm:text-right">
+          {next ? (
+            <a href={postPath(next)} class="group block">
+              <span class="block font-mono text-xs text-ink-3">
+                {t(locale, 'posts.nextInSeries')}
+              </span>
+              <span class="mt-1 block text-sm font-medium leading-snug text-ink transition-colors group-hover:text-accent">
+                {next.data.title}
+              </span>
+            </a>
+          ) : null}
+        </div>
+      </div>
+    </nav>
+  )}
+
+  <p class={hasSeriesNav ? 'mt-8 text-sm' : 'mt-12 border-t border-line pt-6 text-sm'}>
+    <a
+      href={localePath(locale, 'posts/')}
+      class="link-underline text-accent hover:text-accent-hover"
+    >
+      {t(locale, 'posts.backToList')}
+    </a>
+  </p>
+</BaseLayout>

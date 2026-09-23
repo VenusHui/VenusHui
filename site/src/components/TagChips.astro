@@ -1,0 +1,24 @@
+---
+import type { Locale } from '../i18n/ui';
+import { localePath } from '../i18n/utils';
+import { tagSlug } from '../utils/posts';
+
+interface Props {
+  tags: string[];
+  locale: Locale;
+}
+
+const { tags, locale } = Astro.props;
+---
+
+{tags.length > 0 && (
+  <ul class="flex flex-wrap gap-2">
+    {tags.map((tag) => (
+      <li>
+        <a href={localePath(locale, `tags/${tagSlug(tag)}/`)} class="chip">
+          {tag}
+        </a>
+      </li>
+    ))}
+  </ul>
+)}

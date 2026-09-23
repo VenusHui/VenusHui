@@ -1,0 +1,79 @@
+---
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import type { Locale } from '../i18n/ui';
+import { localePath, swapLocalePath, t } from '../i18n/utils';
+
+interface Props {
+  locale: Locale;
+  /** 语言切换目标；未提供时按同构路径推导。 */
+  languageHref?: string;
+}
+
+const { locale, languageHref } = Astro.props;
+
+const homeHref = localePath(locale);
+const nav = [
+  { href: homeHref, label: t(locale, 'nav.home') },
+  { href: localePath(locale, 'posts/'), label: t(locale, 'nav.posts') },
+  { href: localePath(locale, 'projects/'), label: t(locale, 'nav.projects') },
+  { href: localePath(locale, 'tags/'), label: t(locale, 'nav.tags') },
+  { href: localePath(locale, 'archive/'), label: t(locale, 'nav.archive') },
+  { href: localePath(locale, 'resume/'), label: t(locale, 'nav.resume') },
+];
+
+const current = Astro.url.pathname;
+/** 首页要精确匹配，否则任何页面都算「在首页」。 */
+function isActive(href: string): boolean {
+  return href === homeHref ? current === href : current.startsWith(href);
+}
+
+const switchHref = languageHref ?? swapLocalePath(current);
+---
+
+<header class="border-b border-line print:hidden">
+  <div class="mx-auto flex w-full max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4 sm:px-6">
+    {/*
+      品牌 mark：一个主色小方块，hover 时轻微放大，作为全站统一的可记忆点。
+    */}
+    <a
+      href={homeHref}
+      class="group inline-flex items-center gap-2 text-base font-semibold tracking-tight text-ink"
+    >
+      <span
+        aria-hidden="true"
+        class="inline-block h-2 w-2 rounded-[2px] bg-accent transition-transform duration-200 group-hover:scale-125"
+      ></span>
+      {t(locale, 'site.title')}
+    </a>
+
+    {/*
+      移动端优先：导航允许换行而不用 JS 折叠菜单，6 个短标签在窄屏上换行仍可读。
+      （6 项在 5±2 的导航规模约定内，暂不需要把标签/归档收进「更多」。）
+      链接 hover 有下划线滑入动画（.link-underline）。
+    */}
+    <nav aria-label={t(locale, 'nav.main')} class="order-last w-full sm:order-none sm:w-auto">
+      <ul class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+        {nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              class:list={[
+                'link-underline transition-colors',
+                isActive(item.href) ? 'font-semibold text-accent' : 'text-ink-2 hover:text-accent',
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2">
+      <LanguageSwitcher locale={locale} href={switchHref} />
+      <ThemeToggle locale={locale} />
+    </div>
+  </div>
+</header>

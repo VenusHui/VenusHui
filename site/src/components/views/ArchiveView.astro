@@ -1,0 +1,55 @@
+---
+import PageHeader from '../PageHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n/ui';
+import { t } from '../../i18n/utils';
+import { formatDate, getPosts, groupBySeries, postPath, seriesLabel } from '../../utils/posts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const groups = groupBySeries(await getPosts(locale));
+---
+
+<BaseLayout
+  title={t(locale, 'archive.title')}
+  description={t(locale, 'archive.description')}
+  locale={locale}
+  translated
+>
+  <PageHeader title={t(locale, 'archive.title')} description={t(locale, 'archive.description')} />
+
+  {groups.length === 0 ? (
+    <p class="text-sm text-ink-3">{t(locale, 'archive.empty')}</p>
+  ) : (
+    <div class="space-y-12">
+      {groups.map((group) => (
+        <section>
+          <h2 class="mb-3 flex items-baseline gap-3 text-lg font-semibold text-ink">
+            {seriesLabel(group.series, locale)}
+            <span class="text-xs font-normal text-ink-3">
+              {group.posts.length} {t(locale, 'archive.count')}
+            </span>
+          </h2>
+          <ul class="space-y-2">
+            {group.posts.map((post) => (
+              <li class="flex flex-wrap items-baseline gap-x-3">
+                <time
+                  datetime={post.data.date.toISOString()}
+                  class="w-28 shrink-0 font-mono text-sm text-ink-3"
+                >
+                  {formatDate(post.data.date, locale)}
+                </time>
+                <a href={postPath(post)} class="link-underline text-ink-2 hover:text-accent">
+                  {post.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  )}
+</BaseLayout>

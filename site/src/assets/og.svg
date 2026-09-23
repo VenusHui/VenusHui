@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!--
+    全站默认 OG 分享图源文件（品牌色 + 站点名，1200x630）。
+    线上实际使用 public/og.png（由本文件经 SVG→PNG 渲染产出），
+    再生成命令见 site/scripts/generate-og.mjs 的注释。
+    品牌色取自 global.css 的 @theme：主色 teal（accent 浅色 #0f766e / 深色 #2dd4bf）。
+  -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#042f2e" />
+      <stop offset="1" stop-color="#115e59" />
+    </linearGradient>
+  </defs>
+
+  <!-- 深色 teal 渐变底 -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- 装饰性大圆，右上 / 左下各一枚，teal-400 低透明度，避免喧宾夺主 -->
+  <circle cx="1080" cy="90" r="280" fill="#2dd4bf" opacity="0.08" />
+  <circle cx="120" cy="600" r="220" fill="#2dd4bf" opacity="0.06" />
+
+  <!-- 终端式开场：与首页 hero 的「VenusHui // 01」呼应 -->
+  <text x="72" y="96" font-family="DejaVu Sans Mono, ui-monospace, SFMono-Regular, Menlo, monospace" font-size="28" fill="#5eead4">
+    VenusHui // 01
+  </text>
+
+  <!-- 站点名，主视觉 -->
+  <text x="72" y="340" font-family="DejaVu Sans, ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif" font-size="120" font-weight="700" fill="#ffffff">
+    VenusHui<tspan fill="#2dd4bf">.</tspan>
+  </text>
+
+  <!-- 一句话身份定位（全站双语共享一张图，取英文口径，中文读者同样可读） -->
+  <text x="74" y="404" font-family="DejaVu Sans, ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif" font-size="32" fill="#ccfbf1">
+    Software Engineer · Cloud-Native &amp; Big Data
+  </text>
+</svg>

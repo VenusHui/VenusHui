@@ -1,0 +1,25 @@
+---
+import { languages, defaultLocale, type Locale } from '../i18n/ui';
+import { t } from '../i18n/utils';
+
+interface Props {
+  /** 当前语言。 */
+  locale: Locale;
+  /** 目标语言页面的路径（已带 base）。 */
+  href: string;
+}
+
+const { locale, href } = Astro.props;
+const target: Locale = locale === defaultLocale ? 'en' : defaultLocale;
+---
+
+{/* 语言名用目标语言自己写（「English」而不是「英文」），切换成本最低。 */}
+<a
+  href={href}
+  hreflang={target}
+  lang={target}
+  aria-label={t(locale, 'nav.switchLanguage')}
+  class="inline-flex h-9 items-center rounded-md border border-line px-3 text-sm font-medium text-ink-2 transition-colors hover:border-accent hover:text-accent"
+>
+  {languages[target]}
+</a>

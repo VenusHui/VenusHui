@@ -1,0 +1,69 @@
+---
+import { render } from 'astro:content';
+import PageHeader from '../PageHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n/ui';
+import { t } from '../../i18n/utils';
+import { formatDate } from '../../utils/posts';
+import { getPrimaryResume } from '../../utils/resumes';
+import { personJsonLd } from '../../utils/seo';
+import { canonicalUrl } from '../../utils/url';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+// 取简历的查询与草稿闸门都收在 utils/resumes.ts 里；按当前语言取对应变体
+// （zh 走 README.md、en 走 README.en.md），目录为空或该语言无简历时返回 undefined，走空状态。
+const resume = await getPrimaryResume(locale);
+const rendered = resume ? await render(resume) : null;
+
+// 简历页与首页同属「这是谁」：输出 Person；简历有 name 时以简历为准。
+const jsonLd = personJsonLd({
+  name: resume?.data.name,
+  url: canonicalUrl(Astro.url.pathname),
+});
+---
+
+<BaseLayout
+  title={t(locale, 'resume.title')}
+  description={t(locale, 'resume.description')}
+  locale={locale}
+  translated
+  jsonLd={jsonLd}
+>
+  <PageHeader title={t(locale, 'resume.title')} description={t(locale, 'resume.description')} />
+
+  {rendered && resume ? (
+    <>
+      {resume.data.updated && (
+        <p class="mb-6 text-sm text-ink-3">
+          {t(locale, 'resume.updated')}
+          {formatDate(resume.data.updated, locale)}
+        </p>
+      )}
+      {/*
+        正文排版由 @tailwindcss/typography 统一负责，颜色经 global.css 里的
+        `.prose` 覆盖到语义 token（随主题切换）。`resume-prose` 把 h2 渲染成
+        带主色标记的分节标题，让长简历有分区节奏。
+        简历内容仍是 Markdown 唯一源；卡片/时间轴布局需结构化字段，待与内容工程师对齐。
+      */}
+      <div class="resume-prose prose max-w-none break-words prose-pre:overflow-x-auto">
+        <rendered.Content />
+      </div>
+    </>
+  ) : (
+    <div
+      data-reveal
+      class="rounded-lg border border-dashed border-line bg-surface px-6 py-12 text-center"
+    >
+      <p class="font-mono text-sm text-ink-3">
+        <span class="text-accent">$</span> cat resume.md
+        <span class="text-line"># not found</span>
+      </p>
+      <p class="mt-3 text-sm text-ink-3">{t(locale, 'resume.empty')}</p>
+    </div>
+  )}
+</BaseLayout>

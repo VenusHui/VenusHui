@@ -1,0 +1,274 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { AUTHOR, GITHUB_PROFILE } from '../../consts';
+import { rssPath } from '../../i18n/rss';
+import type { Locale } from '../../i18n/ui';
+import { localePath, t } from '../../i18n/utils';
+import {
+  getPosts,
+  groupBySeries,
+  seriesLabel,
+  type Series,
+  type SeriesGroup,
+} from '../../utils/posts';
+import { getProjects, projectRepoUrl } from '../../utils/projects';
+import { personJsonLd } from '../../utils/seo';
+import { canonicalUrl } from '../../utils/url';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const tr = (key: Parameters<typeof t>[1]) => t(locale, key);
+
+// 首页回答「这是谁」：输出 Person 结构化数据，把站点与各平台账号判为同一实体。
+const jsonLd = personJsonLd({ url: canonicalUrl(Astro.url.pathname) });
+
+const posts = await getPosts(locale);
+const latest = posts.slice(0, 5);
+// 首页只列有名字的系列，无系列的博文在博文页的兜底区可见。
+const seriesGroups = groupBySeries(posts).filter(
+  (group): group is SeriesGroup & { series: Series } => group.series !== '',
+);
+
+// 首页「最近在做 / 项目」：优先取 highlight 的项目，没有精选时退化为全部项目，最多 3 张卡。
+const allProjects = await getProjects();
+const highlighted = allProjects.filter((project) => project.data.highlight);
+const featuredProjects = (highlighted.length > 0 ? highlighted : allProjects).slice(0, 3);
+
+// hero 渐进入场的错峰延迟（毫秒）；reduced-motion 下由 CSS 直接显示，不生效。
+const heroReveal = ['0ms', '80ms', '160ms', '240ms'];
+---
+
+<BaseLayout
+  title={tr('site.title')}
+  description={tr('site.description')}
+  locale={locale}
+  translated
+  jsonLd={jsonLd}
+>
+  <section class="border-b border-line pb-12 pt-10 sm:pt-14">
+    {/*
+      hero 辨识元素：等宽字体写出的「VenusHui // 01」，配合 <html> 级等宽栈，
+      终端 / CLI 即视感。// 01 是「站点第一版」的编号，随改版可递增。
+    */}
+    <p
+      data-reveal
+      style={{ '--reveal-delay': heroReveal[0] }}
+      class="font-mono text-sm tracking-wide text-ink-3"
+    >
+      <span class="text-accent">VenusHui</span>
+      <span class="mx-1 text-ink-3">//</span>01
+    </p>
+
+    <h1
+      data-reveal
+      style={{ '--reveal-delay': heroReveal[1] }}
+      class="mt-4 text-4xl font-bold tracking-tight text-ink sm:text-5xl"
+    >
+      {AUTHOR}
+      <span class="text-accent">.</span>
+    </h1>
+
+    {/*
+      自我介绍 bio：tagline 一行身份定位，description 是「做过什么 / 现在在做什么」的
+      叙述段（见 i18n/ui.ts），字号略大于站点描述，保证首屏可读。
+    */}
+    <p
+      data-reveal
+      style={{ '--reveal-delay': heroReveal[2] }}
+      class="mt-4 max-w-prose text-lg leading-relaxed text-ink-2"
+    >
+      {tr('site.tagline')}
+    </p>
+    <p
+      data-reveal
+      style={{ '--reveal-delay': heroReveal[2] }}
+      class="mt-2 max-w-prose text-base leading-relaxed text-ink-2"
+    >
+      {tr('site.description')}
+    </p>
+
+    <div data-reveal style={{ '--reveal-delay': heroReveal[3] }} class="mt-8 flex flex-wrap gap-3">
+      <a href={localePath(locale, 'posts/')} class="btn-primary">
+        {tr('home.allPosts')} →
+      </a>
+      <a href={localePath(locale, 'resume/')} class="btn-secondary">
+        {tr('home.viewResume')}
+      </a>
+    </div>
+
+    <div
+      data-reveal
+      style={{ '--reveal-delay': heroReveal[3] }}
+      class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-sm"
+    >
+      <a
+        href={GITHUB_PROFILE}
+        rel="noopener noreferrer"
+        class="link-underline inline-flex items-center gap-1.5 text-ink-2 hover:text-accent"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+        </svg>
+        github
+      </a>
+      <a
+        href={rssPath(locale)}
+        class="link-underline inline-flex items-center gap-1.5 text-ink-2 hover:text-accent"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M19.199 24C19.199 13.935 10.759 5.5 0.691 5.5L0.691 2.5C12.566 2.5 22.199 12.133 22.199 24L19.199 24Z" />
+          <path d="M4 8.5C7.156 8.5 9.6 10.943 9.6 14.1L6.6 14.1C6.6 12.467 5.333 11.2 4 11.2L4 8.5Z" />
+          <circle cx="4" cy="20" r="3" />
+        </svg>
+        rss
+      </a>
+    </div>
+  </section>
+
+  {/*
+    策展式前门：博文 / 简历 / 归档 三个入口块，紧跟 hero，
+    让访客一进来就知道站点有哪些内容区（tagline 承诺的「简历 · 项目 · 博文」）。
+  */}
+  <section class="mt-section">
+    <ul class="grid gap-4 sm:grid-cols-3">
+      {[
+        {
+          href: localePath(locale, 'posts/'),
+          title: tr('nav.posts'),
+          desc: tr('home.blocks.posts'),
+        },
+        {
+          href: localePath(locale, 'resume/'),
+          title: tr('nav.resume'),
+          desc: tr('home.blocks.resume'),
+        },
+        {
+          href: localePath(locale, 'archive/'),
+          title: tr('nav.archive'),
+          desc: tr('home.blocks.archive'),
+        },
+      ].map((block) => (
+        <li>
+          <a
+            href={block.href}
+            class="group block h-full rounded-lg border border-line bg-surface p-4 transition-colors hover:border-accent"
+          >
+            <h2 class="text-sm font-semibold text-ink">{block.title}</h2>
+            <p class="mt-1 text-xs leading-relaxed text-ink-2">{block.desc}</p>
+            <span
+              aria-hidden="true"
+              class="mt-2 inline-block text-accent transition-transform duration-200 group-hover:translate-x-0.5"
+            >
+              →
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  {featuredProjects.length > 0 && (
+    <section class="mt-section">
+      <div data-reveal class="mb-4 flex items-baseline gap-3">
+        <h2 class="text-lg font-semibold text-ink">{tr('home.projects')}</h2>
+        <span class="font-mono text-xs text-ink-3">
+          {featuredProjects.length.toString().padStart(2, '0')}
+        </span>
+      </div>
+      {/*
+        精选项目卡片网格（参考 maggieappleton / maximeheckel 的项目卡片区）：
+        卡片只展示 projects collection 的 frontmatter 元信息，点击去仓库看正文，
+        延续「Markdown 唯一源」原则。
+      */}
+      <ul class="grid gap-4 sm:grid-cols-2">
+        {featuredProjects.map((project) => (
+          <li>
+            <a
+              href={projectRepoUrl(project)}
+              rel="noopener noreferrer"
+              class="group block h-full rounded-lg border border-line bg-surface p-5 transition-colors hover:border-accent"
+            >
+              <h3 class="text-base font-semibold text-ink">{project.data.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-2">{project.data.summary}</p>
+              {project.data.tech.length > 0 && (
+                <ul class="mt-3 flex flex-wrap gap-2">
+                  {project.data.tech.map((tech) => (
+                    <li>
+                      <span class="chip">{tech}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <span class="mt-3 inline-flex items-center gap-1 text-xs text-accent">
+                {tr('projects.viewRepo')}
+                <span
+                  aria-hidden="true"
+                  class="transition-transform duration-200 group-hover:translate-x-0.5"
+                >
+                  →
+                </span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="mt-6 text-sm">
+        <a
+          href={localePath(locale, 'projects/')}
+          class="link-underline text-accent hover:text-accent-hover"
+        >
+          {tr('home.viewProjects')} →
+        </a>
+      </p>
+    </section>
+  )}
+
+  <section class="mt-section">
+    <div data-reveal class="mb-4 flex items-baseline gap-3">
+      <h2 class="text-lg font-semibold text-ink">{tr('home.latestPosts')}</h2>
+      <span class="font-mono text-xs text-ink-3">{latest.length.toString().padStart(2, '0')}</span>
+    </div>
+    <PostList posts={latest} locale={locale} emptyText={tr('home.empty')} />
+    {posts.length > latest.length && (
+      <p class="mt-6 text-sm">
+        <a
+          href={localePath(locale, 'posts/')}
+          class="link-underline text-accent hover:text-accent-hover"
+        >
+          {tr('home.allPosts')} →
+        </a>
+      </p>
+    )}
+  </section>
+
+  {/*
+    分类分区：把「最新博文」的平铺时间线之外，再给一个按系列进博文页锚点的入口，
+    落地 joshwcomeau 的分区思路。系列列表来自数据，不在首页硬编码。
+  */}
+  {seriesGroups.length > 0 && (
+    <section class="mt-section">
+      <div data-reveal class="mb-4 flex items-baseline gap-3">
+        <h2 class="text-lg font-semibold text-ink">{tr('home.series')}</h2>
+      </div>
+      <ul data-reveal class="flex flex-wrap gap-3">
+        {seriesGroups.map((group) => (
+          <li>
+            <a
+              href={`${localePath(locale, 'posts/')}#${group.series}`}
+              class="chip px-3 py-1 text-sm"
+            >
+              {seriesLabel(group.series, locale)}
+              <span class="text-xs text-ink-3">
+                {group.posts.length} {t(locale, 'series.count')}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</BaseLayout>

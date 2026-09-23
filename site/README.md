@@ -1,0 +1,117 @@
+# VenusHui 站点
+
+VenusHui 个人站点的前端工程：简历（resume）、个人网站（portfolio）、博文（blog）三合一。
+Astro + Tailwind CSS + TypeScript，输出纯静态资源，部署在 GitHub Pages 的项目子路径下。
+
+- 线上地址：https://venushui.github.io/VenusHui/
+- **base path 是 `/VenusHui/`** —— 站内链接与静态资源引用必须走 base，见下文。
+
+## 命令
+
+```bash
+cd site
+npm install
+npm run dev          # 本地开发，http://localhost:4321/VenusHui/
+npm run build        # 构建静态产物到 site/dist/
+npm run preview      # 预览构建产物
+npm run check        # astro check：类型与 .astro 诊断
+npm run format       # prettier 写入
+npm run format:check # prettier 校验（CI 用）
+```
+
+本地 dev 也带 base，所以本地路径同样是 `http://localhost:4321/VenusHui/`。
+
+## 目录结构
+
+```text
+site/
+├── astro.config.mjs        # site / base / i18n / tailwind / sitemap
+├── src/
+│   ├── consts.ts           # 站点级常量（作者、平台主页、OG 分享图）
+│   ├── content.config.ts   # 内容集合 schema（posts / resumes / projects）
+│   ├── i18n/               # 文案表、语言工具、RSS 路径
+│   ├── utils/url.ts        # base path 收口点（withBase / absoluteUrl / canonicalUrl）
+│   ├── utils/posts.ts      # 博文查询、排序、标签与系列聚合、日期格式化
+│   ├── utils/seo.ts        # JSON-LD 构造（Person / BlogPosting）
+│   ├── assets/og.svg       # 默认 OG 分享图源文件（渲染产物在 public/og.png）
+│   ├── layouts/BaseLayout.astro
+│   ├── components/         # Header / Footer / 主题与语言切换 / 列表卡片
+│   ├── components/views/   # 页面级视图，两种语言的路由共用
+│   ├── pages/              # 中文路由（默认语言，不带前缀）
+│   │   └── en/             # 英文路由（/en/...）
+│   ├── posts/              # 博文 Markdown（唯一事实来源）
+│   ├── resumes/            # 简历 Markdown，<handle>/README.md
+│   ├── projects/           # 项目 Markdown，<slug>/README.md（承接 ACM-ICPC / Learning / TongjiClasses）
+│   └── styles/global.css   # Tailwind 入口与主题变量
+├── scripts/                # 一次性工具脚本（generate-og 等），不参与构建
+└── public/                 # 原样拷贝的静态资源（og.png / robots.txt / favicon）
+```
+
+## base path 约定（最重要的坑）
+
+站点是**项目站点**，发布在 `/VenusHui/` 子路径下，写死根路径 `/` 的资源在线上必然 404。
+
+- 站内页面链接：用 `localePath(locale, 'posts/')`（`src/i18n/utils.ts`）。
+- 静态资源 / 文件：用 `withBase('favicon.svg')`（`src/utils/url.ts`）。
+- **不要在组件里写 `href="/..."` 或 `src="/..."`。**
+
+`import.meta.env.BASE_URL` 由 `astro.config.mjs` 的 `base` 注入，构建与本地 dev 一致。
+
+## 多语言
+
+- 默认中文：中文页面在站点根（`/posts/`），英文页面在 `/en/` 下（`/en/posts/`）。
+- 文案集中在 `src/i18n/ui.ts`，页面侧一律 `t(locale, key)`，不写死文案；
+  新增语言时补一份文案表即可，缺键会在 `npm run check` 报错。
+- 路由按语言各写一份薄壳（`src/pages/**` 与 `src/pages/en/**`），页面主体放在
+  `src/components/views/` 里由两种语言共用，不在路由层复制逻辑。
+- 博文不做同篇翻译对齐：中英各是独立文件，靠 frontmatter 的 `lang` 归属语言。
+
+## 内容
+
+博文与简历都以 Markdown 为唯一事实来源，站点侧只读渲染，不复制、不硬编码。
+
+博文 frontmatter（`src/posts/*.md`）：
+
+| 字段      | 必填 | 说明                                                                                                          |
+| --------- | ---- | ------------------------------------------------------------------------------------------------------------- |
+| `title`   | 是   | 标题                                                                                                          |
+| `date`    | 是   | 发布日期，`YYYY-MM-DD`                                                                                        |
+| `tags`    | 否   | 主题标签数组，缺省为空                                                                                        |
+| `series`  | 否   | 系列（内容类型）：`daily-coding` / `contest-solution` / `paper-reading`，与主题标签区分；不属于任何系列可省略 |
+| `summary` | 是   | 摘要，用于列表与 SEO description                                                                              |
+| `draft`   | 否   | `true` 时只在本地 dev 可见，不进构建产物                                                                      |
+| `lang`    | 否   | `zh`（默认）或 `en`，决定归入哪种语言的列表                                                                   |
+
+简历（`src/resumes/<handle>/README.md`）一个目录一篇。基础字段（`name` / `title` / `summary` / `updated` / `draft`）之外，
+结构化字段（`contact` / `links` / `education` / `experience` / `skills` / `honors` / `languages`）全部可选、逐步迁入，
+只驱动站点侧卡片 / 时间轴等排版，正文保留叙述式 Markdown。字段定义见 `src/content.config.ts`，
+约定与公开范围门禁见 `src/resumes/README.md`。
+
+项目（`src/projects/<slug>/README.md`）一个目录一个项目，`title` / `summary` 必填，
+`repo` / `tech` / `highlight` 可选；承接仓库根目录的 ACM-ICPC / Learning / TongjiClasses 三条内容线，
+正文以仓库既有内容为单一事实来源，站点侧不复制正文。约定见 `src/projects/README.md`。
+
+## SEO
+
+`BaseLayout` 统一输出 `<title>` / `description` / `canonical` / hreflang / Open Graph，
+页面侧只传语义（`title` / `description` / `ogType` / `jsonLd`），不自己写 meta 标签。
+
+- **canonical 与绝对地址**：走 `src/utils/url.ts` 的 `canonicalUrl()` / `absoluteUrl()`，
+  组件里不拼 origin。sitemap 由 `@astrojs/sitemap` 生成（`/VenusHui/sitemap-0.xml`），
+  `public/robots.txt` 指向 `sitemap-index.xml`。
+- **分享图**：全站复用 `public/og.png`（1200x630，品牌 teal + 站点名）。
+  源文件是 `src/assets/og.svg`，改文案 / 配色后重跑 `node scripts/generate-og.mjs`
+  生成（该脚本用 sharp，未进依赖，按需 `npm install --no-save sharp`）；
+  PNG 是位图且**入库**，构建不依赖图形栈。
+- **og:type**：站点页面是 `website`；博文详情页传 `ogType="article"`，
+  额外输出 `article:published_time`（frontmatter `date`）与每个 `article:tag`（frontmatter `tags`）。
+- **结构化数据（JSON-LD）**：构造函数在 `src/utils/seo.ts`，由页面决定语义 ——
+  首页 / 简历页输出 `Person`（`sameAs` 指向 GitHub / LeetCode / Codeforces，
+  地址收在 `src/consts.ts` 的 `PROFILE_LINKS`），博文详情页输出 `BlogPosting`。
+
+## 主题
+
+浅色 / 深色由 `<html>` 上的 `dark` 类驱动（Tailwind v4 的 `@custom-variant dark`），
+首屏绘制前的内联脚本负责防闪烁，偏好存在 `localStorage.theme`，未设置时跟随系统。
+
+全站唯一的 JS 就是这个主题切换脚本（约 15 行，`is:inline`）。其余均为静态 HTML + CSS，没有任何框架运行时。

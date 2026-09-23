@@ -1,0 +1,30 @@
+---
+import { AUTHOR, REPO_URL } from '../consts';
+import { rssPath } from '../i18n/rss';
+import type { Locale } from '../i18n/ui';
+import { t } from '../i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+// 构建时取年份；站点每次发布都会重新构建，年份随之更新。
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-line print:hidden">
+  <div class="mx-auto flex w-full max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-6 text-sm text-ink-3 sm:px-6">
+    <p>
+      © {year} {AUTHOR}. {t(locale, 'footer.rights')}
+    </p>
+    <div class="ml-auto flex items-center gap-4">
+      <a href={rssPath(locale)} class="link-underline hover:text-accent">
+        {t(locale, 'footer.rss')}
+      </a>
+      <a href={REPO_URL} rel="noopener noreferrer" class="link-underline hover:text-accent">
+        {t(locale, 'footer.source')}
+      </a>
+    </div>
+  </div>
+</footer>

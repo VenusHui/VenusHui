@@ -1,0 +1,82 @@
+---
+import type { Locale } from '../i18n/ui';
+import { t } from '../i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+{/*
+  主题切换按钮。图标切换与初始状态判断都交给 CSS（dark: 变体），
+  按钮自身只在点击时切 <html> 上的 dark 类并记住偏好 —— 全站唯一的交互脚本。
+*/}
+<button
+  type="button"
+  data-theme-toggle
+  data-to-dark={t(locale, 'nav.themeToDark')}
+  data-to-light={t(locale, 'nav.themeToLight')}
+  aria-label={t(locale, 'nav.toggleTheme')}
+  title={t(locale, 'nav.toggleTheme')}
+  class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-line text-ink-2 transition-colors hover:border-accent hover:text-accent"
+>
+  <svg
+    class="h-5 w-5 dark:hidden"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+  </svg>
+  <svg
+    class="hidden h-5 w-5 dark:block"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+  </svg>
+</button>
+
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const buttons = document.querySelectorAll('[data-theme-toggle]');
+
+    const syncLabels = () => {
+      const dark = root.classList.contains('dark');
+      buttons.forEach((button) => {
+        // 标签描述的是「点下去会发生什么」，所以深色时提示切回浅色。
+        const label = dark ? button.dataset.toLight : button.dataset.toDark;
+        if (label) button.setAttribute('aria-label', label);
+      });
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const dark = !root.classList.contains('dark');
+        root.classList.toggle('dark', dark);
+        root.style.colorScheme = dark ? 'dark' : 'light';
+        try {
+          localStorage.setItem('theme', dark ? 'dark' : 'light');
+        } catch {
+          /* 存不下偏好不影响本次切换 */
+        }
+        syncLabels();
+      });
+    });
+
+    syncLabels();
+  })();
+</script>

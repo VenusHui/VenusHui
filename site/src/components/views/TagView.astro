@@ -1,0 +1,48 @@
+---
+import PageHeader from '../PageHeader.astro';
+import PostList from '../PostList.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n/ui';
+import { localePath, t } from '../../i18n/utils';
+import { getPosts, groupByTag, tagSlug } from '../../utils/posts';
+
+interface Props {
+  /** 标签原文。 */
+  tag: string;
+  locale: Locale;
+}
+
+const { tag, locale } = Astro.props;
+
+// 聚合结果按 slug 取回该标签下的博文。
+const group = groupByTag(await getPosts(locale)).find((item) => item.tag === tag);
+const posts = group?.posts ?? [];
+const slug = group?.slug ?? tagSlug(tag);
+const title = `${t(locale, 'tags.postsTagged')}「${tag}」`;
+
+// 标签是分语言的：同一个标签未必在另一种语言下也有博文。
+// 有对应标签页就切过去，没有就退到该语言的标签索引 —— 不能盲目按路径映射，否则是死链。
+const otherLocale: Locale = locale === 'zh' ? 'en' : 'zh';
+const otherHasTag = groupByTag(await getPosts(otherLocale)).some((item) => item.slug === slug);
+const languageHref = otherHasTag
+  ? localePath(otherLocale, `tags/${slug}/`)
+  : localePath(otherLocale, 'tags/');
+---
+
+<BaseLayout
+  title={title}
+  description={t(locale, 'tags.description')}
+  locale={locale}
+  languageHref={languageHref}
+>
+  <PageHeader title={title} description={t(locale, 'tags.description')} />
+  <PostList posts={posts} locale={locale} emptyText={t(locale, 'posts.empty')} />
+  <p class="mt-12 border-t border-line pt-6 text-sm">
+    <a
+      href={localePath(locale, 'tags/')}
+      class="link-underline text-accent hover:text-accent-hover"
+    >
+      ← {t(locale, 'tags.title')}
+    </a>
+  </p>
+</BaseLayout>

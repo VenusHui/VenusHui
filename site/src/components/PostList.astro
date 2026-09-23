@@ -1,0 +1,24 @@
+---
+import PostCard from './PostCard.astro';
+import type { Locale } from '../i18n/ui';
+import type { Post } from '../utils/posts';
+
+interface Props {
+  posts: Post[];
+  locale: Locale;
+  /** 列表为空时的提示文案。 */
+  emptyText: string;
+}
+
+const { posts, locale, emptyText } = Astro.props;
+---
+
+{posts.length === 0 ? (
+  <p class="text-sm text-ink-3">{emptyText}</p>
+) : (
+  <div>
+    {posts.map((post) => (
+      <PostCard post={post} locale={locale} />
+    ))}
+  </div>
+)}

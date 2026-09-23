@@ -1,0 +1,21 @@
+---
+import { render } from 'astro:content';
+import PostView from '../../components/views/PostView.astro';
+import { getPosts, seriesNeighbors } from '../../utils/posts';
+
+// 必须走 getPosts()（语言过滤 + 草稿闸门都在里面）。
+// 直接 getCollection('posts', ...) 会绕过草稿闸门，把 draft 正文构建出来并写进 sitemap。
+// 相邻篇目在同一批 posts 上算，保证与列表/归档用同一份数据。
+export async function getStaticPaths() {
+  const posts = await getPosts('zh');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post, neighbors: seriesNeighbors(post, posts) },
+  }));
+}
+
+const { post, neighbors } = Astro.props;
+const { Content } = await render(post);
+---
+
+<PostView post={post} Content={Content} locale="zh" neighbors={neighbors} />

@@ -1,0 +1,70 @@
+---
+import PageHeader from '../PageHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n/ui';
+import { t } from '../../i18n/utils';
+import { getProjects, projectRepoUrl } from '../../utils/projects';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const tr = (key: Parameters<typeof t>[1]) => t(locale, key);
+
+const projects = await getProjects();
+---
+
+<BaseLayout
+  title={tr('projects.title')}
+  description={tr('projects.description')}
+  locale={locale}
+  translated
+>
+  <PageHeader title={tr('projects.title')} description={tr('projects.description')} />
+
+  {/*
+    项目卡片网格：承接 ACM-ICPC / Learning / TongjiClasses 三条内容线。
+    卡片只展示 frontmatter 元信息（title / summary / tech），点击去仓库看正文 ——
+    延续「Markdown 唯一源」原则，站点侧不复制内容。
+  */}
+  {projects.length === 0 ? (
+    <p class="text-sm text-ink-3">{tr('projects.empty')}</p>
+  ) : (
+    <ul class="grid gap-4 sm:grid-cols-2">
+      {projects.map((project, index) => (
+        <li>
+          <a
+            href={projectRepoUrl(project)}
+            rel="noopener noreferrer"
+            class="group flex h-full flex-col rounded-lg border border-line bg-surface p-5 transition-colors hover:border-accent"
+          >
+            <div class="flex items-baseline justify-between gap-3">
+              <h2 class="text-base font-semibold text-ink">{project.data.title}</h2>
+              <span class="font-mono text-xs text-ink-3">{String(index + 1).padStart(2, '0')}</span>
+            </div>
+            <p class="mt-2 text-sm leading-relaxed text-ink-2">{project.data.summary}</p>
+            {project.data.tech.length > 0 && (
+              <ul class="mt-4 flex flex-wrap gap-2">
+                {project.data.tech.map((tech) => (
+                  <li>
+                    <span class="chip">{tech}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <span class="mt-4 inline-flex items-center gap-1 text-xs text-accent">
+              {tr('projects.viewRepo')}
+              <span
+                aria-hidden="true"
+                class="transition-transform duration-200 group-hover:translate-x-0.5"
+              >
+                →
+              </span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</BaseLayout>
