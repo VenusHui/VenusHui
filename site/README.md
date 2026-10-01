@@ -42,9 +42,10 @@ site/
 │   ├── posts/              # 博文 Markdown（唯一事实来源）
 │   ├── resumes/            # 简历 Markdown，<handle>/README.md
 │   ├── projects/           # 项目 Markdown，<slug>/README.md（承接 ACM-ICPC / Learning / TongjiClasses）
-│   └── styles/global.css   # Tailwind 入口与主题变量
+│   ├── styles/global.css   # Tailwind 入口与主题变量
 ├── scripts/                # 一次性工具脚本（generate-og 等），不参与构建
 └── public/                 # 原样拷贝的静态资源（og.png / robots.txt / favicon）
+    └── fonts/              # 自托管字体子集（Space Grotesk / JetBrains Mono，拉丁）
 ```
 
 ## base path 约定（最重要的坑）
@@ -109,9 +110,22 @@ site/
   首页 / 简历页输出 `Person`（`sameAs` 指向 GitHub / LeetCode / Codeforces，
   地址收在 `src/consts.ts` 的 `PROFILE_LINKS`），博文详情页输出 `BlogPosting`。
 
-## 主题
+## 主题与字体
 
 浅色 / 深色由 `<html>` 上的 `dark` 类驱动（Tailwind v4 的 `@custom-variant dark`），
 首屏绘制前的内联脚本负责防闪烁，偏好存在 `localStorage.theme`，未设置时跟随系统。
 
-全站唯一的 JS 就是这个主题切换脚本（约 15 行，`is:inline`）。其余均为静态 HTML + CSS，没有任何框架运行时。
+站点自托管两个**拉丁子集**变量字体（`public/fonts/`，SIL OFL 授权，可自由自托管）：
+
+- `space-grotesk-latin.woff2`（~22KB）—— 标题 / 品牌名的 display 字体，`font-display` 工具类。
+- `jetbrains-mono-latin.woff2`（~30KB）—— 日期 / 编号 / 终端提示的等宽字体，`font-mono` 工具类。
+
+两者都只覆盖 Latin，中文照旧回退到系统字体（苹方 / 微软雅黑），因此**不增加中文字体体积**。
+`@font-face` 定义在 `BaseLayout` 的内联 `<style>` 里，用 `withBase()` 拼 base 路径
+（内联 `<style>` 不解析模板表达式，所以先在前置脚本拼成字符串再用 `set:html` 注入）；
+字重是变量字体，一对 `@font-face` 覆盖 400–700，无需按字重分别下载。
+
+全站 JS 只有三处内联脚本，都是为了渐进增强，禁用后内容依然完整可读：
+首屏防闪烁的主题脚本、滚动渐入的 IntersectionObserver、主题切换按钮。
+滚动进度条是纯 CSS（`animation-timeline: scroll()`），没有对应脚本。
+没有任何框架运行时。

@@ -19,7 +19,11 @@ const groups = groupBySeries(await getPosts(locale));
   locale={locale}
   translated
 >
-  <PageHeader title={t(locale, 'archive.title')} description={t(locale, 'archive.description')} />
+  <PageHeader
+    title={t(locale, 'archive.title')}
+    description={t(locale, 'archive.description')}
+    eyebrow="archive"
+  />
 
   {groups.length === 0 ? (
     <p class="text-sm text-ink-3">{t(locale, 'archive.empty')}</p>
@@ -27,22 +31,29 @@ const groups = groupBySeries(await getPosts(locale));
     <div class="space-y-12">
       {groups.map((group) => (
         <section>
-          <h2 class="mb-3 flex items-baseline gap-3 text-lg font-semibold text-ink">
+          <h2 class="mb-3 flex items-baseline gap-3 font-display text-lg font-semibold text-ink">
             {seriesLabel(group.series, locale)}
             <span class="text-xs font-normal text-ink-3">
               {group.posts.length} {t(locale, 'archive.count')}
             </span>
           </h2>
-          <ul class="space-y-2">
+          {/*
+            归档行：日期固定等宽左列，标题右侧悬停右移 + 变色，
+            与博文列表的 hover 语言一致，行内不换行也能看出「可点」。
+          */}
+          <ul class="divide-y divide-line-soft border-y border-line-soft">
             {group.posts.map((post) => (
-              <li class="flex flex-wrap items-baseline gap-x-3">
+              <li class="group flex flex-wrap items-baseline gap-x-3 py-2.5 transition-colors hover:bg-surface">
                 <time
                   datetime={post.data.date.toISOString()}
                   class="w-28 shrink-0 font-mono text-sm text-ink-3"
                 >
                   {formatDate(post.data.date, locale)}
                 </time>
-                <a href={postPath(post)} class="link-underline text-ink-2 hover:text-accent">
+                <a
+                  href={postPath(post)}
+                  class="link-underline text-ink-2 transition-transform duration-200 hover:text-accent group-hover:translate-x-0.5"
+                >
                   {post.data.title}
                 </a>
               </li>

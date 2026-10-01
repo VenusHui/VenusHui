@@ -35,7 +35,7 @@ const languageHref = otherHasTag
   locale={locale}
   languageHref={languageHref}
 >
-  <PageHeader title={title} description={t(locale, 'tags.description')} />
+  <PageHeader title={title} description={t(locale, 'tags.description')} eyebrow={`tags/${slug}`} />
   <PostList posts={posts} locale={locale} emptyText={t(locale, 'posts.empty')} />
   <p class="mt-12 border-t border-line pt-6 text-sm">
     <a

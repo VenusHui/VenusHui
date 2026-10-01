@@ -34,7 +34,11 @@ const jsonLd = personJsonLd({
   translated
   jsonLd={jsonLd}
 >
-  <PageHeader title={t(locale, 'resume.title')} description={t(locale, 'resume.description')} />
+  <PageHeader
+    title={t(locale, 'resume.title')}
+    description={t(locale, 'resume.description')}
+    eyebrow="resume"
+  />
 
   {rendered && resume ? (
     <>
