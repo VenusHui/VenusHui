@@ -20,7 +20,7 @@ const { locale } = Astro.props;
   data-to-light={t(locale, 'nav.themeToLight')}
   aria-label={t(locale, 'nav.toggleTheme')}
   title={t(locale, 'nav.toggleTheme')}
-  class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-line text-ink-2 transition-colors hover:border-accent hover:text-accent"
+  class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-line text-ink-2 transition-all duration-200 hover:border-accent hover:text-accent active:scale-95"
 >
   <svg
     class="h-5 w-5 dark:hidden"

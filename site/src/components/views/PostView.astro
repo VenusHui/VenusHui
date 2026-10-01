@@ -50,7 +50,7 @@ const jsonLd = blogPostingJsonLd({ post, url: canonical, image: absoluteUrl(OG_I
   jsonLd={jsonLd}
 >
   <article>
-    <PageHeader title={title} />
+    <PageHeader title={title} eyebrow={`posts/${post.id}`} />
     <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-ink-3">
       <time datetime={date.toISOString()}>
         {t(locale, 'posts.publishedOn')} {formatDate(date, locale)}

@@ -1,0 +1,26 @@
+---
+/**
+ * 分节标题：首页 / 列表页的每个内容区块共用一套「序号 + 标题 + 计数 + 分隔线」。
+ * 序号用等宽 `/01` 写法，是站点「终端路径」签名的延伸，让区块在长页面上
+ * 有清晰的节奏，而不是一连串同构的 h2。
+ */
+interface Props {
+  /** 序号，如 `01`。渲染成 `/01`。 */
+  index: string;
+  title: string;
+  /** 右侧计数（可选），等宽小字，例如博文篇数。 */
+  count?: string;
+}
+
+const { index, title, count } = Astro.props;
+---
+
+<div data-reveal class="mb-5 flex items-baseline gap-3">
+  <span aria-hidden="true" class="font-mono text-xs font-medium text-accent">
+    /{index}
+  </span>
+  <h2 class="font-display text-xl font-semibold tracking-tight text-ink sm:text-2xl">{title}</h2>
+  {count && <span class="font-mono text-xs text-ink-3">{count}</span>}
+  {/* 尾随分隔线：编辑风的一根细线，把标题与下方内容的距离感拉出来。 */}
+  <span aria-hidden="true" class="h-px min-w-6 flex-1 self-center bg-line-soft"></span>
+</div>

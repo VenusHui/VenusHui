@@ -51,6 +51,35 @@ const siteName = t(locale, 'site.title');
 const pageTitle = title === siteName ? siteName : `${title} | ${siteName}`;
 const htmlLang = locale === 'zh' ? 'zh-CN' : 'en';
 
+// 自托管字体（拉丁子集，woff2 变量字体）。必须经 withBase() 拼 base 路径，
+// 否则在 /VenusHui/ 子路径下会 404 —— 与静态资源引用同一约定。
+const fontDisplay = withBase('fonts/space-grotesk-latin.woff2');
+const fontMono = withBase('fonts/jetbrains-mono-latin.woff2');
+
+// 内联 <style is:inline> 会原样输出、不解析模板表达式，所以先在前置脚本里把
+// @font-face 拼成字符串，再用 set:html 注入 —— 这样 url() 里能带上 base 路径。
+const fontFaces = `
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('${fontDisplay}') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('${fontMono}') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}`;
+
 // canonical 用带 base 的绝对地址：Astro.url 已含 base，站点源由 url.ts 收口。
 const canonical = canonicalUrl(Astro.url.pathname);
 
@@ -94,6 +123,15 @@ const jsonLdScript = jsonLd ? JSON.stringify(jsonLd).replace(/<\//g, '<\\/') : u
     <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
     <link rel="icon" href={withBase('favicon.ico')} sizes="32x32" />
     <link rel="alternate" type="application/rss+xml" title={siteName} href={rssHref} />
+
+    {/*
+      自托管字体：两个 Latin 子集变量字体（Space Grotesk / JetBrains Mono）。
+      woff2 是二进制、不会触发 CORS 的跨源读取也要 crossorigin（预加载规范），
+      font-display: swap 让文字先用回退字体渲染，字体就绪后无感切换。
+    */}
+    <link rel="preload" href={fontDisplay} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fontMono} as="font" type="font/woff2" crossorigin />
+    <style is:inline set:html={fontFaces}></style>
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={siteName} />
@@ -149,6 +187,14 @@ const jsonLdScript = jsonLd ? JSON.stringify(jsonLd).replace(/<\//g, '<\\/') : u
     </script>
   </head>
   <body class="flex min-h-dvh flex-col">
+    {/*
+      滚动进度条：纯 CSS（animation-timeline: scroll()），无需 JS。
+      不支持的浏览器里保持 scaleX(0) 不显示；reduced-motion 下同样隐藏。
+    */}
+    <div
+      aria-hidden="true"
+      class="scroll-progress fixed inset-x-0 top-0 z-50 h-[2px] bg-gradient-to-r from-primary-500 to-flare-500"
+    ></div>
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-ink focus:shadow-lg"
@@ -156,7 +202,7 @@ const jsonLdScript = jsonLd ? JSON.stringify(jsonLd).replace(/<\//g, '<\\/') : u
       {t(locale, 'nav.skipToContent')}
     </a>
     <Header locale={locale} languageHref={languageHref} />
-    <main id="main" class="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
+    <main id="main" class="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
       <slot />
     </main>
     <Footer locale={locale} />

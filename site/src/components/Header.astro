@@ -31,20 +31,25 @@ function isActive(href: string): boolean {
 const switchHref = languageHref ?? swapLocalePath(current);
 ---
 
-<header class="border-b border-line print:hidden">
-  <div class="mx-auto flex w-full max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4 sm:px-6">
+{/*
+  吸顶 + 毛玻璃：滚动时 header 悬浮在内容之上，背景 85% 不透明 + 模糊，
+  文字穿过时不糊成一团。纯 CSS，无 JS。
+*/}
+<header class="sticky top-0 z-40 border-b border-line bg-background/85 backdrop-blur-md print:hidden">
+  <div class="mx-auto flex w-full max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3.5 sm:px-6">
     {/*
-      品牌 mark：一个主色小方块，hover 时轻微放大，作为全站统一的可记忆点。
+      品牌 mark：主色→青色渐变方块，hover 旋转 45° + 轻微放大，
+      是继承 VEW-45「小方块」的可记忆点，换渐变后更有识别度。
     */}
     <a
       href={homeHref}
-      class="group inline-flex items-center gap-2 text-base font-semibold tracking-tight text-ink"
+      class="group inline-flex items-center gap-2.5 text-base font-semibold tracking-tight text-ink"
     >
       <span
         aria-hidden="true"
-        class="inline-block h-2 w-2 rounded-[2px] bg-accent transition-transform duration-200 group-hover:scale-125"
+        class="inline-block h-2.5 w-2.5 rounded-[3px] bg-gradient-to-br from-primary-500 to-flare-500 transition-transform duration-300 group-hover:rotate-45 group-hover:scale-110"
       ></span>
-      {t(locale, 'site.title')}
+      <span class="font-display">{t(locale, 'site.title')}</span>
     </a>
 
     {/*

@@ -26,17 +26,20 @@ const both: Locale[] = [primary, secondary];
       文档大纲会缺根（屏幕阅读器按标题导航会跳空）。
     */}
     <div data-reveal class="text-center">
-      <h1 class="font-mono text-6xl font-bold leading-none tracking-tight text-ink">
-        <span class="text-accent">4</span>0<span class="text-accent">4</span>
+      <h1 class="font-mono text-6xl font-bold leading-none tracking-tight text-ink sm:text-7xl">
+        <span class="gradient-text">4</span>0<span class="gradient-text">4</span>
       </h1>
       <p class="mt-4 font-mono text-sm text-ink-3">
         <span class="text-accent">error[E404]</span>: page not found
+        <span aria-hidden="true" class="cursor-blink text-accent">
+          _
+        </span>
       </p>
     </div>
 
     {both.map((locale) => (
-      <section class="rounded-lg border border-line bg-surface px-6 py-6">
-        <h2 class="text-lg font-semibold text-ink">{t(locale, 'notFound.title')}</h2>
+      <section class="rounded-lg border border-line bg-surface px-6 py-6 shadow-card">
+        <h2 class="font-display text-lg font-semibold text-ink">{t(locale, 'notFound.title')}</h2>
         <p class="mt-2 text-sm text-ink-2">{t(locale, 'notFound.description')}</p>
         <div class="mt-4 flex flex-wrap gap-3">
           <a href={localePath(locale)} class="btn-primary">

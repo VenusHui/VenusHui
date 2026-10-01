@@ -1,5 +1,6 @@
 ---
 import PageHeader from '../PageHeader.astro';
+import SectionHeading from '../SectionHeading.astro';
 import PostCard from '../PostCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Locale } from '../../i18n/ui';
@@ -12,6 +13,7 @@ interface Props {
 
 const { locale } = Astro.props;
 const groups = groupBySeries(await getPosts(locale));
+const total = groups.reduce((sum, group) => sum + group.posts.length, 0);
 ---
 
 <BaseLayout
@@ -20,29 +22,35 @@ const groups = groupBySeries(await getPosts(locale));
   locale={locale}
   translated
 >
-  <PageHeader title={t(locale, 'posts.title')} description={t(locale, 'posts.description')} />
+  <PageHeader
+    title={t(locale, 'posts.title')}
+    description={t(locale, 'posts.description')}
+    eyebrow="posts"
+  />
 
   {groups.length === 0 ? (
     <p class="text-sm text-ink-3">{t(locale, 'posts.empty')}</p>
   ) : (
     <div>
-      {groups.map((group) => (
+      {groups.map((group, index) => (
         <section id={group.series || undefined} class="mt-12 first:mt-0">
           {/*
-            系列分节标题：与首页「最新博文」同款（标题 + 等宽计数），
+            系列分节标题：与首页「最新博文」同款（序号 + 标题 + 等宽计数 + 分隔线），
             只渲染数据里真实存在的系列，列表本身不硬编码系列名。
           */}
-          <h2 class="mb-4 flex items-baseline gap-3 text-lg font-semibold text-ink">
-            {seriesLabel(group.series, locale)}
-            <span class="font-mono text-xs text-ink-3">
-              {group.posts.length.toString().padStart(2, '0')}
-            </span>
-          </h2>
+          <SectionHeading
+            index={String(index + 1).padStart(2, '0')}
+            title={seriesLabel(group.series, locale)}
+            count={group.posts.length.toString().padStart(2, '0')}
+          />
           {group.posts.map((post) => (
             <PostCard post={post} locale={locale} />
           ))}
         </section>
       ))}
+      <p class="mt-8 border-t border-line pt-4 font-mono text-xs text-ink-3">
+        {total.toString().padStart(2, '0')} {t(locale, 'archive.count')}
+      </p>
     </div>
   )}
 </BaseLayout>

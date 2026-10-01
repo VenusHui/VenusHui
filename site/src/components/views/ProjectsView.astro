@@ -21,7 +21,11 @@ const projects = await getProjects();
   locale={locale}
   translated
 >
-  <PageHeader title={tr('projects.title')} description={tr('projects.description')} />
+  <PageHeader
+    title={tr('projects.title')}
+    description={tr('projects.description')}
+    eyebrow="projects"
+  />
 
   {/*
     项目卡片网格：承接 ACM-ICPC / Learning / TongjiClasses 三条内容线。
@@ -37,10 +41,10 @@ const projects = await getProjects();
           <a
             href={projectRepoUrl(project)}
             rel="noopener noreferrer"
-            class="group flex h-full flex-col rounded-lg border border-line bg-surface p-5 transition-colors hover:border-accent"
+            class="card-lift group flex h-full flex-col rounded-lg border border-line bg-surface p-5 shadow-card"
           >
             <div class="flex items-baseline justify-between gap-3">
-              <h2 class="text-base font-semibold text-ink">{project.data.title}</h2>
+              <h2 class="font-display text-base font-semibold text-ink">{project.data.title}</h2>
               <span class="font-mono text-xs text-ink-3">{String(index + 1).padStart(2, '0')}</span>
             </div>
             <p class="mt-2 text-sm leading-relaxed text-ink-2">{project.data.summary}</p>

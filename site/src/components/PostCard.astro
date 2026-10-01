@@ -14,7 +14,7 @@ const { title, date, summary, tags } = post.data;
 
 <article class="group relative border-b border-line py-6 transition-colors first:pt-0 last:border-b-0 hover:bg-surface">
   {/*
-    hover 微交互：左侧一条主色竖线纵向展开；配合标题下划线动画，
+    hover 微交互：左侧一条主色竖线纵向展开；配合标题下划线动画与整行轻微右移，
     让列表项在不动布局的前提下有「可点」的反馈。
   */}
   <span
@@ -23,7 +23,7 @@ const { title, date, summary, tags } = post.data;
   ></span>
   <div class="pl-0 transition-transform duration-300 group-hover:translate-x-1">
     <h3 class="text-lg font-semibold leading-snug">
-      <a href={postPath(post)} class="link-underline text-ink hover:text-accent">
+      <a href={postPath(post)} class="link-underline font-display text-ink hover:text-accent">
         {title}
       </a>
     </h3>
